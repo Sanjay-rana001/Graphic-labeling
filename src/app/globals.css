@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+:root {
+  --background: #1c1917; /* stone-950 */
+  --foreground: #e7e5e4; /* stone-200 */
+  --card: #292524;       /* stone-900 */
+  --card-foreground: #fafaf9;
+  --border: #44403c;     /* stone-800 */
+  --primary: #9db4a0;    /* soothing sage green */
+  --primary-foreground: #1c1917;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar for a premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f4455;
+}
+
+.texture-aluminium {
+  background: 
+    linear-gradient(15deg, transparent 20%, rgba(255, 255, 255, 0.6) 25%, transparent 30%),
+    linear-gradient(-15deg, transparent 40%, rgba(255, 255, 255, 0.5) 45%, transparent 50%),
+    linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.1)),
+    repeating-linear-gradient(to right, transparent, transparent 1px, rgba(0, 0, 0, 0.04) 1px, rgba(0, 0, 0, 0.04) 2px),
+    #b0b5b9;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid #949494;
+  border-bottom: 3px solid #757575;
+  border-right: 3px solid #757575;
+}
