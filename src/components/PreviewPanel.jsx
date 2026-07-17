@@ -35,7 +35,7 @@ export default function PreviewPanel({ config, setConfig }) {
   const hasUploadedFont = layers.some(l => l.font === "UploadedCustomFont") && uploadedFontUrl;
 
   return (
-    <div className="flex-1 min-h-[500px] w-full flex items-center justify-center relative overflow-hidden px-2 lg:px-6">
+    <div className="flex-1 min-h-[250px] lg:min-h-[500px] w-full flex items-center justify-center relative overflow-hidden px-2 lg:px-6">
       
       {/* Dynamic Font Injector */}
       {hasUploadedFont && (
