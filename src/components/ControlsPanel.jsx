@@ -75,8 +75,8 @@ Please confirm!`;
   ];
 
   return (
-    <div className="flex flex-col w-full lg:w-[600px] bg-card text-card-foreground border-l border-border h-full max-h-screen overflow-hidden shadow-2xl z-10 relative">
-      <div className="p-5 border-b border-border bg-stone-950 flex justify-between items-center shrink-0">
+    <div className="flex flex-col flex-1 lg:flex-none w-full lg:w-[600px] bg-card text-card-foreground border-l border-border h-full max-h-screen overflow-hidden shadow-2xl z-10 relative">
+      <div className="p-4 lg:p-5 border-b border-border bg-stone-950 flex justify-between items-center shrink-0">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Customize</h2>
           <p className="text-xs text-gray-400 mt-1">Design your premium name plate</p>
