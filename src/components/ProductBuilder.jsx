@@ -62,7 +62,7 @@ export default function ProductBuilder() {
       </header>
       
       {/* Left side: Preview */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-12 relative pt-24">
+      <div className="flex-1 flex flex-col items-center justify-center relative pt-24 pb-8">
         <PreviewPanel config={config} setConfig={setConfig} />
       </div>
 
