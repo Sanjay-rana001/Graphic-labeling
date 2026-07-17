@@ -58,7 +58,7 @@ export default function ProductBuilder() {
     <div className="flex flex-col lg:flex-row min-h-screen bg-background relative">
       <header className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50 pointer-events-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl" />
+        <img src="/Media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl" />
       </header>
       
       {/* Left side: Preview */}
