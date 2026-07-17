@@ -55,14 +55,14 @@ export default function ProductBuilder() {
   }, [config]);
 
   return (
-    <div className="flex flex-col lg:flex-row h-[100dvh] overflow-hidden bg-background relative">
-      <header className="absolute top-0 left-0 w-full p-4 lg:p-6 flex justify-between items-center z-50 pointer-events-none">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-background relative">
+      <header className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50 pointer-events-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/Media/Logo.png" alt="Brand Logo" className="h-8 lg:h-12 object-contain drop-shadow-xl" />
+        <img src="/Media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl" />
       </header>
       
       {/* Left side: Preview */}
-      <div className="w-full lg:flex-1 h-[45vh] lg:h-full flex flex-col items-center justify-center p-4 lg:p-12 pt-16 lg:pt-24 relative shrink-0 border-b border-border lg:border-none bg-background/95 backdrop-blur-sm z-20">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-12 relative pt-24">
         <PreviewPanel config={config} setConfig={setConfig} />
       </div>
 
