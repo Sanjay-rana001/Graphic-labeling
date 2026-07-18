@@ -222,20 +222,20 @@ export default function LandingClient() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="flex-1 w-full relative z-10 flex gap-4 h-[400px] md:h-[500px] justify-center items-center"
+            className="flex-1 w-full relative z-10 flex gap-2 sm:gap-4 lg:gap-6 h-[250px] sm:h-[350px] lg:h-[550px] justify-center items-center mt-10 lg:mt-0"
           >
             {/* Small Left */}
-            <motion.div style={{ y: heroY1 }} className="w-1/3 h-[60%] rounded-2xl overflow-hidden shadow-xl border border-border/50 transform translate-y-8">
+            <motion.div style={{ y: heroY1 }} className="w-[32%] lg:w-[28%] h-[75%] lg:h-[60%] rounded-xl lg:rounded-2xl overflow-hidden shadow-lg border border-border/50 relative top-4 lg:top-8">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/Media/desk_name_plate.png" alt="Desk Name Plate" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
             </motion.div>
             {/* Big Center */}
-            <motion.div style={{ y: heroY2 }} className="w-1/3 h-[90%] rounded-2xl overflow-hidden shadow-2xl border border-border/50 z-10">
+            <motion.div style={{ y: heroY2 }} className="w-[42%] lg:w-[44%] h-[100%] lg:h-[90%] rounded-xl lg:rounded-2xl overflow-hidden shadow-2xl border border-border/50 z-10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/Media/premium_gold_plate.png" alt="Premium Gold Plate" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
             </motion.div>
             {/* Small Right */}
-            <motion.div style={{ y: heroY3 }} className="w-1/3 h-[60%] rounded-2xl overflow-hidden shadow-xl border border-border/50 transform -translate-y-8">
+            <motion.div style={{ y: heroY3 }} className="w-[32%] lg:w-[28%] h-[75%] lg:h-[60%] rounded-xl lg:rounded-2xl overflow-hidden shadow-lg border border-border/50 relative -top-4 lg:-top-8">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/Media/office_metal_labels.png" alt="Office Metal Labels" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
             </motion.div>
