@@ -4,6 +4,9 @@ import { useState, useMemo, useRef } from "react";
 import PreviewPanel from "./PreviewPanel";
 import ControlsPanel from "./ControlsPanel";
 import CheckoutBlock from "./CheckoutBlock";
+import { useTheme } from "./ThemeProvider";
+import Link from "next/link";
+import { Home } from "lucide-react";
 
 const availableFonts = [
   "Montserrat", "Bebas Neue", "Playfair Display",
@@ -15,7 +18,7 @@ const availableFonts = [
 ];
 
 export default function ProductBuilder() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, setTheme } = useTheme();
   
   const [config, setConfig] = useState({
     layers: [
@@ -62,10 +65,30 @@ export default function ProductBuilder() {
   }, [config]);
 
   return (
-    <div className={`flex flex-col lg:flex-row min-h-screen bg-background relative text-foreground ${isDarkMode ? 'dark' : ''}`}>
-      <header className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50 pointer-events-none">
+    <div className={`flex flex-col lg:flex-row min-h-screen bg-background relative text-foreground`}>
+      <header className="absolute top-0 left-0 p-6 flex items-center gap-6 z-50 pointer-events-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/Media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl" />
+        <img src="/Media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl pointer-events-auto" />
+        <Link href="/" className="pointer-events-auto relative flex items-center p-[4px] rounded-full bg-white border border-gray-200 dark:border-transparent group overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+          
+          {/* Background Sweep (Right to Left) */}
+          <div className="absolute inset-0 bg-white rounded-full translate-x-[101%] group-hover:translate-x-0 transition-transform duration-700 ease-in-out z-10" />
+
+          {/* Sliding Home Icon */}
+          <div className="relative z-20 flex items-center overflow-hidden h-4 w-6 mx-1.5">
+            <Home className="absolute left-1 w-4 h-4 text-black transition-all duration-700 ease-in-out group-hover:-translate-x-8" />
+            <Home className="absolute left-1 w-4 h-4 text-black translate-x-8 transition-all duration-700 ease-in-out group-hover:translate-x-0" />
+          </div>
+
+          {/* Inner Pill */}
+          <div className="relative px-5 py-1.5 rounded-full flex items-center justify-center">
+            <div className="absolute inset-0 bg-zinc-950 rounded-full z-0" />
+            <span className="relative z-20 text-white group-hover:text-black text-sm font-semibold transition-colors duration-500 whitespace-nowrap">
+              Back to Home
+            </span>
+          </div>
+
+        </Link>
       </header>
       
       {/* Left side: Preview */}
@@ -80,7 +103,7 @@ export default function ProductBuilder() {
 
       {/* Right side: Controls */}
       <div className="flex flex-col w-full lg:w-[600px] h-full lg:max-h-screen">
-        <ControlsPanel config={config} setConfig={setConfig} price={price} previewRef={previewRef} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+        <ControlsPanel config={config} setConfig={setConfig} price={price} previewRef={previewRef} isDarkMode={isDarkMode} setIsDarkMode={setTheme} />
       </div>
     </div>
   );

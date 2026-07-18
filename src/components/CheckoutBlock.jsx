@@ -40,7 +40,7 @@ Please confirm!`;
         pixelRatio: 2
       });
       const link = document.createElement("a");
-      link.download = "LuxePlates_Proof.png";
+      link.download = "Saourav_Graphic_Proof.png";
       link.href = dataUrl;
       link.click();
     } catch (err) {
