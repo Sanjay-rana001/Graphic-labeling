@@ -57,7 +57,7 @@ export default function LandingClient() {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Media/Logo.png" alt="Saourav Graphic Logo" className="h-10 md:h-12 object-contain drop-shadow-md" />
+            <img src="/Media/Logo.png" alt="Saourav Graphic Logo" className="h-10 md:h-12 object-contain drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-300" />
           </div>
           
           {/* Desktop Nav Links */}
@@ -334,14 +334,14 @@ export default function LandingClient() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
             {[
-              { id: 1, title: "Brushed Aluminum Sign", price: "₹999", img: "/Media/desk_name_plate.png" },
+              { id: 1, title: "Brushed Aluminum Sign", price: "₹999", img: "/Media/brushed_aluminum_sign.png" },
               { id: 2, title: "Industrial Metal Label", price: "₹499", img: "/Media/office_metal_labels.png" },
               { id: 3, title: "Gold Finished Plaque", price: "₹2,499", img: "/Media/premium_gold_plate.png" },
-              { id: 4, title: "Anodized Aluminum Tag", price: "₹299", img: "/Media/desk_name_plate.png" },
-              { id: 5, title: "Warning Signage", price: "₹799", img: "/Media/office_metal_labels.png" },
+              { id: 4, title: "Anodized Aluminum Tag", price: "₹299", img: "/Media/anodized_aluminum_tag.png" },
+              { id: 5, title: "Warning Signage", price: "₹799", img: "/Media/warning_signage.png" },
               { id: 6, title: "Commemorative Plaque", price: "₹3,499", img: "/Media/premium_gold_plate.png" },
-              { id: 7, title: "Aluminum Door Plate", price: "₹899", img: "/Media/desk_name_plate.png" },
-              { id: 8, title: "Equipment Tag", price: "₹199", img: "/Media/office_metal_labels.png" },
+              { id: 7, title: "Aluminum Door Plate", price: "₹899", img: "/Media/aluminum_door_plate.png" },
+              { id: 8, title: "Equipment Tag", price: "₹199", img: "/Media/equipment_tag.png" },
             ].map((product, i) => (
               <motion.div 
                 key={product.id}
@@ -376,7 +376,7 @@ export default function LandingClient() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Media/Logo.png" alt="Saourav Graphic Logo" className="h-8 object-contain opacity-70" />
+            <img src="/Media/Logo.png" alt="Saourav Graphic Logo" className="h-8 object-contain opacity-70 dark:opacity-90 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-all duration-300" />
           </div>
           <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Saourav Graphic. All rights reserved.</p>
           <div className="flex gap-4 text-sm text-muted-foreground">

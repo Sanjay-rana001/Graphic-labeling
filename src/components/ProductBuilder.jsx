@@ -68,7 +68,7 @@ export default function ProductBuilder() {
     <div className={`flex flex-col lg:flex-row min-h-screen bg-background relative text-foreground`}>
       <header className="absolute top-0 left-0 p-6 flex items-center gap-6 z-50 pointer-events-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/Media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl pointer-events-auto" />
+        <img src="/Media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-300 pointer-events-auto" />
         <Link href="/" className="pointer-events-auto relative flex items-center p-[4px] rounded-full bg-white border border-gray-200 dark:border-transparent group overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
           
           {/* Background Sweep (Right to Left) */}
