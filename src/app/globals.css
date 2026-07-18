@@ -16,18 +16,22 @@
 }
 
 .dark {
-  --background: #1c1917; /* stone-950 */
-  --foreground: #e7e5e4; /* stone-200 */
-  --card: #292524;       /* stone-900 */
-  --card-foreground: #fafaf9;
-  --border: #44403c;     /* stone-800 */
-  --primary: #9db4a0;    /* soothing sage green */
+  --background: #1c1917; /* Very dark stone */
+  --foreground: #fafaf9; /* Stone-50 (Much brighter) */
+  --card: #292524;
+  --card-foreground: #ffffff; /* Pure white for high contrast */
+  --popover: #292524;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
   --primary-foreground: #1c1917;
-  --muted: #1c1917;      /* stone-950/900 */
-  --muted-foreground: #a8a29e; /* stone-400 */
+  --secondary: #44403c;
+  --secondary-foreground: #fafaf9;
+  --muted: #44403c;
+  --muted-foreground: #d6d3d1; /* Brighter muted text */ /* stone-400 */
   --accent: #44403c;     /* stone-800 */
   --accent-foreground: #fafaf9;
   --input: #1c1917;
+  --border: #44403c;     /* stone-800 */
 }
 
 @theme inline {
@@ -45,7 +49,17 @@
   --color-input: var(--input);
 }
 
-
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2147483646;
+}
 
 body {
   background: var(--background);

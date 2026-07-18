@@ -61,8 +61,53 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
           <p className="text-xs text-muted-foreground mt-1">Design your premium name plate</p>
         </div>
         <button 
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className="p-2 rounded-full bg-card border border-border shadow-sm text-foreground hover:bg-accent transition-colors"
+          onClick={(e) => {
+            if (!document.startViewTransition) {
+              setIsDarkMode(!isDarkMode);
+              return;
+            }
+
+            const isDark = !isDarkMode;
+            const transition = document.startViewTransition(() => {
+              setIsDarkMode(isDark);
+            });
+
+            transition.ready.then(() => {
+              const duration = 900;
+              const easing = "cubic-bezier(0.4, 0, 0.2, 1)"; 
+
+              // Generate a complex wavy polygon for the leading edge of the liquid
+              const points = 40; // High resolution for smooth curves
+              const startWavyBottom = [];
+              const endWavyBottom = [];
+              
+              for (let i = points; i >= 0; i--) {
+                const x = (i / points) * 100;
+                // Create 3 full liquid waves across the screen with a 5% height amplitude
+                const wave = Math.sin((i / points) * Math.PI * 6) * 5;
+                startWavyBottom.push(`${x.toFixed(1)}% ${(-10 + wave).toFixed(1)}%`);
+                endWavyBottom.push(`${x.toFixed(1)}% ${(120 + wave).toFixed(1)}%`);
+              }
+
+              const startClip = `polygon(0% 0%, 100% 0%, ${startWavyBottom.join(', ')})`;
+              const endClip = `polygon(0% 0%, 100% 0%, ${endWavyBottom.join(', ')})`;
+
+              // "The Wavy Liquid Drop" - Water fills downward with actual rolling waves
+              document.documentElement.animate(
+                [
+                  { clipPath: startClip },
+                  { clipPath: endClip }
+                ],
+                { 
+                  duration: 1500, 
+                  easing: "cubic-bezier(0.4, 0, 0.2, 1)", 
+                  pseudoElement: "::view-transition-new(root)", 
+                  fill: "forwards" 
+                }
+              );
+            });
+          }}
+          className="p-2 rounded-full bg-card border border-border shadow-sm text-foreground hover:bg-accent transition-colors duration-300"
         >
           {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>

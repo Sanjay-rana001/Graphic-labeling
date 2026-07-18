@@ -62,7 +62,7 @@ export default function ProductBuilder() {
   }, [config]);
 
   return (
-    <div className={`flex flex-col lg:flex-row min-h-screen bg-background relative text-foreground transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`flex flex-col lg:flex-row min-h-screen bg-background relative text-foreground ${isDarkMode ? 'dark' : ''}`}>
       <header className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50 pointer-events-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/Media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl" />
