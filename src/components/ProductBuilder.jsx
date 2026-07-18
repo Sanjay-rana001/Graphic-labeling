@@ -15,6 +15,8 @@ const availableFonts = [
 ];
 
 export default function ProductBuilder() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
   const [config, setConfig] = useState({
     layers: [
       {
@@ -60,7 +62,7 @@ export default function ProductBuilder() {
   }, [config]);
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-background relative">
+    <div className={`flex flex-col lg:flex-row min-h-screen bg-background relative text-foreground transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
       <header className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50 pointer-events-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/Media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl" />
@@ -78,7 +80,7 @@ export default function ProductBuilder() {
 
       {/* Right side: Controls */}
       <div className="flex flex-col w-full lg:w-[600px] h-full lg:max-h-screen">
-        <ControlsPanel config={config} setConfig={setConfig} price={price} previewRef={previewRef} />
+        <ControlsPanel config={config} setConfig={setConfig} price={price} previewRef={previewRef} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
       </div>
     </div>
   );

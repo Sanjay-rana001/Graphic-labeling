@@ -1,6 +1,21 @@
 @import "tailwindcss";
 
 :root {
+  --background: #f1f5f9; /* slate-100 */
+  --foreground: #0f172a; /* slate-900 */
+  --card: #ffffff;       /* white */
+  --card-foreground: #1e293b; /* slate-800 */
+  --border: #cbd5e1;     /* slate-300 */
+  --primary: #475569;    /* slate-600 */
+  --primary-foreground: #ffffff;
+  --muted: #f8fafc;      /* slate-50 */
+  --muted-foreground: #64748b; /* slate-500 */
+  --accent: #e2e8f0;     /* slate-200 */
+  --accent-foreground: #0f172a;
+  --input: #f1f5f9;
+}
+
+.dark {
   --background: #1c1917; /* stone-950 */
   --foreground: #e7e5e4; /* stone-200 */
   --card: #292524;       /* stone-900 */
@@ -8,6 +23,11 @@
   --border: #44403c;     /* stone-800 */
   --primary: #9db4a0;    /* soothing sage green */
   --primary-foreground: #1c1917;
+  --muted: #1c1917;      /* stone-950/900 */
+  --muted-foreground: #a8a29e; /* stone-400 */
+  --accent: #44403c;     /* stone-800 */
+  --accent-foreground: #fafaf9;
+  --input: #1c1917;
 }
 
 @theme inline {
@@ -18,7 +38,14 @@
   --color-border: var(--border);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-input: var(--input);
 }
+
+
 
 body {
   background: var(--background);
