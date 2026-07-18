@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Briefcase, Factory, Sun, MoveRight, Layers, CheckCircle, Moon, ChevronsRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -56,8 +57,7 @@ export default function LandingClient() {
       <nav className={`fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-5xl z-50 transition-all duration-500 rounded-full border border-border/50 shadow-[0_8px_30px_rgba(0,0,0,0.1)] backdrop-blur-xl ${scrolled ? 'bg-background/80 py-3' : 'bg-background/40 py-4'} px-6`}>
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Media/Logo.png" alt="Saourav Graphic Logo" className="h-10 md:h-12 object-contain drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-300" />
+            <Image src="/Media/Logo.png" alt="Saourav Graphic Logo" width={150} height={48} className="h-10 md:h-12 w-auto object-contain drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-300" />
           </div>
           
           {/* Desktop Nav Links */}
@@ -170,7 +170,7 @@ export default function LandingClient() {
             </div>
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-6 leading-[1.1]">
               Custom Metal Labels & <br className="hidden md:block"/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-500 to-slate-800 dark:from-slate-200 dark:to-slate-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-slate-200 dark:to-slate-400">
                 Printing Services
               </span>
             </h1>
@@ -291,13 +291,37 @@ export default function LandingClient() {
               className="flex-1"
             >
               <div className="w-full aspect-square md:aspect-[4/3] rounded-3xl border border-border shadow-2xl overflow-hidden relative group">
-                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                 <motion.img 
-                    style={{ scale: innerImgScale, y: innerImgY }}
-                    src="/Media/premium_gold_plate.png" 
-                    alt="Premium Gold Metal Plate" 
-                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 origin-center" 
+               <motion.div style={{ scale: innerImgScale, y: innerImgY }} className="w-full h-full absolute inset-0">
+                 <motion.div 
+                    className="absolute inset-0 w-full h-full group-hover:scale-[1.02] transition-transform duration-700 origin-center"
+                 >
+                   <Image 
+                      src="/Media/premium_gold_plate.png" 
+                      alt="Premium Gold Metal Plate" 
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                   />
+                 </motion.div>
+                 
+                 {/* Left Shutter Overlay (Slides DOWN to reveal Top-to-Bottom) */}
+                 <motion.div 
+                   initial={{ y: "0%" }}
+                   whileInView={{ y: "101%" }}
+                   viewport={{ once: true, margin: "-100px" }}
+                   transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+                   className="absolute top-0 left-0 w-[50.2%] h-full bg-card z-20"
                  />
+                 
+                 {/* Right Shutter Overlay (Slides UP to reveal Bottom-to-Top) */}
+                 <motion.div 
+                   initial={{ y: "0%" }}
+                   whileInView={{ y: "-101%" }}
+                   viewport={{ once: true, margin: "-100px" }}
+                   transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+                   className="absolute top-0 right-0 w-[50.2%] h-full bg-card z-20"
+                 />
+               </motion.div>
               </div>
             </motion.div>
             <motion.div 
@@ -352,8 +376,15 @@ export default function LandingClient() {
                 className="group flex flex-col bg-card border border-border rounded-xl md:rounded-2xl overflow-hidden hover:border-foreground/30 hover:shadow-md transition-all duration-300"
               >
                 <div className="h-32 md:h-48 bg-accent/30 flex items-center justify-center relative overflow-hidden border-b border-border/50">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={product.img} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <motion.div
+                    initial={{ clipPath: "inset(50% 0 50% 0)" }}
+                    whileInView={{ clipPath: "inset(0% 0 0% 0)" }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: i * 0.05, ease: "easeOut" }}
+                    className="w-full h-full"
+                  >
+                    <Image src={product.img} alt={product.title} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </motion.div>
                 </div>
                 <div className="p-3 md:p-5 flex flex-col flex-grow">
                   <h3 className="text-sm md:text-lg font-bold mb-1 truncate">{product.title}</h3>
@@ -361,7 +392,7 @@ export default function LandingClient() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between mt-auto gap-2 md:gap-0">
                     <span className="text-base md:text-lg font-bold text-foreground">{product.price}</span>
                     <Link href="/customize" className="px-3 py-1.5 md:px-4 md:py-1.5 bg-foreground text-background text-xs md:text-sm font-medium rounded-full text-center hover:opacity-90 transition-opacity w-full md:w-auto">
-                      Customize
+                      Order
                     </Link>
                   </div>
                 </div>
@@ -375,8 +406,7 @@ export default function LandingClient() {
       <footer className="w-full py-12 bg-background border-t border-border text-center">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Media/Logo.png" alt="Saourav Graphic Logo" className="h-8 object-contain opacity-70 dark:opacity-90 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-all duration-300" />
+            <Image src="/Media/Logo.png" alt="Saourav Graphic Logo" width={120} height={32} className="h-8 w-auto object-contain opacity-70 dark:opacity-90 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-all duration-300" />
           </div>
           <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Saourav Graphic. All rights reserved.</p>
           <div className="flex gap-4 text-sm text-muted-foreground">
