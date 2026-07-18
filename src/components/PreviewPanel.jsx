@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { useRef } from "react";
 
-export default function PreviewPanel({ config, setConfig }) {
-  const { layers, uploadedFontUrl, material, size, logoUrl, activeLayerId } = config;
+export default function PreviewPanel({ config, setConfig, previewRef }) {
+  const { layers, uploadedFontUrl, material, size, logoUrl, activeLayerId, mountingStyle, showGuides } = config;
   const constraintsRef = useRef(null);
 
 
@@ -35,7 +35,7 @@ export default function PreviewPanel({ config, setConfig }) {
   const hasUploadedFont = layers.some(l => l.font === "UploadedCustomFont") && uploadedFontUrl;
 
   return (
-    <div className="flex-1 min-h-[250px] lg:min-h-[500px] w-full flex items-center justify-center relative overflow-hidden px-2 lg:px-6">
+    <div className="w-full flex items-center justify-center relative overflow-hidden px-2 lg:px-6 my-4 lg:my-8 shrink">
       
       {/* Dynamic Font Injector */}
       {hasUploadedFont && (
@@ -52,6 +52,15 @@ export default function PreviewPanel({ config, setConfig }) {
         `}</style>
       ))}
 
+      <div ref={previewRef} className="relative flex items-center justify-center p-8 w-full max-w-[600px]">
+        {/* Guides (Rulers) if enabled */}
+        {showGuides && (
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+            <div className="absolute top-0 left-8 right-8 border-t-2 border-dashed border-gray-400/50 text-[10px] text-gray-500 text-center font-bold">Width: {size.width}"</div>
+            <div className="absolute left-0 top-8 bottom-8 border-l-2 border-dashed border-gray-400/50 text-[10px] text-gray-500 flex items-center justify-center font-bold" style={{ writingMode: 'vertical-rl' }}>Height: {size.height}"</div>
+          </div>
+        )}
+
       {/* The Name Plate */}
       <motion.div
         layout
@@ -65,7 +74,20 @@ export default function PreviewPanel({ config, setConfig }) {
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
         }}
       >
+        {/* Safe Zone */}
+        {showGuides && (
+          <div className="absolute inset-4 border-2 border-dashed border-red-500/50 pointer-events-none z-20 rounded" />
+        )}
 
+        {/* Standoffs (Mounting) */}
+        {mountingStyle === "Standoffs" && (
+          <>
+            <div className="absolute top-3 left-3 w-4 h-4 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.5)] border border-gray-400 z-20" />
+            <div className="absolute top-3 right-3 w-4 h-4 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.5)] border border-gray-400 z-20" />
+            <div className="absolute bottom-3 left-3 w-4 h-4 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.5)] border border-gray-400 z-20" />
+            <div className="absolute bottom-3 right-3 w-4 h-4 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.5)] border border-gray-400 z-20" />
+          </>
+        )}
 
         {/* Multi-Layer Text Rendering */}
         {layers.map((layer) => {
@@ -126,6 +148,12 @@ export default function PreviewPanel({ config, setConfig }) {
           );
         })}
       </motion.div>
+
+        {/* Desk Stand */}
+        {mountingStyle === "Desk Stand" && (
+          <div className="absolute bottom-4 w-[60%] h-6 bg-gradient-to-r from-gray-800 via-gray-500 to-gray-800 rounded-b-xl shadow-2xl -z-10 translate-y-4 border-b-2 border-gray-400" />
+        )}
+      </div>
     </div>
   );
 }

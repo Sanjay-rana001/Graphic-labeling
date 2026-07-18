@@ -1,9 +1,8 @@
 "use client";
 
-import { Upload, Type, Palette, Diamond, MessageCircle, Sliders, ChevronDown, Plus, Trash2, Layers, LayoutTemplate, AlignLeft, AlignCenter, AlignRight, ShoppingCart, CreditCard } from "lucide-react";
+import { Upload, Type, Palette, Diamond, Sliders, ChevronDown, Plus, Trash2, Layers, LayoutTemplate, AlignLeft, AlignCenter, AlignRight, Target, Grid } from "lucide-react";
 import { useRef } from "react";
-
-export default function ControlsPanel({ config, setConfig, price }) {
+export default function ControlsPanel({ config, setConfig, price, previewRef }) {
   const fileInputRef = useRef(null);
 
   const activeLayer = config.layers.find(l => l.id === config.activeLayerId) || config.layers[0];
@@ -39,26 +38,6 @@ export default function ControlsPanel({ config, setConfig, price }) {
         activeLayerId: prev.activeLayerId === id ? newLayers[0].id : prev.activeLayerId
       };
     });
-  };
-
-  const handleOrderWhatsApp = () => {
-    const number = "1234567890";
-    
-    const layerDetails = config.layers.map((l, i) => 
-      `Layer ${i+1}: "${l.text.replace(/\n/g, " ")}" (Font: ${l.font === "UploadedCustomFont" ? config.uploadedFontName : l.font}, Color: ${l.color})`
-    ).join("\n");
-
-    const text = `Hello! I would like to order a Custom Metal Name Plate.
-    
-Details:
-${layerDetails}
-- Material: ${config.material}
-- Size: ${config.size.width}x${config.size.height} inches
-- Price: ₹${price}
-
-Please confirm!`;
-    const encoded = encodeURIComponent(text);
-    window.open(`https://wa.me/${number}?text=${encoded}`, "_blank");
   };
 
   const colorPalette = [
@@ -371,6 +350,40 @@ Please confirm!`;
               </div>
             </div>
           </section>
+
+          <section className="space-y-3">
+            <div className="flex items-center gap-2 text-primary">
+              <Target size={18} />
+              <h3 className="font-semibold">Mounting Options</h3>
+            </div>
+            <div className="flex gap-2">
+              {["Standoffs", "Adhesive", "Desk Stand"].map((mount) => (
+                <button
+                  key={mount}
+                  onClick={() => updateConfig("mountingStyle", mount)}
+                  className={`flex-1 py-2 border rounded-lg transition-all text-xs font-bold ${config.mountingStyle === mount ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-gray-500 text-gray-400"}`}
+                >
+                  {mount}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-3">
+            <div className="flex items-center gap-2 text-primary">
+              <Grid size={18} />
+              <h3 className="font-semibold">Professional Guides</h3>
+            </div>
+            <label className="flex items-center gap-3 cursor-pointer bg-stone-900 p-3 rounded-lg border border-border">
+              <input 
+                type="checkbox" 
+                checked={config.showGuides || false} 
+                onChange={(e) => updateConfig("showGuides", e.target.checked)}
+                className="w-4 h-4 accent-primary"
+              />
+              <span className="text-sm font-medium text-gray-300">Show Rulers & Safe Zone</span>
+            </label>
+          </section>
         </div>
 
         {/* Volume Pricing moved to bottom of scrollable area */}
@@ -385,49 +398,6 @@ Please confirm!`;
         </div>
       </div>
 
-      <div className="p-4 border-t border-border bg-stone-950/80 backdrop-blur-xl shrink-0 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
-        <div className="flex justify-between items-center mb-3">
-          <span className="text-sm text-gray-400 font-medium">Quantity</span>
-          <div className="flex items-center gap-2 bg-stone-900 p-1 rounded-lg border border-stone-800">
-            <button 
-              onClick={() => updateConfig("quantity", Math.max(1, (config.quantity || 1) - 1))}
-              className="w-7 h-7 rounded-md bg-stone-800 text-white flex items-center justify-center hover:bg-stone-700 transition-colors"
-            >-</button>
-            <span className="font-bold text-sm w-6 text-center">{config.quantity || 1}</span>
-            <button 
-              onClick={() => updateConfig("quantity", (config.quantity || 1) + 1)}
-              className="w-7 h-7 rounded-md bg-stone-800 text-white flex items-center justify-center hover:bg-stone-700 transition-colors"
-            >+</button>
-          </div>
-        </div>
-        <div className="flex justify-between items-end mb-4">
-          <span className="text-sm text-gray-400 font-medium pb-1">Total</span>
-          <span className="text-2xl font-black text-white leading-none">₹{price.toLocaleString('en-IN')}</span>
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
-            <button 
-              className="flex-1 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all border border-stone-700"
-            >
-              <ShoppingCart size={16} />
-              Add to Cart
-            </button>
-            <button 
-              className="flex-1 py-2 bg-white hover:bg-gray-200 text-black rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all"
-            >
-              <CreditCard size={16} />
-              Buy Now
-            </button>
-          </div>
-          <button 
-            onClick={handleOrderWhatsApp}
-            className="w-full py-2 bg-[#25D366] hover:bg-[#20b958] text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#25D366]/20 hover:shadow-[#25D366]/40"
-          >
-            <MessageCircle size={18} />
-            Order via WhatsApp
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

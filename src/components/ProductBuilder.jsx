@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import PreviewPanel from "./PreviewPanel";
 import ControlsPanel from "./ControlsPanel";
+import CheckoutBlock from "./CheckoutBlock";
 
 const availableFonts = [
   "Montserrat", "Bebas Neue", "Playfair Display",
@@ -35,7 +36,11 @@ export default function ProductBuilder() {
     material: "Aluminium",
     size: { width: 12, height: 4, thickness: 2 },
     quantity: 1,
+    mountingStyle: "Standoffs",
+    showGuides: false,
   });
+
+  const previewRef = useRef(null);
 
   // Calculate dynamic price based on selections
   const price = useMemo(() => {
@@ -62,12 +67,19 @@ export default function ProductBuilder() {
       </header>
       
       {/* Left side: Preview */}
-      <div className="w-full lg:flex-1 flex flex-col items-center justify-center relative pt-20 pb-4 lg:pt-24 lg:pb-8 sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border lg:border-none lg:static lg:bg-transparent">
-        <PreviewPanel config={config} setConfig={setConfig} />
+      <div className="w-full lg:flex-1 flex flex-col items-center justify-center relative pt-20 pb-4 lg:pt-20 lg:pb-4 sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border lg:border-none lg:h-screen lg:overflow-hidden shadow-lg lg:shadow-none">
+        <div className="w-full flex justify-center items-center">
+          <PreviewPanel config={config} setConfig={setConfig} previewRef={previewRef} />
+        </div>
+        <div className="w-full max-w-2xl mt-4 shrink-0">
+          <CheckoutBlock config={config} setConfig={setConfig} price={price} previewRef={previewRef} />
+        </div>
       </div>
 
       {/* Right side: Controls */}
-      <ControlsPanel config={config} setConfig={setConfig} price={price} />
+      <div className="flex flex-col w-full lg:w-[600px] h-full lg:max-h-screen">
+        <ControlsPanel config={config} setConfig={setConfig} price={price} previewRef={previewRef} />
+      </div>
     </div>
   );
 }
