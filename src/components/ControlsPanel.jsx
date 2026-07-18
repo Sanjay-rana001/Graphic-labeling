@@ -54,7 +54,21 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
   ];
 
   return (
-    <div className="flex flex-col w-full lg:w-[600px] bg-card text-card-foreground border-l border-border h-full max-h-screen overflow-hidden shadow-2xl z-10 relative">
+    <div className="flex flex-col w-full lg:w-[600px] bg-card text-card-foreground border-l border-border h-full max-h-screen overflow-visible shadow-2xl z-50 relative">
+      
+      {/* Vertical Side Tab for Guides */}
+      <button 
+        onClick={() => updateConfig("showGuides", !config.showGuides)}
+        className="hidden lg:flex absolute top-40 -left-10 w-10 h-32 bg-card border-y border-l border-border rounded-l-lg shadow-[-4px_0_10px_rgba(0,0,0,0.1)] items-center justify-center cursor-pointer hover:bg-accent transition-colors z-50"
+      >
+        <div 
+          className="text-xs font-bold text-foreground flex items-center gap-2 whitespace-nowrap"
+          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+        >
+          {config.showGuides ? "Hide Guides" : "Show Guides"} <Grid size={12} className="text-primary" style={{ transform: 'rotate(90deg)' }} />
+        </div>
+      </button>
+
       <div className="p-5 border-b border-border bg-muted flex justify-between items-center shrink-0">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Customize</h2>
@@ -420,21 +434,7 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
             </div>
           </section>
 
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 text-primary">
-              <Grid size={18} />
-              <h3 className="font-semibold">Professional Guides</h3>
-            </div>
-            <label className="flex items-center gap-3 cursor-pointer bg-muted p-3 rounded-lg border border-border shadow-sm">
-              <input 
-                type="checkbox" 
-                checked={config.showGuides || false} 
-                onChange={(e) => updateConfig("showGuides", e.target.checked)}
-                className="w-4 h-4 accent-primary"
-              />
-              <span className="text-sm font-medium text-foreground">Show Rulers & Safe Zone</span>
-            </label>
-          </section>
+
         </div>
 
         {/* Volume Pricing moved to bottom of scrollable area */}
@@ -442,8 +442,8 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
           <h4 className="text-[10px] font-bold text-primary uppercase tracking-wider mb-2">Volume Discount Applied</h4>
           <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs font-medium text-muted-foreground">
             <div className="flex justify-between"><span>1 - 10 qty</span> <span className="text-foreground">₹600 / pc</span></div>
-            <div className="flex justify-between"><span>11 - 30 qty</span> <span className="text-foreground">₹350 / pc</span></div>
-            <div className="flex justify-between"><span>31+ qty</span> <span className="text-foreground">₹150 / pc</span></div>
+            <div className="flex justify-between"><span>11 - 30 qty</span> <span className="text-foreground">₹450 / pc</span></div>
+            <div className="flex justify-between"><span>31+ qty</span> <span className="text-foreground">₹350 / pc</span></div>
             <div className="flex justify-between"><span>Base Setup (Fixed)</span> <span className="text-foreground">₹1,000</span></div>
           </div>
         </div>

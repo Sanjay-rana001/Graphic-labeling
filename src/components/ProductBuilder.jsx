@@ -53,9 +53,9 @@ export default function ProductBuilder() {
     if (qty <= 10) {
       perPiecePrice = 600;
     } else if (qty <= 30) {
-      perPiecePrice = 350;
+      perPiecePrice = 450;
     } else {
-      perPiecePrice = 150;
+      perPiecePrice = 350;
     }
 
     return basePrice + (perPiecePrice * qty);

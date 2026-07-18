@@ -1,7 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { Grid } from "lucide-react";
+
+function Counter({ to }) {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, Math.round);
+
+  useEffect(() => {
+    const controls = animate(count, to, { duration: 0.5, ease: "linear" });
+    return controls.stop;
+  }, [count, to]);
+
+  return <motion.span>{rounded}</motion.span>;
+}
 
 export default function PreviewPanel({ config, setConfig, previewRef }) {
   const { layers, uploadedFontUrl, material, size, logoUrl, activeLayerId, mountingStyle, showGuides } = config;
@@ -22,7 +35,7 @@ export default function PreviewPanel({ config, setConfig, previewRef }) {
   // Material background gradients
   const materialStyles = {
     Aluminium: "texture-aluminium",
-    Metal: "bg-gradient-to-br from-zinc-800 to-black shadow-2xl border border-zinc-700/50",
+    Metal: "texture-metal",
   };
 
   const plateStyle = materialStyles[material];
@@ -54,18 +67,44 @@ export default function PreviewPanel({ config, setConfig, previewRef }) {
 
       <div ref={previewRef} className="relative flex items-center justify-center p-8 w-full max-w-[600px]">
         {/* Guides (Rulers) if enabled */}
-        {showGuides && (
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="absolute top-0 left-8 right-8 border-t-2 border-dashed border-gray-400/50 text-[10px] text-gray-500 text-center font-bold">Width: {size.width}"</div>
-            <div className="absolute left-0 top-8 bottom-8 border-l-2 border-dashed border-gray-400/50 text-[10px] text-gray-500 flex items-center justify-center font-bold" style={{ writingMode: 'vertical-rl' }}>Height: {size.height}"</div>
-          </div>
-        )}
+        <AnimatePresence>
+          {showGuides && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6 }}
+              className="absolute inset-0 pointer-events-none flex items-center justify-center z-0"
+            >
+              <motion.div 
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: 1 }}
+                exit={{ scaleX: 0, opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="absolute top-0 left-8 right-8 border-t-2 border-dashed border-gray-400/50 text-[10px] text-gray-500 text-center font-bold"
+                style={{ originX: 0 }}
+              >
+                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>Width: <Counter to={size.width} />"</motion.span>
+              </motion.div>
+              <motion.div 
+                initial={{ scaleY: 0, opacity: 0 }}
+                animate={{ scaleY: 1, opacity: 1 }}
+                exit={{ scaleY: 0, opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="absolute left-0 top-8 bottom-8 border-l-2 border-dashed border-gray-400/50 text-[10px] text-gray-500 flex items-center justify-center font-bold" 
+                style={{ writingMode: 'vertical-rl', originY: 0 }}
+              >
+                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>Height: <Counter to={size.height} />"</motion.span>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       {/* The Name Plate */}
       <motion.div
         layout
         ref={constraintsRef}
-        className={`relative flex flex-col p-3 lg:p-4 rounded-md transition-all duration-500 ${plateStyle} overflow-hidden items-center justify-center`}
+        className={`relative flex flex-col rounded-md transition-all duration-500 ${plateStyle} overflow-hidden items-center justify-center`}
         style={{
           width: "100%",
           maxWidth: "500px",
@@ -75,9 +114,17 @@ export default function PreviewPanel({ config, setConfig, previewRef }) {
         }}
       >
         {/* Safe Zone */}
-        {showGuides && (
-          <div className="absolute inset-4 border-2 border-dashed border-red-500/50 pointer-events-none z-20 rounded" />
-        )}
+        <AnimatePresence>
+          {showGuides && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="absolute inset-4 border-2 border-dashed border-red-500/50 pointer-events-none z-20 rounded" 
+            />
+          )}
+        </AnimatePresence>
 
         {/* Standoffs (Mounting) */}
         {mountingStyle === "Standoffs" && (
@@ -111,7 +158,7 @@ export default function PreviewPanel({ config, setConfig, previewRef }) {
                   setConfig(prev => ({ ...prev, activeLayerId: layer.id }));
                 }
               }}
-              className={`cursor-move flex flex-col items-center justify-center text-center select-none touch-none relative ${isActive ? "ring-2 ring-primary/40 ring-offset-4 ring-offset-transparent rounded-lg z-10" : "z-0"}`}
+              className={`cursor-move flex flex-col items-center justify-center text-center select-none touch-none relative p-2 rounded-lg transition-colors transition-shadow duration-200 hover:ring-2 hover:ring-primary/40 hover:bg-primary/5 active:ring-2 active:ring-primary/60 active:bg-primary/10 ${isActive ? "z-10" : "z-0"}`}
               style={{ 
                 fontSize, 
                 fontFamily: actualFontFamily,
