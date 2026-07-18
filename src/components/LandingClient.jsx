@@ -252,7 +252,7 @@ export default function LandingClient() {
             viewport={{ once: true, margin: "-100px" }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Our Products</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">Our Services</h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Strong metal tags and signs made for real-world use.</p>
           </motion.div>
 
@@ -324,45 +324,50 @@ export default function LandingClient() {
         </div>
       </section>
 
-      {/* 5. Final CTA Section */}
-      <section className="py-24 relative overflow-hidden bg-card border-t border-border">
-        
-        <div className="max-w-4xl mx-auto px-6 text-center z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-6xl font-extrabold mb-8 text-foreground">Ready to get started?</h2>
-            <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Use our online builder to see what your design will look like before you order.
-            </p>
-            <Link href="/customize">
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                className="relative flex items-center p-[6px] rounded-full bg-white border border-gray-200 dark:border-transparent group overflow-hidden transition-shadow duration-300 ease-out hover:shadow-xl mt-8"
+      {/* 5. Shop Products Section */}
+      <section id="products" className="py-24 relative bg-background border-t border-border">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Our Products</h2>
+            <p className="text-lg text-muted-foreground">Select a premium template below to customize it to your exact needs.</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+            {[
+              { id: 1, title: "Brushed Aluminum Sign", price: "₹999", img: "/Media/desk_name_plate.png" },
+              { id: 2, title: "Industrial Metal Label", price: "₹499", img: "/Media/office_metal_labels.png" },
+              { id: 3, title: "Gold Finished Plaque", price: "₹2,499", img: "/Media/premium_gold_plate.png" },
+              { id: 4, title: "Anodized Aluminum Tag", price: "₹299", img: "/Media/desk_name_plate.png" },
+              { id: 5, title: "Warning Signage", price: "₹799", img: "/Media/office_metal_labels.png" },
+              { id: 6, title: "Commemorative Plaque", price: "₹3,499", img: "/Media/premium_gold_plate.png" },
+              { id: 7, title: "Aluminum Door Plate", price: "₹899", img: "/Media/desk_name_plate.png" },
+              { id: 8, title: "Equipment Tag", price: "₹199", img: "/Media/office_metal_labels.png" },
+            ].map((product, i) => (
+              <motion.div 
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="group flex flex-col bg-card border border-border rounded-xl md:rounded-2xl overflow-hidden hover:border-foreground/30 hover:shadow-md transition-all duration-300"
               >
-                {/* Background Sweep */}
-                <div className="absolute inset-0 bg-white rounded-full -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-700 ease-in-out z-10" />
-
-                {/* Inner Pill */}
-                <div className="relative px-10 py-4 rounded-full flex items-center justify-center">
-                  <div className="absolute inset-0 bg-zinc-950 rounded-full z-0" />
-                  <span className="relative z-20 text-white group-hover:text-black text-xl font-bold transition-colors duration-500">
-                    Try Online Builder
-                  </span>
+                <div className="h-32 md:h-48 bg-accent/30 flex items-center justify-center relative overflow-hidden border-b border-border/50">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={product.img} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
-
-                {/* Sliding Arrow */}
-                <div className="relative z-20 flex items-center overflow-hidden h-8 w-10 mx-3">
-                  <ChevronsRight className="absolute left-0 w-8 h-8 text-black transition-all duration-700 ease-in-out group-hover:translate-x-12" />
-                  <ChevronsRight className="absolute left-0 w-8 h-8 text-black -translate-x-12 transition-all duration-700 ease-in-out group-hover:translate-x-0" />
+                <div className="p-3 md:p-5 flex flex-col flex-grow">
+                  <h3 className="text-sm md:text-lg font-bold mb-1 truncate">{product.title}</h3>
+                  <p className="text-muted-foreground text-xs mb-4 line-clamp-2 hidden md:block">Customizable premium metal tag designed for durability and a professional finish.</p>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between mt-auto gap-2 md:gap-0">
+                    <span className="text-base md:text-lg font-bold text-foreground">{product.price}</span>
+                    <Link href="/customize" className="px-3 py-1.5 md:px-4 md:py-1.5 bg-foreground text-background text-xs md:text-sm font-medium rounded-full text-center hover:opacity-90 transition-opacity w-full md:w-auto">
+                      Customize
+                    </Link>
+                  </div>
                 </div>
-              </motion.button>
-            </Link>
-          </motion.div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
