@@ -11,6 +11,7 @@ export default function LandingClient() {
   const [scrolled, setScrolled] = useState(false);
   const { isDarkMode, setTheme } = useTheme();
   
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const imgRef = useRef(null);
   
   const heroRef = useRef(null);
@@ -69,6 +70,10 @@ export default function LandingClient() {
             <button onClick={() => scrollToSection('benefits')} className="relative group overflow-hidden">
               <span className="group-hover:-translate-y-full transition-transform duration-300 block">Benefits</span>
               <span className="absolute top-0 left-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 block text-primary">Benefits</span>
+            </button>
+            <button onClick={() => scrollToSection('products')} className="relative group overflow-hidden">
+              <span className="group-hover:-translate-y-full transition-transform duration-300 block">Products</span>
+              <span className="absolute top-0 left-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 block text-primary">Products</span>
             </button>
             <button onClick={() => scrollToSection('testimonials')} className="relative group overflow-hidden">
               <span className="group-hover:-translate-y-full transition-transform duration-300 block">Testimonials</span>
@@ -151,12 +156,32 @@ export default function LandingClient() {
       </nav>
 
       {/* 2. Immersive Hero Section */}
-      <section ref={heroRef} className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden flex flex-col items-center justify-center min-h-[90vh]">
+      <section 
+        ref={heroRef} 
+        onMouseMove={(e) => {
+          if (!heroRef.current) return;
+          const rect = heroRef.current.getBoundingClientRect();
+          setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        }}
+        className="relative pt-28 pb-16 md:pt-36 md:pb-20 overflow-hidden flex flex-col items-center justify-center min-h-[90vh]"
+      >
+        {/* Dynamic Mouse Spotlight */}
+        <motion.div 
+          className="pointer-events-none absolute inset-0 z-0"
+          animate={{
+            background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'}, transparent 40%)`
+          }}
+          transition={{ type: "tween", ease: "linear", duration: 0 }}
+        />
+
+        {/* Subtle Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] -z-20" />
+
         {/* Abstract Background Elements */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[100px] -z-10 mix-blend-multiply dark:mix-blend-screen" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-slate-500/20 rounded-full blur-[100px] -z-10 mix-blend-multiply dark:mix-blend-screen" />
 
-        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           
           {/* Hero Text */}
           <motion.div 
@@ -215,6 +240,20 @@ export default function LandingClient() {
                 </motion.button>
               </Link>
             </div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+            >
+              <div className="flex flex-col items-center sm:items-start">
+                <div className="flex text-yellow-500 text-sm tracking-widest mb-0.5">
+                  ★★★★★
+                </div>
+                <p className="text-sm text-muted-foreground font-medium">Trusted by 500+ industrial businesses</p>
+              </div>
+            </motion.div>
           </motion.div>
 
           {/* Hero Images Collage: Small Big Small */}
@@ -244,19 +283,20 @@ export default function LandingClient() {
       </section>
 
       {/* 3. Scroll-Triggered Feature Sections */}
-      <section id="features" className="py-24 bg-card border-y border-border">
+      <section id="features" className="py-16 bg-card border-y border-border">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             className="text-center mb-16"
+            className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-4">Our Services</h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Strong metal tags and signs made for real-world use.</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FeatureCard 
               icon={<Briefcase className="w-8 h-8" />}
               title="Corporate Name Plates"
@@ -280,11 +320,11 @@ export default function LandingClient() {
       </section>
 
       {/* 4. Benefits Section (Alternating Layout) */}
-      <section id="benefits" className="py-24">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col gap-24">
+      <section id="benefits" className="py-16 bg-background border-b border-border">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col gap-12">
           
           {/* Benefit 1 */}
-          <div className="flex flex-col md:flex-row items-center gap-12">
+          <div className="flex flex-col md:flex-row items-center gap-8">
             <motion.div 
               ref={imgRef}
               style={{ scale: imgScale, opacity: imgOpacity, y: imgY }}
@@ -349,9 +389,9 @@ export default function LandingClient() {
       </section>
 
       {/* 5. Shop Products Section */}
-      <section id="products" className="py-24 relative bg-background border-t border-border">
+      <section id="products" className="py-16 relative bg-background border-t border-border">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="text-center max-w-2xl mx-auto mb-12">
             <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Our Products</h2>
             <p className="text-lg text-muted-foreground">Select a premium template below to customize it to your exact needs.</p>
           </div>
