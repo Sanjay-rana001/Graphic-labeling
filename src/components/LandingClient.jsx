@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowRight, Briefcase, Factory, Sun, MoveRight, Layers, CheckCircle, Moon, ChevronsRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "./ThemeProvider";
@@ -30,13 +30,15 @@ export default function LandingClient() {
   }, []);
   
   const heroRef = useRef(null);
-  const { scrollYProgress: heroScroll } = useScroll({
+  const { scrollYProgress: rawHeroScroll } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"]
   });
+  const heroScroll = useSpring(rawHeroScroll, { stiffness: 100, damping: 30, restDelta: 0.001 });
   const heroY1 = useTransform(heroScroll, [0, 1], [0, -300]);
   const heroY2 = useTransform(heroScroll, [0, 1], [0, -100]);
   const heroY3 = useTransform(heroScroll, [0, 1], [0, -400]);
+  const heroY4 = useTransform(heroScroll, [0, 1], [0, -200]);
 
   // Benefits section parallax
   const { scrollYProgress: imgScrollProgress } = useScroll({
@@ -172,6 +174,12 @@ export default function LandingClient() {
 
       {/* 2. Compact Bulky Hero Section */}
       <section ref={heroRef} className="relative pt-32 pb-12 px-6 max-w-7xl mx-auto w-full z-10">
+
+        {/* Soft Ambient Background Glows */}
+        <div className="absolute inset-0 w-[100vw] h-[120vh] z-[-1] overflow-hidden pointer-events-none left-1/2 -translate-x-1/2 top-[-10%]">
+          <motion.div style={{ y: heroY1 }} className="absolute top-[0%] left-[-10%] w-[50%] h-[60%] rounded-full bg-primary/10 blur-[120px]" />
+          <motion.div style={{ y: heroY2 }} className="absolute bottom-[20%] right-[-5%] w-[40%] h-[50%] rounded-full bg-blue-500/10 blur-[100px]" />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 auto-rows-[minmax(140px,auto)] relative z-10">
           
