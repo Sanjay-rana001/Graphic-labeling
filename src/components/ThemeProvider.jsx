@@ -8,7 +8,7 @@ const ThemeContext = createContext({
 });
 
 export function ThemeProvider({ children }) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -18,7 +18,8 @@ export function ThemeProvider({ children }) {
     } else if (storedTheme === "light") {
       setIsDarkMode(false);
       document.documentElement.classList.remove("dark");
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    } else {
+      // Default to dark for neon aesthetic
       setIsDarkMode(true);
       document.documentElement.classList.add("dark");
     }

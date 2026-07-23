@@ -1,37 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f1f5f9; /* slate-100 */
-  --foreground: #0f172a; /* slate-900 */
-  --card: #ffffff;       /* white */
-  --card-foreground: #1e293b; /* slate-800 */
-  --border: #cbd5e1;     /* slate-300 */
-  --primary: #475569;    /* slate-600 */
+  --background: #ffffff;
+  --foreground: #09090b;
+  --card: #f8fafc;       
+  --card-foreground: #0f172a; 
+  --border: #e2e8f0;     
+  --primary: #ff007f;    /* Neon Pink */
   --primary-foreground: #ffffff;
-  --muted: #f8fafc;      /* slate-50 */
-  --muted-foreground: #64748b; /* slate-500 */
-  --accent: #e2e8f0;     /* slate-200 */
+  --muted: #f1f5f9;      
+  --muted-foreground: #64748b; 
+  --accent: #f1f5f9;     
   --accent-foreground: #0f172a;
-  --input: #f1f5f9;
+  --input: #ffffff;
 }
 
 .dark {
-  --background: #1c1917; /* Very dark stone */
-  --foreground: #fafaf9; /* Stone-50 (Much brighter) */
-  --card: #292524;
-  --card-foreground: #ffffff; /* Pure white for high contrast */
-  --popover: #292524;
+  --background: #000000; 
+  --foreground: #ffffff; 
+  --card: #0a0a0a;
+  --card-foreground: #ffffff; 
+  --popover: #0a0a0a;
   --popover-foreground: #ffffff;
-  --primary: #ffffff;
-  --primary-foreground: #1c1917;
-  --secondary: #44403c;
-  --secondary-foreground: #fafaf9;
-  --muted: #44403c;
-  --muted-foreground: #d6d3d1; /* Brighter muted text */ /* stone-400 */
-  --accent: #44403c;     /* stone-800 */
-  --accent-foreground: #fafaf9;
-  --input: #1c1917;
-  --border: #44403c;     /* stone-800 */
+  --primary: #ff007f; /* Neon Pink */
+  --primary-foreground: #ffffff;
+  --secondary: #171717;
+  --secondary-foreground: #ffffff;
+  --muted: #171717;
+  --muted-foreground: #a3a3a3; 
+  --accent: #171717;     
+  --accent-foreground: #ffffff;
+  --input: #0a0a0a;
+  --border: #262626;     
 }
 
 @theme inline {
@@ -81,7 +81,39 @@ body {
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f4455;
+  background: var(--primary);
+}
+
+.neon-text {
+  color: var(--foreground);
+  text-shadow: 
+    0 0 5px var(--primary),
+    0 0 20px var(--primary),
+    0 0 40px var(--primary);
+}
+
+.dark .neon-text {
+  color: #fff;
+  text-shadow: 
+    0 0 5px #fff,
+    0 0 10px #fff,
+    0 0 20px var(--primary),
+    0 0 40px var(--primary),
+    0 0 80px var(--primary);
+}
+
+.neon-box {
+  border: 2px solid var(--primary);
+  box-shadow: 
+    0 0 5px var(--primary),
+    inset 0 0 5px var(--primary);
+}
+
+.neon-box:hover {
+  box-shadow: 
+    0 0 10px var(--primary),
+    0 0 20px var(--primary),
+    inset 0 0 10px var(--primary);
 }
 
 .texture-aluminium {
@@ -99,17 +131,22 @@ body {
 
 .texture-metal {
   background: 
-    /* Specular diagonal highlight */
     linear-gradient(60deg, transparent 40%, rgba(255, 255, 255, 0.7) 45%, transparent 50%),
-    /* Darker edge gradients for 3D volume */
     linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, transparent 15%, transparent 85%, rgba(0, 0, 0, 0.4) 100%),
     linear-gradient(to right, rgba(255,255,255,0.4) 0%, transparent 10%, transparent 90%, rgba(0, 0, 0, 0.3) 100%),
-    /* Horizontal brushing */
     repeating-linear-gradient(to bottom, transparent, transparent 1px, rgba(0,0,0,0.04) 1px, rgba(0,0,0,0.04) 2px),
-    /* Base Light Grey */
     #e2e8f0; 
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.15), 0 25px 50px -12px rgba(0,0,0,0.5);
   border: 1px solid #cbd5e1;
   border-bottom: 3px solid #94a3b8;
   border-right: 3px solid #94a3b8;
+}
+
+@keyframes bounce-horizontal {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+.group:hover .group-hover\:animate-bounce-x {
+  animation: bounce-horizontal 1s infinite ease-in-out;
 }

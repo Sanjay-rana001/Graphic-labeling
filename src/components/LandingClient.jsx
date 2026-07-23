@@ -14,6 +14,21 @@ export default function LandingClient() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const imgRef = useRef(null);
   
+  const heroImages = [
+    "/Media/desk_name_plate.png",
+    "/Media/premium_gold_plate.png",
+    "/Media/brushed_aluminum_sign.png",
+    "/Media/office_metal_labels.png"
+  ];
+  const [heroImageIndex, setHeroImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+  
   const heroRef = useRef(null);
   const { scrollYProgress: heroScroll } = useScroll({
     target: heroRef,
@@ -155,130 +170,139 @@ export default function LandingClient() {
         </div>
       </nav>
 
-      {/* 2. Immersive Hero Section */}
-      <section 
-        ref={heroRef} 
-        onMouseMove={(e) => {
-          if (!heroRef.current) return;
-          const rect = heroRef.current.getBoundingClientRect();
-          setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-        }}
-        className="relative pt-28 pb-16 md:pt-36 md:pb-20 overflow-hidden flex flex-col items-center justify-center min-h-[90vh]"
-      >
-        {/* Dynamic Mouse Spotlight */}
-        <motion.div 
-          className="pointer-events-none absolute inset-0 z-0"
-          animate={{
-            background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'}, transparent 40%)`
-          }}
-          transition={{ type: "tween", ease: "linear", duration: 0 }}
-        />
+      {/* 2. Compact Bulky Hero Section */}
+      <section ref={heroRef} className="relative pt-32 pb-12 px-6 max-w-7xl mx-auto w-full z-10">
 
-        {/* Subtle Grid Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] -z-20" />
-
-        {/* Abstract Background Elements */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[100px] -z-10 mix-blend-multiply dark:mix-blend-screen" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-slate-500/20 rounded-full blur-[100px] -z-10 mix-blend-multiply dark:mix-blend-screen" />
-
-        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 auto-rows-[minmax(140px,auto)] relative z-10">
           
-          {/* Hero Text */}
+          {/* Main Hero Card */}
+          {/* Main Hero Card */}
           <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex-1 text-center lg:text-left z-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="md:col-span-8 row-span-3 bg-card border-[4px] border-border rounded-3xl p-8 md:p-12 flex flex-col justify-center relative overflow-hidden group shadow-2xl"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent text-accent-foreground text-xs md:text-sm font-bold mb-6 tracking-wide uppercase border border-border shadow-sm">
-              <span>Professional Labeling & Printing</span>
+            {/* Realistic Brushed Metal Background (Light/Dark Compatible) */}
+            <div className="absolute inset-0 z-0 overflow-hidden bg-card">
+              
+              {/* Base Gradient - Studio Lighting Reflection */}
+              <div className="absolute inset-0 bg-gradient-to-br from-background via-muted to-card" />
+              <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_20%,rgba(255,255,255,0.3)_30%,transparent_40%)] dark:bg-[linear-gradient(115deg,transparent_20%,rgba(255,255,255,0.05)_30%,transparent_40%)]" />
+              
+              {/* Fine Brushed Metal Texture */}
+              <div className="absolute inset-0 opacity-[0.04] bg-[repeating-linear-gradient(to_right,transparent,transparent_1px,var(--color-foreground)_1px,var(--color-foreground)_2px)]" />
+              
+              {/* Diagonal Etched Grooves (Soft 3D Effect) */}
+              <div className="absolute inset-0 opacity-30 bg-[repeating-linear-gradient(45deg,rgba(0,0,0,0.05)_0,rgba(0,0,0,0.05)_1px,rgba(255,255,255,0.3)_1px,rgba(255,255,255,0.3)_2px,transparent_2px,transparent_120px),repeating-linear-gradient(-45deg,rgba(0,0,0,0.05)_0,rgba(0,0,0,0.05)_1px,rgba(255,255,255,0.3)_1px,rgba(255,255,255,0.3)_2px,transparent_2px,transparent_120px)] dark:bg-[repeating-linear-gradient(45deg,rgba(0,0,0,0.6)_0,rgba(0,0,0,0.6)_1px,rgba(255,215,0,0.6)_1px,rgba(255,215,0,0.6)_2px,transparent_2px,transparent_120px),repeating-linear-gradient(-45deg,rgba(0,0,0,0.6)_0,rgba(0,0,0,0.6)_1px,rgba(255,215,0,0.6)_1px,rgba(255,215,0,0.6)_2px,transparent_2px,transparent_120px)] [mask-image:radial-gradient(ellipse_100%_100%_at_50%_50%,#000_60%,transparent_100%)]" />
+              
+              {/* Ambient Glow */}
+              <motion.div 
+                className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[100px]"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              />
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-6 leading-[1.1]">
-              Custom Metal Labels & <br className="hidden md:block"/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-slate-200 dark:to-slate-400">
-                Printing Services
-              </span>
+            
+            {/* Thick Metallic Edge Highlights */}
+            <div className="absolute inset-x-0 top-0 h-[4px] bg-gradient-to-r from-transparent via-white/60 dark:via-white/20 to-transparent opacity-80" />
+            <div className="absolute inset-x-0 bottom-0 h-[4px] bg-gradient-to-r from-transparent via-black/40 dark:via-black/80 to-transparent opacity-80" />
+            
+            <div className="relative z-10 inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-foreground/10 text-foreground font-black text-xs md:text-sm uppercase tracking-widest w-fit mb-6 border border-foreground/10 backdrop-blur-md">
+              Industrial Grade
+            </div>
+            
+            <h1 className="relative z-10 text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-foreground leading-[0.95] mb-6 uppercase">
+              Metal & <br /> Aluminium
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              We make tough metal labels, custom name plates, and handle industrial printing for your business.
+            
+            <p className="relative z-10 text-lg font-bold text-muted-foreground max-w-md mb-8">
+              HEAVY-DUTY CUSTOM LABELS AND NAME PLATES. BUILT COMPACT. BUILT BULKY. BUILT TO LAST.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mt-8">
-              <motion.button 
-                onClick={() => scrollToSection('features')} 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                className="relative flex items-center p-[5px] rounded-full bg-white border border-gray-200 dark:border-transparent group overflow-hidden transition-shadow duration-300 ease-out hover:shadow-lg"
-              >
-                {/* Background Sweep */}
-                <div className="absolute inset-0 bg-white rounded-full -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-700 ease-in-out z-10" />
-
-                {/* Inner Pill */}
-                <div className="relative px-8 py-3 rounded-full flex items-center justify-center">
-                  <div className="absolute inset-0 bg-zinc-950 rounded-full z-0" />
-                  <span className="relative z-20 text-white group-hover:text-black text-lg font-semibold transition-colors duration-500">
-                    Explore Services
-                  </span>
-                </div>
-
-                {/* Sliding Arrow */}
-                <div className="relative z-20 flex items-center overflow-hidden h-6 w-8 mx-2">
-                  <ChevronsRight className="absolute left-0 w-6 h-6 text-black transition-all duration-700 ease-in-out group-hover:translate-x-10" />
-                  <ChevronsRight className="absolute left-0 w-6 h-6 text-black -translate-x-10 transition-all duration-700 ease-in-out group-hover:translate-x-0" />
-                </div>
-              </motion.button>
-              
-              <Link href="/customize">
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                  className="px-8 py-4 rounded-full bg-transparent border-2 border-border text-foreground font-semibold text-lg flex items-center gap-2 hover:bg-foreground hover:text-background transition-colors duration-300"
-                >
-                  Try Online Builder
-                </motion.button>
-              </Link>
-            </div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
-            >
-              <div className="flex flex-col items-center sm:items-start">
-                <div className="flex text-yellow-500 text-sm tracking-widest mb-0.5">
-                  ★★★★★
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">Trusted by 500+ industrial businesses</p>
+            <div className="relative z-10 mt-auto flex flex-col gap-4 max-w-xl bg-background/40 backdrop-blur-xl border border-border/50 p-6 rounded-2xl shadow-2xl">
+              <div className="flex items-center justify-between text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">
+                <span>Get an Instant Bulk Quote</span>
+                <span className="text-primary flex items-center gap-1"><CheckCircle size={12}/> 24h Turnaround</span>
               </div>
-            </motion.div>
+              <form className="flex flex-col sm:flex-row gap-3 w-full" onSubmit={(e) => e.preventDefault()}>
+                <input type="email" placeholder="sanjay.rana@company.com" className="flex-1 px-5 py-4 bg-background/60 border-2 border-border rounded-xl font-bold focus:outline-none focus:border-primary transition-all text-foreground placeholder:text-muted-foreground/50" required />
+                <button type="submit" className="px-8 py-4 bg-primary text-primary-foreground font-black text-lg uppercase tracking-widest rounded-xl border-[3px] border-primary hover:bg-transparent hover:text-primary transition-all shadow-[6px_6px_0px_0px_rgba(255,0,127,0.3)] active:translate-y-1 active:shadow-none whitespace-nowrap">
+                  Get Quote
+                </button>
+              </form>
+              <div className="flex gap-4 items-center mt-1">
+                <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">OR</span>
+                <Link href="/customize" className="text-xs font-black uppercase tracking-widest text-foreground hover:text-primary transition-colors flex items-center gap-2 group">
+                  Try Online Builder <MoveRight size={14} className="group-hover:animate-bounce-x transition-transform"/>
+                </Link>
+              </div>
+            </div>
           </motion.div>
 
-          {/* Hero Images Collage: Small Big Small */}
+          {/* Side Card 1 - Dynamic Scattered Collage */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="flex-1 w-full relative z-10 flex gap-2 sm:gap-4 lg:gap-6 h-[250px] sm:h-[350px] lg:h-[550px] justify-center items-center mt-10 lg:mt-0"
+            transition={{ delay: 0.1 }}
+            className="md:col-span-4 row-span-2 rounded-3xl border-[4px] border-border overflow-hidden relative shadow-xl bg-accent min-h-[280px] md:min-h-0 group flex items-center justify-center"
           >
-            {/* Small Left */}
-            <motion.div style={{ y: heroY1 }} className="w-[32%] lg:w-[28%] h-[75%] lg:h-[60%] rounded-xl lg:rounded-2xl overflow-hidden shadow-lg border border-border/50 relative top-4 lg:top-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/Media/desk_name_plate.png" alt="Desk Name Plate" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
-            </motion.div>
-            {/* Big Center */}
-            <motion.div style={{ y: heroY2 }} className="w-[42%] lg:w-[44%] h-[100%] lg:h-[90%] rounded-xl lg:rounded-2xl overflow-hidden shadow-2xl border border-border/50 z-10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/Media/premium_gold_plate.png" alt="Premium Gold Plate" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
-            </motion.div>
-            {/* Small Right */}
-            <motion.div style={{ y: heroY3 }} className="w-[32%] lg:w-[28%] h-[75%] lg:h-[60%] rounded-xl lg:rounded-2xl overflow-hidden shadow-lg border border-border/50 relative -top-4 lg:-top-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/Media/office_metal_labels.png" alt="Office Metal Labels" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
-            </motion.div>
+            {/* The Animated Collage Stack */}
+            <div className="relative w-full h-[85%] flex items-center justify-center mb-8">
+              {heroImages.map((src, idx) => {
+                // Calculate position relative to current index
+                const offset = (idx - heroImageIndex) % heroImages.length;
+                const normalizedOffset = offset < 0 ? offset + heroImages.length : offset;
+                
+                // 0 is top (active), 1 is middle right, 2 is middle left, 3 is back
+                const rotation = normalizedOffset === 0 ? 0 : normalizedOffset === 1 ? 8 : normalizedOffset === 2 ? -8 : 12;
+                const scale = normalizedOffset === 0 ? 1 : normalizedOffset === 1 ? 0.9 : normalizedOffset === 2 ? 0.9 : 0.8;
+                const x = normalizedOffset === 0 ? 0 : normalizedOffset === 1 ? 20 : normalizedOffset === 2 ? -20 : 0;
+                const y = normalizedOffset === 0 ? -10 : normalizedOffset === 3 ? -30 : -20;
+                const zIndex = 10 - normalizedOffset;
+                
+                return (
+                  <motion.div
+                    key={src}
+                    animate={{ 
+                      rotate: rotation,
+                      scale: scale,
+                      x: x,
+                      y: y,
+                      zIndex: zIndex,
+                      opacity: normalizedOffset === 3 ? 0 : 1 // fade out the one moving to the back
+                    }}
+                    transition={{ type: "spring", stiffness: 80, damping: 15 }}
+                    className="absolute w-[75%] h-[80%] rounded-2xl border-[6px] border-white dark:border-zinc-800 shadow-2xl overflow-hidden"
+                  >
+                    <Image
+                      src={src}
+                      alt="Premium Product Collage"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      priority={idx === 0}
+                    />
+                  </motion.div>
+                )
+              })}
+            </div>
+
+            <div className="absolute bottom-4 left-4 right-4 bg-background/90 backdrop-blur-md border-[3px] border-border p-3 rounded-xl font-black uppercase text-sm text-center z-20 transition-all shadow-[0_0_20px_rgba(0,0,0,0.1)]">
+              {['Premium Desk Plates', 'Gold Finished Plaques', 'Brushed Aluminum', 'Industrial Labels'][heroImageIndex]}
+            </div>
           </motion.div>
+
+          {/* Side Card 2 - Stats/Info */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="md:col-span-4 row-span-1 bg-foreground text-background rounded-3xl border-[4px] border-foreground p-6 flex flex-col justify-center items-center text-center shadow-xl hover:scale-[1.02] transition-transform"
+          >
+            <span className="text-4xl md:text-5xl font-black mb-1 tracking-tighter">500+</span>
+            <span className="text-sm font-bold uppercase tracking-widest opacity-80">Trusted Clients</span>
+          </motion.div>
+
         </div>
       </section>
 
@@ -431,7 +455,7 @@ export default function LandingClient() {
                   <p className="text-muted-foreground text-xs mb-4 line-clamp-2 hidden md:block">Customizable premium metal tag designed for durability and a professional finish.</p>
                   <div className="flex flex-col md:flex-row md:items-center justify-between mt-auto gap-2 md:gap-0">
                     <span className="text-base md:text-lg font-bold text-foreground">{product.price}</span>
-                    <Link href="/customize" className="px-3 py-1.5 md:px-4 md:py-1.5 bg-foreground text-background text-xs md:text-sm font-medium rounded-full text-center hover:opacity-90 transition-opacity w-full md:w-auto">
+                    <Link href="/customize" className="px-3 py-1.5 md:px-4 md:py-1.5 bg-primary/20 border border-primary text-primary neon-box text-xs md:text-sm font-medium rounded-full text-center hover:bg-primary hover:text-primary-foreground transition-all w-full md:w-auto">
                       Order
                     </Link>
                   </div>
@@ -442,13 +466,64 @@ export default function LandingClient() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full py-12 bg-background border-t border-border text-center">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Image src="/Media/Logo.png" alt="Saourav Graphic Logo" width={120} height={32} className="h-8 w-auto object-contain opacity-70 dark:opacity-90 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-all duration-300" />
+      {/* 6. Lead Generation Section */}
+      <section className="py-24 bg-card border-t border-border relative overflow-hidden">
+        {/* Decorative Background */}
+        <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] -z-10" />
+        
+        <div className="max-w-4xl mx-auto px-6 relative z-10">
+          <div className="bg-background border-[4px] border-border rounded-3xl p-8 md:p-12 shadow-2xl flex flex-col md:flex-row gap-12 items-center">
+            
+            {/* Lead Copy */}
+            <div className="flex-1 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest mb-6">
+                Bulk Orders
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 uppercase">
+                Request a <br className="hidden md:block" />
+                Custom Quote
+              </h2>
+              <p className="text-muted-foreground font-medium text-lg mb-6">
+                Have a large industrial project? Drop your details and our team will get back to you with a customized pricing plan tailored to your specific needs.
+              </p>
+              <ul className="space-y-3 text-sm font-bold text-foreground">
+                <li className="flex items-center gap-2 md:justify-start justify-center"><CheckCircle className="w-5 h-5 text-primary" /> Volume-based discounts</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><CheckCircle className="w-5 h-5 text-primary" /> Dedicated bulk pricing agent</li>
+              </ul>
+            </div>
+
+            {/* Lead Form */}
+            <div className="flex-1 w-full max-w-md bg-card border-[3px] border-border p-6 rounded-2xl shadow-xl">
+              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Full Name</label>
+                  <input type="text" placeholder="Sanjay Rana" className="w-full p-3 bg-background border-2 border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-medium" required />
+                </div>
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Work Email</label>
+                  <input type="email" placeholder="sanjay.rana@company.com" className="w-full p-3 bg-background border-2 border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-medium" required />
+                </div>
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Phone (Optional)</label>
+                  <input type="tel" placeholder="+91 98765 43210" className="w-full p-3 bg-background border-2 border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-medium" />
+                </div>
+                <button type="submit" className="w-full py-4 mt-2 bg-foreground text-background font-black text-lg uppercase tracking-widest rounded-xl border-[3px] border-foreground hover:bg-background hover:text-foreground transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] active:translate-y-1 active:shadow-none">
+                  Get My Quote
+                </button>
+                <p className="text-center text-xs font-medium text-muted-foreground mt-3">We typically respond within 24 hours.</p>
+              </form>
+            </div>
+
           </div>
-          <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Saourav Graphic. All rights reserved.</p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="w-full py-4 bg-background border-t border-border text-center">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+          <Image src="/Media/Logo.png" alt="Saourav Graphic Logo" width={280} height={80} className="h-20 w-auto object-contain opacity-70 dark:opacity-90 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-all duration-300" />
+          <p className="text-muted-foreground text-sm my-4 md:my-0">&copy; {new Date().getFullYear()} Saourav Graphic. All rights reserved.</p>
           <div className="flex gap-4 text-sm text-muted-foreground">
             <a href="#" className="hover:text-foreground">Privacy</a>
             <a href="#" className="hover:text-foreground">Terms</a>
