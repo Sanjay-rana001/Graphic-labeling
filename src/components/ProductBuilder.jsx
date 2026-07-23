@@ -38,6 +38,8 @@ export default function ProductBuilder() {
     availableFonts: availableFonts,
     uploadedFontUrl: null,
     uploadedFontName: null,
+    uploadedDesignUrl: null,
+    uploadedDesignName: null,
     material: "Aluminium",
     size: { width: 12, height: 4, thickness: 2 },
     quantity: 1,

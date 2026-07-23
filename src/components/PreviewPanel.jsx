@@ -17,7 +17,7 @@ function Counter({ to }) {
 }
 
 export default function PreviewPanel({ config, setConfig, previewRef }) {
-  const { layers, uploadedFontUrl, material, size, logoUrl, activeLayerId, mountingStyle, showGuides } = config;
+  const { layers, uploadedFontUrl, material, size, logoUrl, activeLayerId, mountingStyle, showGuides, uploadedDesignUrl } = config;
   const constraintsRef = useRef(null);
 
 
@@ -134,6 +134,24 @@ export default function PreviewPanel({ config, setConfig, previewRef }) {
             <div className="absolute bottom-3 left-3 w-4 h-4 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.5)] border border-gray-400 z-20" />
             <div className="absolute bottom-3 right-3 w-4 h-4 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.5)] border border-gray-400 z-20" />
           </>
+        )}
+
+        {/* Uploaded Custom Design Layer */}
+        {uploadedDesignUrl && (
+          <motion.div
+            drag
+            dragConstraints={constraintsRef}
+            dragMomentum={false}
+            whileDrag={{ scale: 1.05 }}
+            className="absolute z-10 cursor-move p-2 rounded-lg hover:ring-2 hover:ring-primary/40 active:ring-2 active:ring-primary/60"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={uploadedDesignUrl} 
+              alt="Uploaded Design" 
+              className="w-auto h-24 md:h-32 object-contain pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" 
+            />
+          </motion.div>
         )}
 
         {/* Multi-Layer Text Rendering */}

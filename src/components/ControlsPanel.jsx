@@ -1,9 +1,10 @@
 "use client";
 
-import { Upload, Type, Palette, Diamond, Sliders, ChevronDown, Plus, Trash2, Layers, LayoutTemplate, AlignLeft, AlignCenter, AlignRight, Target, Grid, Sun, Moon } from "lucide-react";
+import { Upload, Type, Palette, Diamond, Sliders, ChevronDown, Plus, Trash2, Layers, LayoutTemplate, AlignLeft, AlignCenter, AlignRight, Target, Grid, Sun, Moon, Image as ImageIcon } from "lucide-react";
 import { useRef } from "react";
 export default function ControlsPanel({ config, setConfig, price, previewRef, isDarkMode, setIsDarkMode }) {
   const fileInputRef = useRef(null);
+  const designInputRef = useRef(null);
 
   const activeLayer = config.layers.find(l => l.id === config.activeLayerId) || config.layers[0];
 
@@ -127,10 +128,72 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
         </button>
       </div>
 
-      <div className="flex-1 p-5 space-y-6 overflow-y-auto">
+      <div className="flex-1 p-4 space-y-4 overflow-y-auto">
         
+        {/* Base Material */}
+        <section className="space-y-2 pb-4 border-b border-border">
+          <div className="flex items-center gap-2 text-primary">
+            <Diamond size={18} />
+            <h3 className="font-semibold">Base Material</h3>
+          </div>
+          <div className="flex gap-2">
+            {["Metal", "Aluminium"].map((mat) => (
+              <button
+                key={mat}
+                onClick={() => updateConfig("material", mat)}
+                className={`flex-1 py-3 border-2 rounded-xl transition-all text-sm font-bold ${config.material === mat ? "border-primary bg-primary/10 shadow-sm text-primary" : "border-border hover:border-primary/50 hover:bg-accent/50 text-muted-foreground bg-card shadow-sm hover:shadow-md"}`}
+              >
+                {mat} Plate
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Custom Design Upload */}
+        <section className="space-y-2 pb-4 border-b border-border">
+          <div className="flex items-center gap-2 text-primary">
+            <ImageIcon size={18} />
+            <h3 className="font-semibold">Custom Design / Logo</h3>
+          </div>
+          <p className="text-xs text-muted-foreground">Upload your own logo or design to place on the plate.</p>
+          <div className="flex flex-col gap-2">
+            <input 
+              type="file" 
+              accept="image/png, image/jpeg, image/svg+xml" 
+              ref={designInputRef} 
+              className="hidden" 
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  const url = URL.createObjectURL(file);
+                  updateConfig("uploadedDesignUrl", url);
+                  updateConfig("uploadedDesignName", file.name);
+                }
+              }} 
+            />
+            <button 
+              onClick={() => designInputRef.current.click()} 
+              className="flex items-center justify-center gap-2 w-full py-3 bg-primary/10 border-2 border-primary/30 hover:border-primary rounded-xl text-sm font-bold transition-all text-primary shadow-sm hover:shadow-md hover:bg-primary/20"
+            >
+              <Upload size={18} /> 
+              {config.uploadedDesignName ? `Change: ${config.uploadedDesignName}` : "Upload PNG / SVG"}
+            </button>
+            {config.uploadedDesignUrl && (
+              <button 
+                onClick={() => {
+                  updateConfig("uploadedDesignUrl", null);
+                  updateConfig("uploadedDesignName", null);
+                }}
+                className="text-xs font-bold text-red-500 hover:text-red-400 self-end mt-1"
+              >
+                Remove Design
+              </button>
+            )}
+          </div>
+        </section>
+
         {/* Layer Manager */}
-        <section className="space-y-3">
+        <section className="space-y-2">
           <div className="flex items-center justify-between text-primary">
             <div className="flex items-center gap-2">
               <Layers size={18} />
@@ -198,7 +261,7 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
         </section>
 
         {/* Active Layer Settings */}
-        <div className="pt-4 border-t border-border space-y-5 relative">
+        <div className="pt-4 border-t border-border space-y-4 relative">
           <div className="absolute -top-3 left-0 bg-card px-2 text-[10px] font-bold text-primary uppercase tracking-widest">
             Editing Layer: {activeLayer.text.substring(0, 10) || "Empty"}
           </div>
@@ -263,7 +326,7 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
             </div>
           </section>
 
-          <section className="space-y-4 pt-4">
+          <section className="space-y-3 pt-4">
             <div className="flex items-center gap-2 text-primary">
               <Palette size={18} />
               <h3 className="font-semibold">Letter Coloring</h3>
@@ -376,25 +439,7 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
         </div>
 
         {/* Global Settings */}
-        <div className="pt-4 border-t border-border space-y-5 relative">
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 text-primary">
-              <Diamond size={18} />
-              <h3 className="font-semibold">Base Material</h3>
-            </div>
-            <div className="flex gap-2">
-              {["Metal", "Aluminium"].map((mat) => (
-                <button
-                  key={mat}
-                  onClick={() => updateConfig("material", mat)}
-                  className={`flex-1 py-2 border rounded-lg transition-all text-sm font-bold ${config.material === mat ? "border-primary bg-primary/10 shadow-sm text-primary" : "border-border hover:border-accent text-muted-foreground bg-card shadow-sm"}`}
-                >
-                  {mat} Plate
-                </button>
-              ))}
-            </div>
-          </section>
-
+        <div className="pt-4 border-t border-border space-y-4 relative">
           <section className="space-y-3">
             <div className="flex items-center gap-2 text-primary">
               <Sliders size={18} />
