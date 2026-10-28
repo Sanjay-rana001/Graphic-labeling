@@ -12,16 +12,14 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
-    if (storedTheme === "dark") {
-      setIsDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else if (storedTheme === "light") {
+    if (storedTheme === "light") {
       setIsDarkMode(false);
       document.documentElement.classList.remove("dark");
+      document.documentElement.setAttribute("data-theme", "light");
     } else {
-      // Default to dark for neon aesthetic
       setIsDarkMode(true);
       document.documentElement.classList.add("dark");
+      document.documentElement.setAttribute("data-theme", "dark");
     }
   }, []);
 
@@ -29,9 +27,11 @@ export function ThemeProvider({ children }) {
     setIsDarkMode(isDark);
     if (isDark) {
       document.documentElement.classList.add("dark");
+      document.documentElement.setAttribute("data-theme", "dark");
       localStorage.setItem("theme", "dark");
     } else {
       document.documentElement.classList.remove("dark");
+      document.documentElement.setAttribute("data-theme", "light");
       localStorage.setItem("theme", "light");
     }
   };

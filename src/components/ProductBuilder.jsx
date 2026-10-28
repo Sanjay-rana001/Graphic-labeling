@@ -6,7 +6,9 @@ import ControlsPanel from "./ControlsPanel";
 import CheckoutBlock from "./CheckoutBlock";
 import { useTheme } from "./ThemeProvider";
 import Link from "next/link";
-import { Home } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Sparkles, Sun, Moon } from "lucide-react";
+import SweepButton from "./SweepButton";
 
 const availableFonts = [
   "Montserrat", "Bebas Neue", "Playfair Display",
@@ -24,14 +26,14 @@ export default function ProductBuilder() {
     layers: [
       {
         id: 1,
-        text: "ACME CORP",
+        text: "SAOURAV GRAPHIC",
         font: availableFonts[0],
         sizeMultiplier: 1.0,
-        color: "#ffffff",
-        textColorMode: "Single", // Single, Pattern, Custom
-        textColors: ["#ffffff", "#ff007f"], // Color palette array
-        textPatternSize: 1, // Pattern block size
-        customCharColors: {}, // Specific colors per character index
+        color: "#18181b",
+        textColorMode: "Single",
+        textColors: ["#18181b"],
+        textPatternSize: 1,
+        customCharColors: {},
       }
     ],
     activeLayerId: 1,
@@ -67,46 +69,74 @@ export default function ProductBuilder() {
   }, [config]);
 
   return (
-    <div className={`flex flex-col lg:flex-row min-h-screen bg-background relative text-foreground`}>
-      <header className="absolute top-0 left-0 p-6 flex items-center gap-6 z-50 pointer-events-none">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/Media/Logo.png" alt="Brand Logo" className="h-12 lg:h-16 object-contain drop-shadow-xl dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-300 pointer-events-auto" />
-        <Link href="/" className="pointer-events-auto relative flex items-center p-[4px] rounded-full bg-white border border-gray-200 dark:border-transparent group overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-          
-          {/* Background Sweep (Right to Left) */}
-          <div className="absolute inset-0 bg-white rounded-full translate-x-[101%] group-hover:translate-x-0 transition-transform duration-700 ease-in-out z-10" />
-
-          {/* Sliding Home Icon */}
-          <div className="relative z-20 flex items-center overflow-hidden h-4 w-6 mx-1.5">
-            <Home className="absolute left-1 w-4 h-4 text-black transition-all duration-700 ease-in-out group-hover:-translate-x-8" />
-            <Home className="absolute left-1 w-4 h-4 text-black translate-x-8 transition-all duration-700 ease-in-out group-hover:translate-x-0" />
-          </div>
-
-          {/* Inner Pill */}
-          <div className="relative px-5 py-1.5 rounded-full flex items-center justify-center">
-            <div className="absolute inset-0 bg-zinc-950 rounded-full z-0" />
-            <span className="relative z-20 text-white group-hover:text-black text-sm font-semibold transition-colors duration-500 whitespace-nowrap">
-              Back to Home
-            </span>
-          </div>
-
-        </Link>
-      </header>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-background relative text-foreground">
       
-      {/* Left side: Preview */}
-      <div className="w-full lg:flex-1 flex flex-col items-center justify-center relative pt-20 pb-4 lg:pt-20 lg:pb-4 sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border lg:border-none lg:h-screen lg:overflow-hidden shadow-lg lg:shadow-none">
-        <div className="w-full flex justify-center items-center">
+      {/* Sleek Top Navigation Bar for Builder */}
+      <header className="w-full lg:hidden flex items-center justify-between p-4 border-b border-border/60 bg-background/80 backdrop-blur-md sticky top-0 z-50">
+        <SweepButton href="/" label="Home" type="back" size="sm" />
+        <Link href="/" prefetch={true} className="relative h-7 w-24 block cursor-pointer active:scale-95 transition-transform duration-75">
+          <Image src="/Media/Logo.png" alt="Logo" fill sizes="100px" className="object-contain" priority />
+        </Link>
+        <button
+          onClick={() => setTheme(!isDarkMode)}
+          className="p-1.5 rounded-full border border-border/60 text-muted-foreground active:scale-90 transition-transform duration-75 cursor-pointer"
+        >
+          {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
+        </button>
+      </header>
+
+      {/* Left side: Canvas & Realtime 3D Specimen Preview */}
+      <div className="w-full lg:flex-1 flex flex-col justify-between relative bg-muted/10 lg:h-screen lg:overflow-y-auto">
+        
+        {/* Desktop Header */}
+        <div className="hidden lg:flex items-center justify-between p-5 border-b border-border/40 shrink-0">
+          <div className="flex items-center gap-4">
+            <SweepButton href="/" label="Back to Home" type="back" size="sm" />
+            <div className="h-4 w-px bg-border/60" />
+            <Link href="/" prefetch={true} className="relative h-8 w-28 block cursor-pointer active:scale-95 transition-transform duration-75">
+              <Image src="/Media/Logo.png" alt="Logo" fill sizes="120px" className="object-contain object-left" priority />
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] text-muted-foreground">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Real-time Laser Preview</span>
+            </div>
+            <button
+              onClick={() => setTheme(!isDarkMode)}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground border border-border/60 hover:bg-muted transition-colors"
+            >
+              {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Center Canvas */}
+        <div className="flex-1 flex items-center justify-center p-4 sm:p-8 min-h-[360px] relative">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.03)_0%,transparent_70%)] pointer-events-none" />
           <PreviewPanel config={config} setConfig={setConfig} previewRef={previewRef} />
         </div>
-        <div className="w-full max-w-2xl mt-4 shrink-0">
+
+        {/* Bottom Checkout & Export Block */}
+        <div className="w-full max-w-2xl mx-auto px-4 pb-6 shrink-0">
           <CheckoutBlock config={config} setConfig={setConfig} price={price} previewRef={previewRef} />
         </div>
+
       </div>
 
-      {/* Right side: Controls */}
-      <div className="flex flex-col w-full lg:w-[600px] h-full lg:max-h-screen">
-        <ControlsPanel config={config} setConfig={setConfig} price={price} previewRef={previewRef} isDarkMode={isDarkMode} setIsDarkMode={setTheme} />
+      {/* Right side: Modern Sleek Controls Drawer */}
+      <div className="flex flex-col w-full lg:w-[500px] xl:w-[540px] h-full lg:max-h-screen border-l border-border/60 bg-card">
+        <ControlsPanel 
+          config={config} 
+          setConfig={setConfig} 
+          price={price} 
+          previewRef={previewRef} 
+          isDarkMode={isDarkMode} 
+          setIsDarkMode={setTheme} 
+        />
       </div>
+
     </div>
   );
 }

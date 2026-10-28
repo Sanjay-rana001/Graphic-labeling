@@ -1,10 +1,25 @@
 "use client";
 
-import { Upload, Type, Palette, Diamond, Sliders, ChevronDown, Plus, Trash2, Layers, LayoutTemplate, AlignLeft, AlignCenter, AlignRight, Target, Grid, Sun, Moon, Image as ImageIcon } from "lucide-react";
-import { useRef } from "react";
+import { 
+  Upload, 
+  Type, 
+  Palette, 
+  Diamond, 
+  Sliders, 
+  ChevronDown, 
+  Plus, 
+  Trash2, 
+  Layers, 
+  Image as ImageIcon,
+  Check,
+  Maximize2
+} from "lucide-react";
+import { useRef, useState } from "react";
+
 export default function ControlsPanel({ config, setConfig, price, previewRef, isDarkMode, setIsDarkMode }) {
   const fileInputRef = useRef(null);
   const designInputRef = useRef(null);
+  const [activeTab, setActiveTab] = useState("text"); // 'text', 'material', 'colors', 'artwork'
 
   const activeLayer = config.layers.find(l => l.id === config.activeLayerId) || config.layers[0];
 
@@ -24,7 +39,15 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
     const newId = Date.now();
     setConfig(prev => ({
       ...prev,
-      layers: [...prev.layers, { id: newId, text: "New Text", font: prev.availableFonts[0], color: "#ffffff", x: 0, y: 0 }],
+      layers: [...prev.layers, { 
+        id: newId, 
+        text: "NEW LINE", 
+        font: prev.availableFonts[0], 
+        color: config.material === "Titanium" ? "#ffffff" : "#18181b", 
+        sizeMultiplier: 0.8,
+        x: 0, 
+        y: 0 
+      }],
       activeLayerId: newId
     }));
   };
@@ -42,456 +65,466 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
   };
 
   const colorPalette = [
-    '#ffffff', // Pure White
-    '#000000', // Pure Black
-    '#222222', // Matte Black
-    '#ff007f', // Neon Pink
-    '#00f3ff', // Cyan
-    '#39ff14', // Neon Green
-    '#ff0000', // Bright Red
-    '#b026ff', // Neon Purple
-    '#ffd700', // Golden Yellow
-    '#ff6600', // Neon Orange
+    { name: "Laser Obsidian", value: "#18181b" },
+    { name: "Pure White", value: "#ffffff" },
+    { name: "Champagne Gold", value: "#f59e0b" },
+    { name: "Polished Brass", value: "#d4af37" },
+    { name: "Satin Chrome", value: "#cbd5e1" },
+    { name: "Architect Cyan", value: "#0ea5e9" },
+    { name: "Imperial Emerald", value: "#10b981" },
+    { name: "Crimson Red", value: "#e11d48" },
+    { name: "Electric Indigo", value: "#6366f1" },
+    { name: "Deep Charcoal", value: "#334155" },
+  ];
+
+  const materialOptions = [
+    { id: "Aluminium", name: "Brushed Aluminium", desc: "Aerospace 6061-T6 Silver Grain" },
+    { id: "Brass", name: "Heritage Brass Gold", desc: "Solid Architectural Warm Gold" },
+    { id: "Titanium", name: "Matte Black Titanium", desc: "Stealth Dark Satin Finish" },
+    { id: "RoseGold", name: "Satin Rose Gold", desc: "Refined Luxury Copper Glow" },
+    { id: "Metal", name: "Stainless Chrome Steel", desc: "Bright Polished Industrial Alloy" },
   ];
 
   return (
-    <div className="flex flex-col w-full lg:w-[600px] bg-card text-card-foreground border-l border-border h-full max-h-screen overflow-visible shadow-2xl z-50 relative">
+    <div className="flex flex-col h-full bg-card text-card-foreground select-none">
       
-      {/* Vertical Side Tab for Guides */}
-      <button 
-        onClick={() => updateConfig("showGuides", !config.showGuides)}
-        className="hidden lg:flex absolute top-40 -left-10 w-10 h-32 bg-card border-y border-l border-border rounded-l-lg shadow-[-4px_0_10px_rgba(0,0,0,0.1)] items-center justify-center cursor-pointer hover:bg-accent transition-colors z-50"
-      >
-        <div 
-          className="text-xs font-bold text-foreground flex items-center gap-2 whitespace-nowrap"
-          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-        >
-          {config.showGuides ? "Hide Guides" : "Show Guides"} <Grid size={12} className="text-primary" style={{ transform: 'rotate(90deg)' }} />
-        </div>
-      </button>
-
-      <div className="p-5 border-b border-border bg-muted flex justify-between items-center shrink-0">
+      {/* Studio Drawer Header */}
+      <div className="p-4 sm:p-5 border-b border-border/60 bg-muted/20 flex items-center justify-between shrink-0">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">Customize</h2>
-          <p className="text-xs text-muted-foreground mt-1">Design your premium name plate</p>
+          <h2 className="text-base font-semibold tracking-tight text-foreground">Studio Controls</h2>
+          <p className="text-[11px] text-muted-foreground mt-0.5">Customize laser engravings, hardware, and materials</p>
         </div>
-        <button 
-          onClick={(e) => {
-            if (!document.startViewTransition) {
-              setIsDarkMode(!isDarkMode);
-              return;
-            }
 
-            const isDark = !isDarkMode;
-            const transition = document.startViewTransition(() => {
-              setIsDarkMode(isDark);
-            });
+        <div className="text-right">
+          <span className="text-[10px] text-muted-foreground block uppercase tracking-wider font-mono">Unit Estimate</span>
+          <span className="text-base font-semibold text-foreground font-mono">₹{price.toLocaleString('en-IN')}</span>
+        </div>
+      </div>
 
-            transition.ready.then(() => {
-              const duration = 900;
-              const easing = "cubic-bezier(0.4, 0, 0.2, 1)"; 
-
-              // Generate a complex wavy polygon for the leading edge of the liquid
-              const points = 40; // High resolution for smooth curves
-              const startWavyBottom = [];
-              const endWavyBottom = [];
-              
-              for (let i = points; i >= 0; i--) {
-                const x = (i / points) * 100;
-                // Create 3 full liquid waves across the screen with a 5% height amplitude
-                const wave = Math.sin((i / points) * Math.PI * 6) * 5;
-                startWavyBottom.push(`${x.toFixed(1)}% ${(-10 + wave).toFixed(1)}%`);
-                endWavyBottom.push(`${x.toFixed(1)}% ${(120 + wave).toFixed(1)}%`);
-              }
-
-              const startClip = `polygon(0% 0%, 100% 0%, ${startWavyBottom.join(', ')})`;
-              const endClip = `polygon(0% 0%, 100% 0%, ${endWavyBottom.join(', ')})`;
-
-              // "The Wavy Liquid Drop" - Water fills downward with actual rolling waves
-              document.documentElement.animate(
-                [
-                  { clipPath: startClip },
-                  { clipPath: endClip }
-                ],
-                { 
-                  duration: 1500, 
-                  easing: "cubic-bezier(0.4, 0, 0.2, 1)", 
-                  pseudoElement: "::view-transition-new(root)", 
-                  fill: "forwards" 
-                }
-              );
-            });
-          }}
-          className="p-2 rounded-full bg-card border border-border shadow-sm text-foreground hover:bg-accent transition-colors duration-300"
+      {/* Category Tabs Strip */}
+      <div className="flex border-b border-border/60 bg-background/50 px-2 pt-2 gap-1 shrink-0 overflow-x-auto">
+        <button
+          onClick={() => setActiveTab("text")}
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-t-lg transition-all duration-75 border-b-2 whitespace-nowrap cursor-pointer active:scale-95 touch-manipulation select-none ${
+            activeTab === "text" 
+              ? "border-amber-500 text-foreground bg-card shadow-sm" 
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
         >
-          {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+          <Type size={13} />
+          <span>Text & Fonts</span>
+          <span className="px-1.5 py-0.2 rounded-full bg-muted text-[10px] text-muted-foreground">{config.layers.length}</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("material")}
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-t-lg transition-all duration-75 border-b-2 whitespace-nowrap cursor-pointer active:scale-95 touch-manipulation select-none ${
+            activeTab === "material" 
+              ? "border-amber-500 text-foreground bg-card shadow-sm" 
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Diamond size={13} />
+          <span>Material & Mount</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("colors")}
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-t-lg transition-all duration-75 border-b-2 whitespace-nowrap cursor-pointer active:scale-95 touch-manipulation select-none ${
+            activeTab === "colors" 
+              ? "border-amber-500 text-foreground bg-card shadow-sm" 
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Palette size={13} />
+          <span>Inlay Color</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("artwork")}
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-t-lg transition-all duration-75 border-b-2 whitespace-nowrap cursor-pointer active:scale-95 touch-manipulation select-none ${
+            activeTab === "artwork" 
+              ? "border-amber-500 text-foreground bg-card shadow-sm" 
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <ImageIcon size={13} />
+          <span>Artwork</span>
         </button>
       </div>
 
-      <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+      {/* Tab Panels Body (Scrollable, Clean) */}
+      <div className="flex-1 p-5 space-y-6 overflow-y-auto">
         
-        {/* Base Material */}
-        <section className="space-y-2 pb-4 border-b border-border">
-          <div className="flex items-center gap-2 text-primary">
-            <Diamond size={18} />
-            <h3 className="font-semibold">Base Material</h3>
-          </div>
-          <div className="flex gap-2">
-            {["Metal", "Aluminium"].map((mat) => (
-              <button
-                key={mat}
-                onClick={() => updateConfig("material", mat)}
-                className={`flex-1 py-3 border-2 rounded-xl transition-all text-sm font-bold ${config.material === mat ? "border-primary bg-primary/10 shadow-sm text-primary" : "border-border hover:border-primary/50 hover:bg-accent/50 text-muted-foreground bg-card shadow-sm hover:shadow-md"}`}
-              >
-                {mat} Plate
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Custom Design Upload */}
-        <section className="space-y-2 pb-4 border-b border-border">
-          <div className="flex items-center gap-2 text-primary">
-            <ImageIcon size={18} />
-            <h3 className="font-semibold">Custom Design / Logo</h3>
-          </div>
-          <p className="text-xs text-muted-foreground">Upload your own logo or design to place on the plate.</p>
-          <div className="flex flex-col gap-2">
-            <input 
-              type="file" 
-              accept="image/png, image/jpeg, image/svg+xml" 
-              ref={designInputRef} 
-              className="hidden" 
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  const url = URL.createObjectURL(file);
-                  updateConfig("uploadedDesignUrl", url);
-                  updateConfig("uploadedDesignName", file.name);
-                }
-              }} 
-            />
-            <button 
-              onClick={() => designInputRef.current.click()} 
-              className="flex items-center justify-center gap-2 w-full py-3 bg-primary/10 border-2 border-primary/30 hover:border-primary rounded-xl text-sm font-bold transition-all text-primary shadow-sm hover:shadow-md hover:bg-primary/20"
-            >
-              <Upload size={18} /> 
-              {config.uploadedDesignName ? `Change: ${config.uploadedDesignName}` : "Upload PNG / SVG"}
-            </button>
-            {config.uploadedDesignUrl && (
-              <button 
-                onClick={() => {
-                  updateConfig("uploadedDesignUrl", null);
-                  updateConfig("uploadedDesignName", null);
-                }}
-                className="text-xs font-bold text-red-500 hover:text-red-400 self-end mt-1"
-              >
-                Remove Design
-              </button>
-            )}
-          </div>
-        </section>
-
-        {/* Layer Manager */}
-        <section className="space-y-2">
-          <div className="flex items-center justify-between text-primary">
-            <div className="flex items-center gap-2">
-              <Layers size={18} />
-              <h3 className="font-semibold">Text Layers ({config.layers.length}/5)</h3>
-            </div>
-            {config.layers.length < 5 && (
-              <button onClick={addLayer} className="text-xs bg-primary/20 text-primary hover:bg-primary/40 px-2 py-1 rounded flex items-center gap-1 transition-all">
-                <Plus size={14} /> Add Layer
-              </button>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground">Add up to 5 independent text layers. Drag them directly on the preview to position!</p>
-          <div className="flex flex-col gap-2">
-            {config.layers.map((layer, index) => (
-              <div 
-                key={layer.id} 
-                onClick={() => updateConfig("activeLayerId", layer.id)}
-                className={`flex flex-col p-3 rounded-lg border transition-all cursor-pointer ${config.activeLayerId === layer.id ? "border-primary bg-primary/10 shadow-sm" : "border-border bg-muted hover:border-accent-foreground/50 hover:shadow-sm"}`}
-              >
-                <div className="flex items-start justify-between w-full">
-                  <textarea 
-                    value={layer.text}
-                    onChange={(e) => {
-                      setConfig(prev => ({
-                        ...prev,
-                        layers: prev.layers.map(l => l.id === layer.id ? { ...l, text: e.target.value } : l)
-                      }));
-                    }}
-                    className={`flex-1 bg-transparent border-none focus:outline-none resize-none text-sm font-medium ${config.activeLayerId === layer.id ? "text-primary" : "text-muted-foreground"}`}
-                    rows={1}
-                    placeholder={`Layer ${index + 1}`}
-                  />
-                  {config.layers.length > 1 && (
-                    <button onClick={(e) => { e.stopPropagation(); removeLayer(layer.id); }} className="text-red-400 hover:text-red-300 ml-2 mt-1 shrink-0">
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </div>
-                {config.activeLayerId === layer.id && (
-                  <div className="mt-2 pt-2 border-t border-primary/20 w-full" onClick={(e) => e.stopPropagation()}>
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2 flex justify-between">
-                      <span>Font Size</span>
-                      <span className="text-primary">{layer.sizeMultiplier || 1.0}x</span>
-                    </label>
-                    <input 
-                      type="range" 
-                      min="0.2" 
-                      max="3.0" 
-                      step="0.1"
-                      value={layer.sizeMultiplier || 1.0}
-                      onChange={(e) => {
-                        const val = parseFloat(e.target.value);
-                        setConfig(prev => ({
-                          ...prev,
-                          layers: prev.layers.map(l => l.id === layer.id ? { ...l, sizeMultiplier: val } : l)
-                        }));
-                      }}
-                      className="w-full accent-primary h-1"
-                    />
-                  </div>
+        {/* TAB 1: TEXT & TYPOGRAPHY */}
+        {activeTab === "text" && (
+          <div className="space-y-5">
+            
+            {/* Layer Selection & Add Button */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-medium text-foreground">Active Text Layers</label>
+                {config.layers.length < 5 && (
+                  <button 
+                    onClick={addLayer}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-muted hover:bg-muted/80 text-foreground transition-colors border border-border/60"
+                  >
+                    <Plus size={12} />
+                    <span>Add Layer</span>
+                  </button>
                 )}
               </div>
-            ))}
-          </div>
-        </section>
 
-        {/* Active Layer Settings */}
-        <div className="pt-4 border-t border-border space-y-4 relative">
-          <div className="absolute -top-3 left-0 bg-card px-2 text-[10px] font-bold text-primary uppercase tracking-widest">
-            Editing Layer: {activeLayer.text.substring(0, 10) || "Empty"}
-          </div>
+              <div className="space-y-2">
+                {config.layers.map((layer, idx) => {
+                  const isSelected = layer.id === config.activeLayerId;
+                  return (
+                    <div
+                      key={layer.id}
+                      onClick={() => updateConfig("activeLayerId", layer.id)}
+                      className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                        isSelected 
+                          ? "border-amber-500/70 bg-amber-500/[0.04] shadow-sm" 
+                          : "border-border/60 bg-muted/20 hover:border-border"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-mono text-muted-foreground shrink-0">
+                            {idx + 1}
+                          </span>
+                          <input
+                            type="text"
+                            value={layer.text}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setConfig(prev => ({
+                                ...prev,
+                                layers: prev.layers.map(l => l.id === layer.id ? { ...l, text: val } : l)
+                              }));
+                            }}
+                            className="bg-transparent border-none text-xs font-medium text-foreground focus:outline-none w-full truncate"
+                            placeholder="Layer text..."
+                          />
+                        </div>
 
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 text-primary">
-              <Type size={18} />
-              <h3 className="font-semibold">Typography</h3>
+                        {config.layers.length > 1 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeLayer(layer.id);
+                            }}
+                            className="text-muted-foreground hover:text-red-500 p-1 transition-colors"
+                            title="Delete Layer"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Font Size Slider for Selected Layer */}
+                      {isSelected && (
+                        <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between gap-3 text-xs">
+                          <span className="text-[11px] text-muted-foreground">Size</span>
+                          <input
+                            type="range"
+                            min="0.4"
+                            max="2.0"
+                            step="0.05"
+                            value={layer.sizeMultiplier || 1.0}
+                            onChange={(e) => updateActiveLayer("sizeMultiplier", parseFloat(e.target.value))}
+                            className="flex-1 accent-amber-500 cursor-pointer h-1.5 rounded-lg bg-muted"
+                          />
+                          <span className="text-[11px] font-mono text-muted-foreground w-8 text-right">
+                            {Math.round((layer.sizeMultiplier || 1.0) * 100)}%
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className="relative">
-              <select 
-                value={activeLayer.font}
-                onChange={(e) => updateActiveLayer("font", e.target.value)}
-                className="w-full p-2 pr-10 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all appearance-none cursor-pointer"
-                style={{ fontFamily: activeLayer.font === "UploadedCustomFont" ? "UploadedCustomFont" : `"${activeLayer.font}", sans-serif` }}
-              >
-                {config.availableFonts.map((fontName) => (
-                  <option key={fontName} value={fontName} style={{ fontFamily: `"${fontName}", sans-serif` }}>
-                    {fontName}
-                  </option>
+
+            {/* Typography Selection */}
+            <div className="pt-2">
+              <label className="text-xs font-medium text-foreground block mb-2">Typeface / Font Style</label>
+              
+              <div className="relative mb-3">
+                <select
+                  value={activeLayer.font}
+                  onChange={(e) => updateActiveLayer("font", e.target.value)}
+                  className="w-full p-2.5 pr-8 text-xs bg-background border border-border/70 rounded-xl focus:outline-none focus:border-amber-500 text-foreground cursor-pointer appearance-none"
+                  style={{ fontFamily: activeLayer.font === "UploadedCustomFont" ? "UploadedCustomFont" : `"${activeLayer.font}", sans-serif` }}
+                >
+                  {config.availableFonts.map((f) => (
+                    <option key={f} value={f} style={{ fontFamily: `"${f}", sans-serif` }}>
+                      {f}
+                    </option>
+                  ))}
+                  {activeLayer.font === "UploadedCustomFont" && (
+                    <option value="UploadedCustomFont">{config.uploadedFontName}</option>
+                  )}
+                </select>
+                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              </div>
+
+              {/* Quick Font Preset Chips */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {["Montserrat", "Playfair Display", "Cinzel", "Bebas Neue", "Orbitron"].map(f => (
+                  <button
+                    key={f}
+                    onClick={() => updateActiveLayer("font", f)}
+                    className={`px-2.5 py-1 text-[11px] rounded-lg border transition-all duration-75 cursor-pointer active:scale-95 touch-manipulation select-none ${
+                      activeLayer.font === f 
+                        ? "bg-foreground text-background font-medium" 
+                        : "bg-muted/40 text-muted-foreground hover:text-foreground border-border/50"
+                    }`}
+                    style={{ fontFamily: `"${f}", sans-serif` }}
+                  >
+                    {f}
+                  </button>
                 ))}
-                {activeLayer.font === "UploadedCustomFont" && (
-                  <option value="UploadedCustomFont">
-                    {config.uploadedFontName}
-                  </option>
-                )}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={18} />
+              </div>
+
+              {/* Custom Font Upload */}
+              <div className="pt-2">
+                <input
+                  type="file"
+                  accept=".ttf,.otf,.woff,.woff2"
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      updateConfig("uploadedFontUrl", url);
+                      updateConfig("uploadedFontName", file.name.split('.')[0]);
+                      updateActiveLayer("font", "UploadedCustomFont");
+                    }
+                  }}
+                />
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  className="w-full py-2 px-3 text-xs rounded-xl border border-dashed border-border hover:border-amber-500/70 text-muted-foreground hover:text-foreground transition-all duration-75 active:scale-[0.98] cursor-pointer touch-manipulation select-none flex items-center justify-center gap-2 bg-muted/20"
+                >
+                  <Upload size={13} />
+                  <span>{config.uploadedFontName ? `Loaded: ${config.uploadedFontName}` : "Upload Custom Font (.ttf / .otf)"}</span>
+                </button>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-2 pt-2 border-t border-border">
-              <input 
-                type="file" 
-                accept=".ttf,.otf,.woff,.woff2" 
-                ref={fileInputRef} 
-                className="hidden" 
+          </div>
+        )}
+
+        {/* TAB 2: MATERIAL & DIMENSIONS */}
+        {activeTab === "material" && (
+          <div className="space-y-6">
+            
+            {/* Material Cards */}
+            <div>
+              <label className="text-xs font-medium text-foreground block mb-2.5">Alloy Plate Material</label>
+              <div className="space-y-2">
+                {materialOptions.map((mat) => {
+                  const isSelected = config.material === mat.id;
+                  return (
+                    <button
+                      key={mat.id}
+                      onClick={() => updateConfig("material", mat.id)}
+                      className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all duration-75 active:scale-[0.98] cursor-pointer touch-manipulation select-none ${
+                        isSelected 
+                          ? "border-amber-500/80 bg-amber-500/[0.05] shadow-sm" 
+                          : "border-border/60 bg-muted/20 hover:border-border"
+                      }`}
+                    >
+                      <div>
+                        <div className="text-xs font-semibold text-foreground">{mat.name}</div>
+                        <div className="text-[11px] text-muted-foreground mt-0.5">{mat.desc}</div>
+                      </div>
+                      {isSelected && (
+                        <div className="w-5 h-5 rounded-full bg-amber-500 text-black flex items-center justify-center shrink-0">
+                          <Check size={12} />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Dimensions */}
+            <div className="pt-2 border-t border-border/50">
+              <label className="text-xs font-medium text-foreground block mb-2.5">Plate Dimensions (Inches)</label>
+              
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
+                  <span className="text-[10px] text-muted-foreground block mb-1">Width</span>
+                  <input
+                    type="number"
+                    min="4"
+                    max="36"
+                    value={config.size.width}
+                    onChange={(e) => updateConfig("size", { ...config.size, width: parseInt(e.target.value) || 4 })}
+                    className="w-full bg-transparent text-sm font-semibold text-foreground focus:outline-none"
+                  />
+                  <span className="text-[10px] text-muted-foreground font-mono">inches</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
+                  <span className="text-[10px] text-muted-foreground block mb-1">Height</span>
+                  <input
+                    type="number"
+                    min="2"
+                    max="18"
+                    value={config.size.height}
+                    onChange={(e) => updateConfig("size", { ...config.size, height: parseInt(e.target.value) || 2 })}
+                    className="w-full bg-transparent text-sm font-semibold text-foreground focus:outline-none"
+                  />
+                  <span className="text-[10px] text-muted-foreground font-mono">inches</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
+                  <span className="text-[10px] text-muted-foreground block mb-1">Gauge</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={config.size.thickness || 3}
+                    onChange={(e) => updateConfig("size", { ...config.size, thickness: parseInt(e.target.value) || 1 })}
+                    className="w-full bg-transparent text-sm font-semibold text-foreground focus:outline-none"
+                  />
+                  <span className="text-[10px] text-muted-foreground font-mono">mm solid</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Mounting Hardware */}
+            <div className="pt-2 border-t border-border/50">
+              <label className="text-xs font-medium text-foreground block mb-2.5">Mounting Hardware</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: "Standoffs", label: "4× Standoffs" },
+                  { id: "Adhesive", label: "3M High-Bond" },
+                  { id: "Desk Stand", label: "Desk Easel" }
+                ].map((mount) => (
+                  <button
+                    key={mount.id}
+                    onClick={() => updateConfig("mountingStyle", mount.id)}
+                    className={`py-2 px-2 text-xs rounded-xl border text-center transition-all duration-75 active:scale-95 cursor-pointer touch-manipulation select-none ${
+                      config.mountingStyle === mount.id
+                        ? "border-amber-500 text-foreground bg-amber-500/10 font-medium"
+                        : "border-border/60 text-muted-foreground hover:text-foreground bg-muted/20"
+                    }`}
+                  >
+                    {mount.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* TAB 3: COLORS & INLAY */}
+        {activeTab === "colors" && (
+          <div className="space-y-5">
+            
+            <div>
+              <label className="text-xs font-medium text-foreground block mb-2">Engraving / Enamel Palette</label>
+              <p className="text-[11px] text-muted-foreground mb-3">Pick an architectural finish for your active layer ({activeLayer.text || "Text"}).</p>
+
+              <div className="grid grid-cols-2 gap-2">
+                {colorPalette.map((col) => {
+                  const isSelected = (activeLayer.textColors?.[0] || activeLayer.color) === col.value;
+                  return (
+                    <button
+                      key={col.value}
+                      onClick={() => {
+                        updateActiveLayer("color", col.value);
+                        updateActiveLayer("textColors", [col.value]);
+                      }}
+                      className={`p-2.5 rounded-xl border flex items-center gap-2.5 transition-all duration-75 active:scale-95 cursor-pointer touch-manipulation select-none text-left ${
+                        isSelected 
+                          ? "border-amber-500 bg-amber-500/[0.05] shadow-sm" 
+                          : "border-border/60 hover:border-border bg-muted/20"
+                      }`}
+                    >
+                      <span 
+                        className="w-4 h-4 rounded-full border border-black/20 shadow-inner shrink-0" 
+                        style={{ backgroundColor: col.value }}
+                      />
+                      <span className="text-xs font-medium text-foreground truncate">{col.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* TAB 4: ARTWORK & LOGO */}
+        {activeTab === "artwork" && (
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-medium text-foreground block mb-1">Company Logo / Emblem</label>
+              <p className="text-[11px] text-muted-foreground mb-3">Upload your vectorized logo or transparent PNG to place on the plate.</p>
+              
+              <input
+                type="file"
+                accept="image/png, image/jpeg, image/svg+xml"
+                ref={designInputRef}
+                className="hidden"
                 onChange={(e) => {
                   const file = e.target.files[0];
                   if (file) {
                     const url = URL.createObjectURL(file);
-                    updateConfig("uploadedFontUrl", url);
-                    updateConfig("uploadedFontName", file.name.split('.')[0]);
-                    updateActiveLayer("font", "UploadedCustomFont");
+                    updateConfig("uploadedDesignUrl", url);
+                    updateConfig("uploadedDesignName", file.name);
                   }
-                }} 
+                }}
               />
-              <button 
-                onClick={() => fileInputRef.current.click()} 
-                className="flex items-center justify-center gap-2 w-full py-1.5 bg-muted border border-border hover:border-primary rounded-lg text-xs transition-all text-muted-foreground hover:text-foreground shadow-sm"
+
+              <button
+                onClick={() => designInputRef.current.click()}
+                className="w-full py-6 px-4 rounded-2xl border-2 border-dashed border-border hover:border-amber-500/70 text-muted-foreground hover:text-foreground transition-all flex flex-col items-center justify-center gap-2 bg-muted/10 group"
               >
-                <Upload size={16} /> 
-                {config.uploadedFontName && activeLayer.font === "UploadedCustomFont" ? `Using: ${config.uploadedFontName}` : "Upload Custom Font (.ttf/.otf)"}
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Upload size={16} className="text-amber-500" />
+                </div>
+                <span className="text-xs font-medium">
+                  {config.uploadedDesignName ? `Change: ${config.uploadedDesignName}` : "Click to select PNG or SVG"}
+                </span>
+                <span className="text-[10px] text-muted-foreground">High resolution or vector recommended</span>
               </button>
-              {activeLayer.font === "UploadedCustomFont" && (
-                <button 
-                  onClick={() => updateActiveLayer("font", config.availableFonts[0])}
-                  className="text-[10px] text-red-400 hover:text-red-300 self-end"
-                >
-                  Clear Custom Font
-                </button>
+
+              {config.uploadedDesignUrl && (
+                <div className="flex items-center justify-between mt-3 p-3 rounded-xl bg-muted/30 border border-border/50 text-xs">
+                  <span className="truncate max-w-[200px] text-foreground">{config.uploadedDesignName}</span>
+                  <button
+                    onClick={() => {
+                      updateConfig("uploadedDesignUrl", null);
+                      updateConfig("uploadedDesignName", null);
+                    }}
+                    className="text-red-500 hover:text-red-400 font-medium text-[11px]"
+                  >
+                    Remove Logo
+                  </button>
+                </div>
               )}
             </div>
-          </section>
-
-          <section className="space-y-3 pt-4">
-            <div className="flex items-center gap-2 text-primary">
-              <Palette size={18} />
-              <h3 className="font-semibold">Letter Coloring</h3>
-            </div>
-            
-            <div className="flex bg-muted rounded-lg p-1 border border-border">
-              {["Single", "Pattern", "Custom"].map(mode => (
-                <button
-                  key={mode}
-                  onClick={() => updateActiveLayer("textColorMode", mode)}
-                  className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${activeLayer.textColorMode === mode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  {mode}
-                </button>
-              ))}
-            </div>
-
-            {(!activeLayer.textColorMode || activeLayer.textColorMode === "Single") && (
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">Select Color</label>
-                <div className="flex flex-wrap gap-2">
-                  {colorPalette.map(color => (
-                    <button
-                      key={color}
-                      onClick={() => updateActiveLayer("textColors", [color])}
-                      className={`w-6 h-6 rounded-full border-2 transition-all ${(activeLayer.textColors?.[0] || activeLayer.color) === color ? "border-foreground scale-110 shadow-md" : "border-transparent hover:scale-105 shadow-sm"}`}
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeLayer.textColorMode === "Pattern" && (
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-2">Pattern Colors (Click to toggle)</label>
-                  <div className="flex flex-wrap gap-2">
-                    {colorPalette.map(color => {
-                      const isActive = activeLayer.textColors?.includes(color);
-                      return (
-                        <button
-                          key={color}
-                          onClick={() => {
-                            const current = activeLayer.textColors || [];
-                            const newColors = isActive ? current.filter(c => c !== color) : [...current, color];
-                            if (newColors.length > 0) updateActiveLayer("textColors", newColors);
-                          }}
-                          className={`w-6 h-6 rounded-full border-2 transition-all ${isActive ? "border-foreground scale-110 shadow-md" : "border-transparent hover:scale-105 shadow-sm opacity-50"}`}
-                          style={{ backgroundColor: color }}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-2 flex justify-between">
-                    <span>Block Size</span>
-                    <span className="text-primary">{activeLayer.textPatternSize || 1} chars</span>
-                  </label>
-                  <input 
-                    type="range" min="1" max="5" step="1"
-                    value={activeLayer.textPatternSize || 1}
-                    onChange={(e) => updateActiveLayer("textPatternSize", parseInt(e.target.value))}
-                    className="w-full accent-primary"
-                  />
-                </div>
-              </div>
-            )}
-
-            {activeLayer.textColorMode === "Custom" && (
-              <div className="space-y-4">
-                <p className="text-xs text-muted-foreground">Click a character below to select it, then pick a color.</p>
-                <div className="flex flex-wrap gap-1 p-3 bg-muted rounded-lg border border-border">
-                  {activeLayer.text.split('').map((char, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setConfig(prev => ({ ...prev, activeLayerCharIndex: index }))}
-                      className={`w-6 h-6 text-xs flex items-center justify-center font-bold rounded-md transition-all ${config.activeLayerCharIndex === index ? "ring-2 ring-primary bg-card shadow-sm text-foreground" : "bg-card border border-border hover:bg-accent shadow-sm text-foreground"}`}
-                      style={{ color: activeLayer.customCharColors?.[index] || activeLayer.textColors?.[0] || activeLayer.color || "currentColor" }}
-                    >
-                      {char === " " ? "_" : char}
-                    </button>
-                  ))}
-                </div>
-                {config.activeLayerCharIndex !== undefined && (
-                  <div>
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-2">
-                      Color for '{activeLayer.text[config.activeLayerCharIndex] === " " ? "Space" : activeLayer.text[config.activeLayerCharIndex]}'
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {colorPalette.map(color => (
-                        <button
-                          key={color}
-                          onClick={() => {
-                            const custom = { ...(activeLayer.customCharColors || {}) };
-                            custom[config.activeLayerCharIndex] = color;
-                            updateActiveLayer("customCharColors", custom);
-                          }}
-                          className={`w-6 h-6 rounded-full border-2 transition-all ${activeLayer.customCharColors?.[config.activeLayerCharIndex] === color ? "border-foreground scale-110 shadow-md" : "border-transparent hover:scale-105"}`}
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </section>
-        </div>
-
-        {/* Global Settings */}
-        <div className="pt-4 border-t border-border space-y-4 relative">
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 text-primary">
-              <Sliders size={18} />
-              <h3 className="font-semibold">Dimensions</h3>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Width (in)</label>
-                <input type="number" value={config.size.width} onChange={(e) => updateConfig("size", { ...config.size, width: parseInt(e.target.value) || 1 })} className="w-full p-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all text-sm text-foreground shadow-sm" />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Height (in)</label>
-                <input type="number" value={config.size.height} onChange={(e) => updateConfig("size", { ...config.size, height: parseInt(e.target.value) || 1 })} className="w-full p-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all text-sm text-foreground shadow-sm" />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Thick (mm)</label>
-                <input type="number" value={config.size.thickness || 2} onChange={(e) => updateConfig("size", { ...config.size, thickness: parseInt(e.target.value) || 1 })} className="w-full p-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all text-sm text-foreground shadow-sm" />
-              </div>
-            </div>
-          </section>
-
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 text-primary">
-              <Target size={18} />
-              <h3 className="font-semibold">Mounting Options</h3>
-            </div>
-            <div className="flex gap-2">
-              {["Standoffs", "Adhesive", "Desk Stand"].map((mount) => (
-                <button
-                  key={mount}
-                  onClick={() => updateConfig("mountingStyle", mount)}
-                  className={`flex-1 py-2 border rounded-lg transition-all text-xs font-bold ${config.mountingStyle === mount ? "border-primary bg-primary/10 text-primary shadow-sm" : "border-border hover:border-accent text-muted-foreground bg-card shadow-sm"}`}
-                >
-                  {mount}
-                </button>
-              ))}
-            </div>
-          </section>
-
-
-        </div>
-
-        {/* Volume Pricing moved to bottom of scrollable area */}
-        <div className="mt-8 p-3 bg-muted rounded-xl border border-border">
-          <h4 className="text-[10px] font-bold text-primary uppercase tracking-wider mb-2">Volume Discount Applied</h4>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs font-medium text-muted-foreground">
-            <div className="flex justify-between"><span>1 - 10 qty</span> <span className="text-foreground">₹600 / pc</span></div>
-            <div className="flex justify-between"><span>11 - 30 qty</span> <span className="text-foreground">₹450 / pc</span></div>
-            <div className="flex justify-between"><span>31+ qty</span> <span className="text-foreground">₹350 / pc</span></div>
-            <div className="flex justify-between"><span>Base Setup (Fixed)</span> <span className="text-foreground">₹1,000</span></div>
           </div>
+        )}
+
+        {/* Volume Tier Mini-Bar (Always helpful & subtle) */}
+        <div className="p-3 rounded-xl bg-muted/30 border border-border/50 text-[11px] text-muted-foreground">
+          <div className="flex justify-between font-medium text-foreground mb-1">
+            <span>Tiered Bulk Pricing</span>
+            <span className="text-amber-500 font-mono">10+ pcs = 25% off</span>
+          </div>
+          <span>Automatic discount applies when you increase units in the order bar.</span>
         </div>
+
       </div>
 
     </div>

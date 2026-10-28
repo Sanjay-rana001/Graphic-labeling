@@ -1,125 +1,149 @@
 "use client";
 
-import { ShoppingCart, CreditCard, MessageCircle, Download } from "lucide-react";
+import { ShoppingCart, MessageCircle, Download, Check } from "lucide-react";
 import { toPng } from "html-to-image";
-import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function CheckoutBlock({ config, setConfig, price, previewRef }) {
+  const [downloading, setDownloading] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
+
   const updateConfig = (key, value) => {
     setConfig((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleOrderWhatsApp = () => {
-    const number = "1234567890";
+    const number = "919876543210";
     
     const layerDetails = config.layers.map((l, i) => 
-      `Layer ${i+1}: "${l.text.replace(/\n/g, " ")}" (Font: ${l.font === "UploadedCustomFont" ? config.uploadedFontName : l.font}, Color: ${l.color})`
+      `Line ${i+1}: "${l.text.replace(/\n/g, " ")}" (Font: ${l.font === "UploadedCustomFont" ? config.uploadedFontName : l.font})`
     ).join("\n");
 
-    const text = `Hello! I would like to order a Custom Metal Name Plate.
+    const text = `Hello Saourav Graphic! I customized a Name Plate on your studio:
     
-Details:
+*Details:*
 ${layerDetails}
 - Material: ${config.material}
-- Size: ${config.size.width}x${config.size.height} inches
-- Price: ₹${price}
+- Size: ${config.size.width}" × ${config.size.height}" (${config.size.thickness || 3}mm)
+- Mounting: ${config.mountingStyle}
+- Quantity: ${config.quantity || 1} units
+- Estimated Total: ₹${price.toLocaleString('en-IN')}
 
-Please confirm!`;
+Please share payment details and digital proof!`;
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/${number}?text=${encoded}`, "_blank");
   };
 
   const handleDownloadProof = async () => {
-    if (!previewRef?.current) {
-      alert("Preview not found");
-      return;
-    }
+    if (!previewRef?.current) return;
     try {
+      setDownloading(true);
       const dataUrl = await toPng(previewRef.current, { 
-        backgroundColor: "#1e1e1e",
-        pixelRatio: 2
+        backgroundColor: "#090a0f",
+        pixelRatio: 2,
+        cacheBust: true,
       });
       const link = document.createElement("a");
-      link.download = "Saourav_Graphic_Proof.png";
+      link.download = `SaouravGraphic_${config.material}_${config.size.width}x${config.size.height}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
-      console.error("Error generating proof", err);
-      alert("Error generating proof: " + err.message);
+      console.error("Proof download failed", err);
+    } finally {
+      setDownloading(false);
     }
   };
 
+  const handleAddToCart = () => {
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 3000);
+  };
+
   return (
-    <div className="p-4 border-t border-border bg-card/80 backdrop-blur-xl shrink-0 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] lg:shadow-sm lg:bg-card/90 lg:border lg:border-border lg:rounded-xl lg:m-4 lg:mb-8 transition-colors duration-300">
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-4">
-        <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start">
-          <span className="text-sm text-muted-foreground font-medium">Quantity</span>
-          <div className="flex items-center gap-2 bg-muted p-1 rounded-lg border border-border">
+    <div className="p-4 sm:p-5 rounded-2xl glass-panel shadow-lg border border-border/70 transition-all select-none">
+      
+      {/* Top Details & Price */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        
+        {/* Quantity Stepper */}
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground font-medium">Quantity</span>
+          <div className="flex items-center gap-1.5 bg-muted/60 p-1 rounded-xl border border-border/60">
             <button 
               onClick={() => updateConfig("quantity", Math.max(1, (config.quantity || 1) - 1))}
-              className="w-7 h-7 rounded-md bg-card text-foreground shadow-sm flex items-center justify-center hover:bg-accent transition-colors"
-            >-</button>
-            <span className="font-bold text-sm w-6 text-center text-foreground">{config.quantity || 1}</span>
+              className="w-6 h-6 rounded-lg bg-card text-foreground shadow-xs flex items-center justify-center hover:bg-muted transition-colors text-xs font-semibold"
+            >
+              -
+            </button>
+            <span className="font-mono font-semibold text-xs w-7 text-center text-foreground">
+              {config.quantity || 1}
+            </span>
             <button 
               onClick={() => updateConfig("quantity", (config.quantity || 1) + 1)}
-              className="w-7 h-7 rounded-md bg-card text-foreground shadow-sm flex items-center justify-center hover:bg-accent transition-colors"
-            >+</button>
+              className="w-6 h-6 rounded-lg bg-card text-foreground shadow-xs flex items-center justify-center hover:bg-muted transition-colors text-xs font-semibold"
+            >
+              +
+            </button>
           </div>
+          {(config.quantity || 1) >= 10 && (
+            <span className="text-[10px] font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+              Bulk Discount Applied
+            </span>
+          )}
         </div>
-        <div className="flex items-end justify-between w-full lg:w-auto">
-          <span className="text-sm text-muted-foreground font-medium pb-1 lg:hidden">Total</span>
-          <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium pb-1 mr-3">Total:</span>
-          <span className="text-2xl font-black text-foreground leading-none">₹{price.toLocaleString('en-IN')}</span>
+
+        {/* Total Price */}
+        <div className="flex items-baseline justify-between sm:justify-end gap-2">
+          <span className="text-xs text-muted-foreground font-normal">Project Total:</span>
+          <span className="text-xl sm:text-2xl font-bold text-foreground font-mono leading-none">
+            ₹{price.toLocaleString('en-IN')}
+          </span>
         </div>
+
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        {/* Add to Cart Button */}
-        <motion.button 
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 500, damping: 15 }}
-          className="group w-full py-2.5 bg-card hover:bg-accent text-foreground rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors border border-border shadow-sm hover:shadow-md"
-        >
-          <ShoppingCart size={16} className="transition-transform duration-150 group-hover:-rotate-12 group-hover:scale-110" />
-          <span>Add to Cart</span>
-        </motion.button>
-
-        {/* Buy Now Button */}
-        <motion.button 
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 500, damping: 15 }}
-          className="group w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg"
-        >
-          <CreditCard size={16} className="transition-transform duration-150 group-hover:scale-110" />
-          <span>Buy Now</span>
-        </motion.button>
-
-        {/* Order via WhatsApp Button */}
-        <motion.button 
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 500, damping: 15 }}
+      {/* Action Buttons */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        
+        {/* WhatsApp Order (Primary) */}
+        <button
           onClick={handleOrderWhatsApp}
-          className="group w-full py-2.5 bg-[#25D366] hover:bg-[#20b958] text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg"
+          className="sm:col-span-1 inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-sm active:scale-98"
         >
-          <MessageCircle size={18} className="transition-transform duration-150 group-hover:rotate-12 group-hover:scale-110" />
-          <span>Order via WhatsApp</span>
-        </motion.button>
+          <MessageCircle size={15} />
+          <span>Confirm on WhatsApp</span>
+        </button>
 
-        {/* Download Digital Proof Button */}
-        <motion.button 
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 500, damping: 15 }}
+        {/* Download Digital Proof */}
+        <button
           onClick={handleDownloadProof}
-          className="group w-full py-2.5 bg-card hover:bg-accent text-foreground rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors border border-dashed border-border hover:border-primary shadow-sm hover:shadow-md"
+          disabled={downloading}
+          className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-medium bg-muted/50 hover:bg-muted text-foreground border border-border/60 transition-all active:scale-98"
         >
-          <Download size={18} className="transition-transform duration-150 group-hover:translate-y-1 text-muted-foreground group-hover:text-primary" />
-          <span>Download Digital Proof</span>
-        </motion.button>
+          <Download size={14} className="text-muted-foreground" />
+          <span>{downloading ? "Rendering PNG..." : "Download Proof"}</span>
+        </button>
+
+        {/* Add to Cart */}
+        <button
+          onClick={handleAddToCart}
+          className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-medium bg-card hover:bg-muted/40 text-foreground border border-border/60 transition-all active:scale-98"
+        >
+          {addedToCart ? (
+            <>
+              <Check size={14} className="text-emerald-500" />
+              <span className="text-emerald-500 font-semibold">Config Saved</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart size={14} className="text-muted-foreground" />
+              <span>Save Configuration</span>
+            </>
+          )}
+        </button>
+
       </div>
+
     </div>
   );
 }
