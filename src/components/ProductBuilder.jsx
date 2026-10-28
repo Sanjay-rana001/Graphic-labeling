@@ -7,8 +7,9 @@ import CheckoutBlock from "./CheckoutBlock";
 import { useTheme } from "./ThemeProvider";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Sparkles, Sun, Moon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import SweepButton from "./SweepButton";
+import ThemeToggle from "./ThemeToggle";
 
 const availableFonts = [
   "Montserrat", "Bebas Neue", "Playfair Display",
@@ -77,12 +78,7 @@ export default function ProductBuilder() {
         <Link href="/" prefetch={true} className="relative h-7 w-24 block cursor-pointer active:scale-95 transition-transform duration-75">
           <Image src="/Media/Logo.png" alt="Logo" fill sizes="100px" className="object-contain" priority />
         </Link>
-        <button
-          onClick={() => setTheme(!isDarkMode)}
-          className="p-1.5 rounded-full border border-border/60 text-muted-foreground active:scale-90 transition-transform duration-75 cursor-pointer"
-        >
-          {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
-        </button>
+        <ThemeToggle size="sm" />
       </header>
 
       {/* Left side: Canvas & Realtime 3D Specimen Preview */}
@@ -101,14 +97,9 @@ export default function ProductBuilder() {
           <div className="flex items-center gap-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] text-muted-foreground">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Real-time Laser Preview</span>
+              <span>Laser Proof • 1:1 Scale Preview</span>
             </div>
-            <button
-              onClick={() => setTheme(!isDarkMode)}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground border border-border/60 hover:bg-muted transition-colors"
-            >
-              {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
-            </button>
+            <ThemeToggle size="sm" />
           </div>
         </div>
 

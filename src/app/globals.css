@@ -94,6 +94,21 @@ footer,
               color 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Animatic Circular Ripple View Transition */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
 /* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;

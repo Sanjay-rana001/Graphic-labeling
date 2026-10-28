@@ -4,12 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { 
-  Sparkles, 
   ArrowRight, 
   Check, 
   Sliders, 
-  Sun, 
-  Moon, 
   ShieldCheck, 
   Layers, 
   Cpu, 
@@ -24,12 +21,12 @@ import {
   MoveRight,
   Factory,
   Briefcase,
-  Star,
   ChevronsRight
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "./ThemeProvider";
 import SweepButton from "./SweepButton";
+import ThemeToggle from "./ThemeToggle";
 
 const sampleProducts = [
   { 
@@ -272,14 +269,8 @@ export default function LandingClient() {
           {/* Action Group */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             
-            {/* Theme Toggle */}
-            <button
-              onClick={handleThemeToggle}
-              aria-label="Toggle Theme"
-              className="w-9 h-9 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground hover:bg-muted/70 transition-colors border border-border bg-card/60 dark:bg-card/40 shadow-xs"
-            >
-              {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
-            </button>
+            {/* Animated Theme Toggle Capsule */}
+            <ThemeToggle />
 
             {/* Launch Studio Button - Signature Filling Sweep Button (Fuller & Thicker) */}
             <SweepButton href="/customize" label="Studio Builder" size="nav" />
@@ -312,7 +303,7 @@ export default function LandingClient() {
             <div className="relative z-10 flex items-center gap-2 mb-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300/80 dark:bg-amber-500/10 dark:text-amber-500 dark:border-amber-500/20 text-xs font-bold tracking-wide shadow-xs">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                <span>INDUSTRIAL GRADE PRECISION • AERO 6061</span>
+                <span>AEROSPACE 6061-T6 ALLOY • FIBER LASER WORKSHOP</span>
               </div>
             </div>
 
@@ -367,7 +358,7 @@ export default function LandingClient() {
                 <SweepButton href="/customize" label="Try Online Builder" size="md" />
                 <span className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
                   <CheckCircle2 size={13} className="text-emerald-500" />
-                  <span>Interactive Realtime 3D Metal Proof Preview</span>
+                  <span>Real-time digital proof before production</span>
                 </span>
               </div>
             </div>
@@ -388,8 +379,8 @@ export default function LandingClient() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(245,158,11,0.08)_0%,transparent_70%)] pointer-events-none" />
 
             <div className="w-full flex items-center justify-between text-xs text-muted-foreground z-20">
-              <span className="font-mono text-[11px] font-bold text-foreground">Interactive Deck</span>
-              <span className="text-[10px] text-amber-700 dark:text-amber-400 font-semibold">Click to flip</span>
+              <span className="font-mono text-[11px] font-bold text-foreground">Material Samples</span>
+              <span className="text-[10px] text-muted-foreground font-semibold">Click sample to view</span>
             </div>
 
             {/* The 3D Layered Card Stack */}
@@ -455,23 +446,23 @@ export default function LandingClient() {
             className="lg:col-span-12 glass-panel rounded-2xl p-5 border border-border grid grid-cols-2 md:grid-cols-4 gap-4 items-center text-center"
           >
             <div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">500+</div>
-              <div className="text-xs text-muted-foreground font-medium">Corporate Deployments</div>
+              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">2,500+</div>
+              <div className="text-xs text-muted-foreground font-medium">Plates Fabricated</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">4.9 / 5</div>
+              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">±0.02 mm</div>
               <div className="text-xs text-muted-foreground font-medium flex items-center justify-center gap-1">
-                <span>Architect Rated</span>
-                <Star size={11} className="text-amber-500 fill-amber-500" />
+                <ShieldCheck size={13} className="text-emerald-500" />
+                <span>CNC Machine Tolerance</span>
               </div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">24h</div>
-              <div className="text-xs text-muted-foreground font-medium">Express Dispatch</div>
+              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">24-48h</div>
+              <div className="text-xs text-muted-foreground font-medium">Standard Proof Dispatch</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">10 Yrs</div>
-              <div className="text-xs text-muted-foreground font-medium">Outdoor Alloy Guarantee</div>
+              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">100% Solid</div>
+              <div className="text-xs text-muted-foreground font-medium">Aerospace Billet Guarantee</div>
             </div>
           </motion.div>
 

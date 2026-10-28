@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
-import { Grid, Sparkles, Sun, Eye, RotateCcw, Shield } from "lucide-react";
+import { Grid, Sliders, Sun, Eye, RotateCcw, Shield } from "lucide-react";
 
 export default function PreviewPanel({ config, setConfig, previewRef }) {
   const { 
@@ -308,10 +308,10 @@ export default function PreviewPanel({ config, setConfig, previewRef }) {
 
       </div>
 
-      {/* Helpful Hint Pill */}
+      {/* Studio Hint */}
       <div className="text-[11px] text-muted-foreground flex items-center gap-1.5 mt-2">
-        <Sparkles size={11} className="text-amber-500" />
-        <span>Drag text & logos directly on the plate to position</span>
+        <Sliders size={12} className="text-muted-foreground" />
+        <span>Click & drag typography directly on plate to align</span>
       </div>
 
     </div>
