@@ -21,7 +21,8 @@ import {
   MoveRight,
   Factory,
   Briefcase,
-  ChevronsRight
+  ChevronsRight,
+  Lightbulb
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "./ThemeProvider";
@@ -533,7 +534,7 @@ export default function LandingClient() {
           >
             <div>
               <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-500 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform shadow-xs">
-                <Sun size={22} />
+                <Lightbulb size={22} />
               </div>
               <h3 className="text-base font-bold text-foreground mb-2">LED & Illuminated Plaques</h3>
               <p className="text-xs text-muted-foreground leading-relaxed font-medium">
