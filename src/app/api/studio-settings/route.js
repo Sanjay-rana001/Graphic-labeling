@@ -1,11 +1,42 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { readStore, writeStore, DEFAULT_STUDIO_SETTINGS } from "@/lib/serverStore";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const store = readStore();
+  let settings = store.studioSettings || DEFAULT_STUDIO_SETTINGS;
+
+  try {
+    const cookieStore = await cookies();
+    const cookieMode = cookieStore.get("sourav_display_mode")?.value;
+    const cookieUpdatedAt = cookieStore.get("sourav_mode_updated_at")?.value;
+
+    if (cookieMode === "studio" || cookieMode === "enquiry") {
+      const cookieTs = cookieUpdatedAt ? Date.parse(cookieUpdatedAt) : 0;
+      const storeTs = settings.updatedAt ? Date.parse(settings.updatedAt) : 0;
+
+      if (cookieTs >= storeTs) {
+        settings = {
+          ...settings,
+          displayMode: cookieMode,
+          customizationStudioOn: cookieMode === "studio",
+          enquiryFormOn: cookieMode === "enquiry",
+          updatedAt: cookieUpdatedAt || settings.updatedAt,
+        };
+      }
+    }
+  } catch (e) {}
+
   return NextResponse.json(
-    { success: true, settings: store.studioSettings || DEFAULT_STUDIO_SETTINGS },
-    { status: 200 }
+    { success: true, settings },
+    {
+      status: 200,
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+      },
+    }
   );
 }
 
@@ -14,7 +45,11 @@ export async function POST(request) {
     const isAdmin = request.headers.get("x-admin-auth") === "true";
     if (!isAdmin) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized: Only authenticated administrators can modify display mode settings." },
+        {
+          success: false,
+          error:
+            "Unauthorized: Only authenticated administrators can modify display mode settings.",
+        },
         { status: 403 }
       );
     }
@@ -22,7 +57,11 @@ export async function POST(request) {
     const body = await request.json();
     const displayMode = body.displayMode === "enquiry" ? "enquiry" : "studio";
     const minQuantity = Math.max(1, parseInt(body.minQuantity, 10) || 1);
-    const maxFileSizeMB = Math.min(50, Math.max(1, parseInt(body.maxFileSizeMB, 10) || 10));
+    const maxFileSizeMB = Math.min(
+      50,
+      Math.max(1, parseInt(body.maxFileSizeMB, 10) || 10)
+    );
+    const updatedAt = body.updatedAt || new Date().toISOString();
 
     const store = readStore();
     const updatedSettings = {
@@ -32,39 +71,35 @@ export async function POST(request) {
       enquiryFormOn: displayMode === "enquiry",
       minQuantity,
       maxFileSizeMB,
-      thicknessOptions: Array.isArray(body.thicknessOptions) && body.thicknessOptions.length > 0
-        ? body.thicknessOptions.map((s) => String(s).trim()).filter(Boolean)
-        : store.studioSettings.thicknessOptions,
-      holeOptions: Array.isArray(body.holeOptions) && body.holeOptions.length > 0
-        ? body.holeOptions.map((s) => String(s).trim()).filter(Boolean)
-        : store.studioSettings.holeOptions,
-      sideOptions: Array.isArray(body.sideOptions) && body.sideOptions.length > 0
-        ? body.sideOptions.map((s) => String(s).trim()).filter(Boolean)
-        : store.studioSettings.sideOptions,
-      colourOptions: Array.isArray(body.colourOptions) && body.colourOptions.length > 0
-        ? body.colourOptions.map((s) => String(s).trim()).filter(Boolean)
-        : store.studioSettings.colourOptions,
-      updatedAt: new Date().toISOString(),
+      updatedAt,
       updatedBy: String(body.updatedBy || "admin").slice(0, 100),
     };
 
     store.studioSettings = updatedSettings;
-    const saved = writeStore(store);
+    writeStore(store);
 
-    if (!saved) {
-      return NextResponse.json(
-        { success: false, error: "Failed to persist studio display settings." },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: `Studio Builder Display Mode saved: ${
-        displayMode === "studio" ? "Customization Studio (ON)" : "Enquiry Form (ON)"
+        displayMode === "studio"
+          ? "Customization Studio (ON)"
+          : "Enquiry Form (ON)"
       }`,
       settings: updatedSettings,
     });
+
+    response.cookies.set("sourav_display_mode", displayMode, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+    response.cookies.set("sourav_mode_updated_at", updatedAt, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+
+    return response;
   } catch (err) {
     console.error("POST /api/studio-settings error:", err);
     return NextResponse.json(
@@ -73,4 +108,3 @@ export async function POST(request) {
     );
   }
 }
-

@@ -5,12 +5,42 @@
     "enquiryFormOn": true,
     "minQuantity": 1,
     "maxFileSizeMB": 10,
-    "allowedFileTypes": [".png", ".jpg", ".jpeg", ".svg", ".pdf", ".ai", ".cdr", ".eps"],
-    "thicknessOptions": ["0.3", "0.5", "0.7", "0.91mm", "1.5mm", "2.0mm"],
-    "holeOptions": ["1mm", "2mm", "3mm", "4mm", "5mm"],
-    "sideOptions": ["Single Side", "Double Side"],
-    "colourOptions": ["Single Colour", "Double Colour", "Three Colour", "Four Colour"],
-    "updatedAt": "2026-10-29T12:20:00.000Z",
+    "allowedFileTypes": [
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".svg",
+      ".pdf",
+      ".ai",
+      ".cdr",
+      ".eps"
+    ],
+    "thicknessOptions": [
+      "0.3 mm",
+      "0.5 mm",
+      "0.7 mm",
+      "0.91 mm",
+      "1.5 mm",
+      "2.0 mm"
+    ],
+    "holeOptions": [
+      "1 mm",
+      "2 mm",
+      "3 mm",
+      "4 mm",
+      "5 mm"
+    ],
+    "sideOptions": [
+      "Single Side",
+      "Double Side"
+    ],
+    "colourOptions": [
+      "Single Colour",
+      "Double Colour",
+      "Three Colour",
+      "Four Colour"
+    ],
+    "updatedAt": "2026-10-29T12:27:57.099Z",
     "updatedBy": "sanjay00002023@gmail.com"
   },
   "enquiries": []
