@@ -632,7 +632,7 @@ export default function StudioEnquiryForm({
               </motion.div>
 
               <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-2">
-                Lead Logged in Admin Dashboard • {submittedEnquiry.id}
+                Enquiry Reference • {submittedEnquiry.id}
               </span>
 
               <h2 className="text-xl sm:text-2xl font-black tracking-tight">
@@ -714,12 +714,11 @@ export default function StudioEnquiryForm({
                 {/* Drawer Header + Quick Upload Trigger */}
                 <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-border/60">
                   <div>
-                    <h1 className="text-sm sm:text-base font-black tracking-tight flex items-center gap-1.5">
-                      <Sparkles size={15} className="text-amber-500" />
-                      <span>Product Specifications & Lead Form</span>
+                    <h1 className="text-sm sm:text-base font-black tracking-tight">
+                      Product Enquiry Form
                     </h1>
                     <p className="text-[11px] text-muted-foreground">
-                      Upload your photo, choose specifications & submit for instant pricing
+                      Select specifications & enter details below
                     </p>
                   </div>
 
@@ -1030,7 +1029,7 @@ export default function StudioEnquiryForm({
               <div className="pt-2 border-t border-border/60 flex items-center justify-between gap-3">
                 <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-muted-foreground">
                   <ShieldCheck size={14} className="text-emerald-500 shrink-0" />
-                  <span>Direct factory lead • Fast response</span>
+                  <span>Direct factory enquiry • Fast response</span>
                 </div>
 
                 <button
@@ -1041,8 +1040,8 @@ export default function StudioEnquiryForm({
                   <Send size={14} />
                   <span>
                     {isSubmitting
-                      ? "Generating Lead..."
-                      : "Submit Enquiry & Get Quote"}
+                      ? "Submitting Enquiry..."
+                      : "Submit Enquiry"}
                   </span>
                 </button>
               </div>
