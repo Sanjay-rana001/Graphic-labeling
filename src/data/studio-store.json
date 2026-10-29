@@ -1,0 +1,17 @@
+{
+  "studioSettings": {
+    "displayMode": "enquiry",
+    "customizationStudioOn": false,
+    "enquiryFormOn": true,
+    "minQuantity": 1,
+    "maxFileSizeMB": 10,
+    "allowedFileTypes": [".png", ".jpg", ".jpeg", ".svg", ".pdf", ".ai", ".cdr", ".eps"],
+    "thicknessOptions": ["0.3", "0.5", "0.7", "0.91mm", "1.5mm", "2.0mm"],
+    "holeOptions": ["1mm", "2mm", "3mm", "4mm", "5mm"],
+    "sideOptions": ["Single Side", "Double Side"],
+    "colourOptions": ["Single Colour", "Double Colour", "Three Colour", "Four Colour"],
+    "updatedAt": "2026-10-29T12:20:00.000Z",
+    "updatedBy": "sanjay00002023@gmail.com"
+  },
+  "enquiries": []
+}

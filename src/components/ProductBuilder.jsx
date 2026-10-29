@@ -20,7 +20,7 @@ const availableFonts = [
   "Special Elite", "Black Ops One"
 ];
 
-export default function ProductBuilder() {
+export default function ProductBuilder({ isPreview = false, onExitPreview = null }) {
   const { isDarkMode, setTheme } = useTheme();
   
   const [config, setConfig] = useState({
@@ -70,8 +70,30 @@ export default function ProductBuilder() {
   }, [config]);
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-background relative text-foreground">
-      
+    <div className="flex flex-col min-h-screen bg-background relative text-foreground">
+      {isPreview && (
+        <div className="sticky top-0 z-50 bg-zinc-950 text-white px-4 py-2.5 border-b border-amber-500/40 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded bg-amber-500 text-zinc-950 font-black uppercase tracking-wider text-[10px]">
+              Preview Mode
+            </span>
+            <span className="text-zinc-300 font-medium">
+              Customization Studio Preview — Interactive tools are enabled, but enquiries will not be saved.
+            </span>
+          </div>
+          {onExitPreview && (
+            <button
+              type="button"
+              onClick={onExitPreview}
+              className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition-colors flex items-center gap-1.5"
+            >
+              <ArrowLeft size={13} /> Back to Admin Settings
+            </button>
+          )}
+        </div>
+      )}
+
+      <div className="flex flex-col lg:flex-row flex-1">
       {/* Sleek Top Navigation Bar for Builder */}
       <header className="w-full lg:hidden flex items-center justify-between p-4 border-b border-border/60 bg-background/80 backdrop-blur-md sticky top-0 z-50">
         <SweepButton href="/" label="Home" type="back" size="sm" />
@@ -111,7 +133,7 @@ export default function ProductBuilder() {
 
         {/* Bottom Checkout & Export Block */}
         <div className="w-full max-w-2xl mx-auto px-4 pb-6 shrink-0">
-          <CheckoutBlock config={config} setConfig={setConfig} price={price} previewRef={previewRef} />
+          <CheckoutBlock config={config} setConfig={setConfig} price={price} previewRef={previewRef} isPreview={isPreview} />
         </div>
 
       </div>
@@ -126,6 +148,7 @@ export default function ProductBuilder() {
           isDarkMode={isDarkMode} 
           setIsDarkMode={setTheme} 
         />
+      </div>
       </div>
 
     </div>

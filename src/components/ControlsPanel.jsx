@@ -96,8 +96,8 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
         </div>
 
         <div className="text-right">
-          <span className="text-[10px] text-muted-foreground block uppercase tracking-wider font-mono">Unit Estimate</span>
-          <span className="text-base font-semibold text-foreground font-mono">₹{price.toLocaleString('en-IN')}</span>
+          <span className="text-[10px] text-muted-foreground block uppercase tracking-wider font-mono">Selected Spec</span>
+          <span className="text-xs font-semibold text-amber-500 font-mono">{config.size.width}" × {config.size.height}" • {config.material}</span>
         </div>
       </div>
 
@@ -516,13 +516,13 @@ export default function ControlsPanel({ config, setConfig, price, previewRef, is
           </div>
         )}
 
-        {/* Volume Tier Mini-Bar (Always helpful & subtle) */}
+        {/* Custom Quote Notice Bar */}
         <div className="p-3 rounded-xl bg-muted/30 border border-border/50 text-[11px] text-muted-foreground">
           <div className="flex justify-between font-medium text-foreground mb-1">
-            <span>Tiered Bulk Pricing</span>
-            <span className="text-amber-500 font-mono">10+ pcs = 25% off</span>
+            <span>Custom Fabrication & Bulk Quotes</span>
+            <span className="text-amber-500 font-mono">24h Turnaround</span>
           </div>
-          <span>Automatic discount applies when you increase units in the order bar.</span>
+          <span>Submit your inquiry below the preview to receive a formal quotation and digital proof.</span>
         </div>
 
       </div>

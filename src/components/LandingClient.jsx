@@ -28,6 +28,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTheme } from "./ThemeProvider";
 import SweepButton from "./SweepButton";
 import ThemeToggle from "./ThemeToggle";
+import { INITIAL_LEADS } from "@/lib/adminData";
 
 const sampleProducts = [
   { 
@@ -139,28 +140,9 @@ const showcaseSpecimens = [
   },
 ];
 
-const heroCollageImages = [
-  { src: "/Media/brushed_aluminum_sign.png", label: "Brushed Aluminium Sign" },
-  { src: "/Media/desk_name_plate.png", label: "Executive Desk Plate" },
-  { src: "/Media/premium_gold_plate.png", label: "Heritage Gold Brass" },
-  { src: "/Media/office_metal_labels.png", label: "Industrial Metal Labels" },
-];
-
 export default function LandingClient() {
   const [scrolled, setScrolled] = useState(false);
   const { isDarkMode, setTheme } = useTheme();
-  
-  // 3D Animated Card Stack State
-  const [heroCardIndex, setHeroCardIndex] = useState(0);
-  const [isHoveredStack, setIsHoveredStack] = useState(false);
-
-  useEffect(() => {
-    if (isHoveredStack) return;
-    const interval = setInterval(() => {
-      setHeroCardIndex((prev) => (prev + 1) % heroCollageImages.length);
-    }, 2800);
-    return () => clearInterval(interval);
-  }, [isHoveredStack]);
 
   // Parallax Shutter Reveal Ref
   const shutterRef = useRef(null);
@@ -212,13 +194,59 @@ export default function LandingClient() {
   const handleQuickQuote = (e) => {
     e.preventDefault();
     if (!quickEmail) return;
+    try {
+      const saved = localStorage.getItem("sourav_admin_leads");
+      const existing = saved ? JSON.parse(saved) : INITIAL_LEADS;
+      const newLead = {
+        id: `INQ-${Math.floor(1000 + Math.random() * 9000)}`,
+        client: quickEmail.split("@")[0] || "Web Inquiry",
+        phone: "Not provided",
+        email: quickEmail,
+        city: "Website Hero",
+        date: new Date().toISOString().split("T")[0],
+        source: "Hero Spec Request",
+        material: "Brushed / Anodized Aluminium",
+        size: "Custom / Catalog Request",
+        lighting: "None",
+        mounting: "To be discussed",
+        textLayers: [],
+        quantity: 25,
+        status: "New Inquiry",
+        notes: "Requested instant spec sheet & bulk quote from homepage hero."
+      };
+      localStorage.setItem("sourav_admin_leads", JSON.stringify([newLead, ...existing]));
+    } catch (err) {}
     setQuickSubmitted(true);
+    setQuickEmail("");
     setTimeout(() => setQuickSubmitted(false), 5000);
   };
 
   const handleQuoteSubmit = (e) => {
     e.preventDefault();
+    try {
+      const saved = localStorage.getItem("sourav_admin_leads");
+      const existing = saved ? JSON.parse(saved) : INITIAL_LEADS;
+      const newLead = {
+        id: `INQ-${Math.floor(1000 + Math.random() * 9000)}`,
+        client: formData.name || "Commercial Client",
+        phone: formData.phone || "Not provided",
+        email: formData.email || "",
+        city: "Commercial Inquiry",
+        date: new Date().toISOString().split("T")[0],
+        source: "Website Inquiry Console",
+        material: showcaseSpecimens[selectedSpecimen]?.name || "Brushed Aluminium",
+        size: showcaseSpecimens[selectedSpecimen]?.thickness || "3.0 mm",
+        lighting: "To be discussed",
+        mounting: showcaseSpecimens[selectedSpecimen]?.mount || "Standoffs",
+        textLayers: [],
+        quantity: Number(quoteQuantity) || 25,
+        status: "New Inquiry",
+        notes: formData.notes || "Submitted bulk / custom inquiry from homepage proposal console."
+      };
+      localStorage.setItem("sourav_admin_leads", JSON.stringify([newLead, ...existing]));
+    } catch (err) {}
     setQuoteSubmitted(true);
+    setFormData({ name: "", email: "", phone: "", notes: "" });
     setTimeout(() => setQuoteSubmitted(false), 5000);
   };
 
@@ -310,10 +338,10 @@ export default function LandingClient() {
 
             {/* Headline - Deep, Lustrous Liquid Gold in Light Mode */}
             <div className="relative z-10 mb-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.05] uppercase">
-                Metal & <br />
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.05] uppercase">
+                Sourav Graphic & <br />
                 <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 dark:from-amber-400 dark:via-amber-300 dark:to-yellow-500 bg-clip-text text-transparent drop-shadow-xs">
-                  Aluminium
+                  Metal Labels
                 </span>
               </h1>
               <p className="mt-4 text-sm sm:text-base text-muted-foreground font-medium max-w-lg leading-relaxed">
@@ -366,76 +394,41 @@ export default function LandingClient() {
 
           </motion.div>
 
-          {/* Right Top Card (4 Cols) - 3D Layered Card Stack */}
+          {/* Right Top Card (4 Cols) - Material Sample Full Image */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.15, duration: 0.6 }}
-            onMouseEnter={() => setIsHoveredStack(true)}
-            onMouseLeave={() => setIsHoveredStack(false)}
-            onClick={() => setHeroCardIndex((prev) => (prev + 1) % heroCollageImages.length)}
-            className="lg:col-span-4 min-h-[320px] lg:min-h-[380px] bg-card border border-border rounded-3xl p-5 relative overflow-hidden shadow-xl shadow-black/[0.03] dark:shadow-black/40 flex flex-col justify-between items-center cursor-pointer group"
+            className="lg:col-span-4 min-h-[320px] lg:min-h-[380px] bg-card border border-border rounded-3xl p-5 relative overflow-hidden shadow-xl shadow-black/[0.03] dark:shadow-black/40 flex flex-col justify-between items-center group"
           >
             {/* Ambient Specular Highlight */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(245,158,11,0.08)_0%,transparent_70%)] pointer-events-none" />
 
             <div className="w-full flex items-center justify-between text-xs text-muted-foreground z-20">
               <span className="font-mono text-[11px] font-bold text-foreground">Material Samples</span>
-              <span className="text-[10px] text-muted-foreground font-semibold">Click sample to view</span>
+              <span className="text-[10px] text-muted-foreground font-semibold">Aerospace Grade</span>
             </div>
 
-            {/* The 3D Layered Card Stack */}
-            <div className="relative w-full h-[220px] sm:h-[250px] flex items-center justify-center my-auto z-10 active:scale-98 transition-transform duration-75">
-              {heroCollageImages.map((item, idx) => {
-                const offset = (idx - heroCardIndex) % heroCollageImages.length;
-                const normalizedOffset = offset < 0 ? offset + heroCollageImages.length : offset;
-
-                const rotation = normalizedOffset === 0 ? 0 : normalizedOffset === 1 ? 7 : normalizedOffset === 2 ? -7 : 10;
-                const scale = normalizedOffset === 0 ? 1 : normalizedOffset === 1 ? 0.92 : normalizedOffset === 2 ? 0.92 : 0.84;
-                const x = normalizedOffset === 0 ? 0 : normalizedOffset === 1 ? 16 : normalizedOffset === 2 ? -16 : 0;
-                const y = normalizedOffset === 0 ? 0 : normalizedOffset === 3 ? -24 : -12;
-                const zIndex = 10 - normalizedOffset;
-
-                return (
-                  <motion.div
-                    key={item.src}
-                    animate={{
-                      rotate: rotation,
-                      scale: scale,
-                      x: x,
-                      y: y,
-                      zIndex: zIndex,
-                      opacity: normalizedOffset === 3 ? 0 : 1,
-                    }}
-                    transition={{ type: "spring", stiffness: 280, damping: 20 }}
-                    className="absolute w-[80%] h-[82%] rounded-2xl border-2 border-border shadow-2xl overflow-hidden bg-card"
-                  >
-                    <Image
-                      src={item.src}
-                      alt={item.label}
-                      fill
-                      className="object-cover group-hover:scale-104 transition-transform duration-300"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      priority={idx === 0}
-                    />
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            {/* Active Specimen Label */}
-            <div className="w-full py-2 px-3.5 rounded-xl glass-panel text-center text-xs font-bold text-foreground z-20 border border-border shadow-xs flex items-center justify-between">
-              <span className="truncate">{heroCollageImages[heroCardIndex].label}</span>
-              <div className="flex gap-1 shrink-0">
-                {heroCollageImages.map((_, i) => (
-                  <span
-                    key={i}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      i === heroCardIndex ? "bg-amber-500 w-3" : "bg-muted-foreground/30"
-                    }`}
-                  />
-                ))}
+            {/* Full Material Sample Image - Zoomed */}
+            <div className="relative w-full flex-1 min-h-[240px] sm:min-h-[270px] flex items-center justify-center my-2 z-10">
+              <div className="relative w-full h-full flex items-center justify-center">
+                <Image
+                  src="/Media/anodized-aluminium-labels-1000x1000-removebg-preview.png"
+                  alt="Anodized Aluminium Label"
+                  fill
+                  className="object-contain scale-125 group-hover:scale-130 transition-transform duration-500 drop-shadow-2xl"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority
+                />
               </div>
+            </div>
+
+            {/* Material Label */}
+            <div className="w-full py-2 px-3.5 rounded-xl glass-panel text-center text-xs font-bold text-foreground z-20 border border-border shadow-xs flex items-center justify-between">
+              <span className="truncate">Anodized Aluminium Labels</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-mono font-medium border border-amber-500/20">
+                Sample Specimen
+              </span>
             </div>
           </motion.div>
 
@@ -743,7 +736,7 @@ export default function LandingClient() {
               Catalog & Collections
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-              Ready-to-Order Formats
+              Signature Metal Formats
             </h2>
           </div>
 
@@ -793,15 +786,15 @@ export default function LandingClient() {
 
                 <div className="mt-auto pt-3 border-t border-border/40 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] text-muted-foreground font-medium block">Starting at</span>
-                    <span className="text-sm font-black text-foreground font-mono">{product.price}</span>
+                    <span className="text-[10px] text-muted-foreground font-medium block">Fabrication</span>
+                    <span className="text-xs font-bold text-foreground">Custom Size & Finish</span>
                   </div>
                   <Link
                     href="/customize"
                     prefetch={true}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-zinc-950 text-white dark:bg-foreground dark:text-background hover:opacity-90 active:scale-95 transition-all duration-75 cursor-pointer touch-manipulation select-none"
                   >
-                    <span>Order</span>
+                    <span>Inquire</span>
                     <ArrowRight size={11} />
                   </Link>
                 </div>
@@ -811,58 +804,53 @@ export default function LandingClient() {
         </div>
       </section>
 
-      {/* 7. VOLUME ESTIMATOR & PROPOSAL CONSOLE */}
+      {/* 7. VOLUME & CUSTOM INQUIRY CONSOLE */}
       <section id="quote" className="py-20 px-6 max-w-5xl mx-auto w-full">
         <div className="glass-panel rounded-3xl p-8 sm:p-12 border border-border relative overflow-hidden shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
             <div className="lg:col-span-6">
               <div className="inline-block text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2">
-                Volume & Project Orders
+                Direct Workshop Inquiry
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground mb-3">
-                Instant Order Estimator
+                Submit Your Custom Query
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6 font-medium">
-                Planning signage for a campus, manufacturing floor, or new corporate headquarters? Adjust volume to see automated tier discounts.
+                Planning signage for a home, corporate office, manufacturing floor, or residential society? Select your approximate quantity and submit your requirement for a tailored quotation.
               </p>
 
               <div className="p-5 rounded-2xl bg-card border border-border mb-6">
                 <div className="flex items-center justify-between text-xs font-bold mb-3">
-                  <span className="text-muted-foreground">Order Units:</span>
+                  <span className="text-muted-foreground">Approximate Quantity Needed:</span>
                   <span className="text-foreground px-2.5 py-0.5 rounded-md bg-muted/60 dark:bg-muted/40 border border-border shadow-xs font-mono">
                     {quoteQuantity} Units
                   </span>
                 </div>
                 <input
                   type="range"
-                  min="5"
+                  min="1"
                   max="150"
-                  step="5"
+                  step="1"
                   value={quoteQuantity}
                   onChange={(e) => setQuoteQuantity(Number(e.target.value))}
                   className="w-full accent-amber-500 cursor-pointer h-1.5 rounded-lg bg-muted"
                 />
                 <div className="flex justify-between text-[10px] text-muted-foreground mt-2 font-medium">
-                  <span>5 pcs (Standard)</span>
-                  <span>50 pcs (15% off)</span>
-                  <span>100+ pcs (25% off)</span>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground font-medium">Estimated Total:</span>
-                  <span className="text-base sm:text-lg font-black text-foreground font-mono">₹{calculateEstimate()}</span>
+                  <span>1 pc (Single Custom)</span>
+                  <span>25 pcs (Corporate Batch)</span>
+                  <span>100+ pcs (Industrial Bulk)</span>
                 </div>
               </div>
 
               <div className="space-y-2 text-xs text-muted-foreground font-medium">
                 <div className="flex items-center gap-2">
                   <Check size={13} className="text-emerald-600 dark:text-emerald-500" />
-                  <span>GST invoice provided for corporate tax claims</span>
+                  <span>Direct consultation & digital proof before laser fabrication</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check size={13} className="text-emerald-600 dark:text-emerald-500" />
-                  <span>Physical pre-production proof sample on orders over 30 pcs</span>
+                  <span>Physical pre-production sample available for bulk inquiries</span>
                 </div>
               </div>
             </div>
@@ -957,6 +945,9 @@ export default function LandingClient() {
             <a href="#engineering" className="hover:text-foreground transition-colors">Engineering</a>
             <a href="#products" className="hover:text-foreground transition-colors">Collections</a>
             <Link href="/customize" prefetch={true} className="hover:text-foreground active:scale-95 transition-all duration-75">Studio Builder</Link>
+            <Link href="/admin" className="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold hover:bg-amber-500 hover:text-zinc-950 transition-colors">
+              Admin Portal
+            </Link>
           </div>
 
           <div>

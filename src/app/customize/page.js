@@ -1,14 +1,19 @@
-import ProductBuilder from "../../components/ProductBuilder";
+import StudioModeClient from "../../components/StudioModeClient";
+import { readStore } from "@/lib/serverStore";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Customize Your Plate | Saourav Graphic",
-  description: "Customize and preview your premium metal and LED name plates in real-time.",
+  title: "Studio Builder & Product Enquiry | Sourav Graphic",
+  description:
+    "Customize your metal & LED name plates in 3D or submit an industrial product specification enquiry.",
 };
 
 export default function CustomizePage() {
+  const store = readStore();
   return (
     <main>
-      <ProductBuilder />
+      <StudioModeClient initialSettings={store.studioSettings} />
     </main>
   );
 }
