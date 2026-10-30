@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../components/ThemeProvider";
+import MetalScrollToTop from "../components/MetalScrollToTop";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Saourav Graphic | Architectural Signage & Industrial Metal Engraving",
-  description: "Bespoke aerospace-grade 6061 aluminium plates, architectural brass signage, and laser micro-relief plaques with realtime 3D studio builder.",
+  title: "Sourav Graphic | Architectural Signage & Industrial Metal Engraving",
+  description:
+    "Bespoke aerospace-grade 6061 aluminium plates, architectural brass signage, and laser micro-relief plaques with realtime 3D studio builder.",
 };
 
 export default function RootLayout({ children }) {
@@ -26,11 +28,16 @@ export default function RootLayout({ children }) {
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           {children}
+          <MetalScrollToTop />
         </ThemeProvider>
       </body>
     </html>

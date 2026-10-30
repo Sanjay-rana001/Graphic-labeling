@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import ProductBuilder from "./ProductBuilder";
 import StudioEnquiryForm from "./StudioEnquiryForm";
 import PremiumLoader, { isScreenLoaderEnabled } from "./PremiumLoader";
+import MetalScrollToTop from "./MetalScrollToTop";
 
 function getTs(obj) {
   const raw = obj?.updatedAt;

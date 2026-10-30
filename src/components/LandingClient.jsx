@@ -37,6 +37,7 @@ import SweepButton from "./SweepButton";
 import ThemeToggle from "./ThemeToggle";
 import RealBlackPlateSpecimen from "./RealBlackPlateSpecimen";
 import PremiumLoader, { isScreenLoaderEnabled } from "./PremiumLoader";
+import MetalScrollToTop from "./MetalScrollToTop";
 import { INITIAL_LEADS } from "@/lib/adminData";
 
 function WhatsAppLogo({ size = 15, className = "" }) {
