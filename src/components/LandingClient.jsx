@@ -87,14 +87,14 @@ const CATALOG_PRODUCTS = [
   {
     id: 1,
     category: "Aluminium Nameplates",
-    title: "Anodized & UV Printed Aluminium Nameplate",
+    title: "Aluminium Name Plate",
     code: "SG-ALU-101",
-    desc: "High-contrast anodized & chemical-etched aluminium rating plates for motors, compressors, weighing scales & control panels.",
-    thickness: "0.3mm, 0.5mm, 0.7mm, 1.5mm, 2.0mm",
-    material: "Aerospace 6061 / 1100 Aluminium",
-    process: "Anodizing + UV / Laser Etch",
-    mounting: "1mm–5mm Corner Holes / 3M",
-    application: "Machinery, Motors & OEM Panels",
+    desc: "Anodized & etched aluminium rating plates for motors & panels.",
+    thickness: "0.3 – 2.0mm",
+    material: "6061 / 1100 Aluminium",
+    process: "Anodize + Laser Etch",
+    mounting: "1–5mm Holes",
+    application: "Machinery & Motors",
     tag: "Bestseller",
     img: "/Media/anodized-aluminium-labels-1000x1000-removebg-preview.png",
     isContain: true,
@@ -102,155 +102,155 @@ const CATALOG_PRODUCTS = [
   {
     id: 2,
     category: "Aluminium Nameplates",
-    title: "Premium Aluminium Etching Name Plate",
+    title: "Aluminium Etching Plate",
     code: "SG-ALU-102",
-    desc: "Deep chemical-etched and satin-brushed aluminium name plates with solvent-proof baked enamel colour filling.",
-    thickness: "0.7mm – 3.0mm",
-    material: "Brushed / Matte Aluminium",
-    process: "Deep Chemical Etching",
-    mounting: "Punched Holes / Studs",
-    application: "Industrial Equipment & Valves",
-    tag: "Export Quality",
+    desc: "Deep chemical-etched aluminium plates with enamel colour fill.",
+    thickness: "0.7 – 3.0mm",
+    material: "Brushed Aluminium",
+    process: "Chemical Etching",
+    mounting: "Holes / Studs",
+    application: "Valves & Equipment",
+    tag: "Export",
     img: "/Media/brushed_aluminum_sign.png",
   },
   {
     id: 3,
     category: "Industrial Tags & Labels",
-    title: "Custom QR Code, Barcode & Serial Asset ID Tag",
+    title: "QR & Barcode Metal Tag",
     code: "SG-TAG-201",
-    desc: "Oil, heat, and UV-resistant anodized aluminium tags with sequential numbering, barcode & QR code laser matrix.",
-    thickness: "0.3mm – 1.5mm",
-    material: "Sealed Anodized Aluminium",
-    process: "Fiber Laser Matrix Marking",
-    mounting: "1mm–5mm Rivet / Cable Holes",
-    application: "Asset Tracking & Cable ID",
-    tag: "QR / Barcode",
+    desc: "Anodized aluminium tags with sequential barcode & QR matrix.",
+    thickness: "0.3 – 1.5mm",
+    material: "Anodized Aluminium",
+    process: "Laser Matrix",
+    mounting: "1–5mm Holes",
+    application: "Asset & Cable ID",
+    tag: "QR / ID",
     img: "/Media/equipment_tag.png",
   },
   {
     id: 4,
     category: "SS & Brass Plates",
-    title: "SS 304 / 316 Chemical Etched Equipment Nameplate",
+    title: "SS 304 Etched Plate",
     code: "SG-SS-301",
-    desc: "Corrosion-proof 0.5mm to 2.0mm stainless steel machinery rating plates, schematic diagrams, and compliance boards.",
-    thickness: "0.5mm, 0.7mm, 1.0mm, 1.5mm, 2.0mm",
-    material: "Grade 304 / 316 Stainless Steel",
-    process: "Acid Etching + Colour Fill",
-    mounting: "2mm–5mm Corner Holes",
-    application: "Chemical, Marine & Heavy Plants",
-    tag: "SS 304 / 316",
+    desc: "Corrosion-proof stainless steel machinery rating plates.",
+    thickness: "0.5 – 2.0mm",
+    material: "SS 304 / 316",
+    process: "Acid Etching",
+    mounting: "2–5mm Holes",
+    application: "Chemical & Marine",
+    tag: "SS 304/316",
     img: "/Media/aluminum_door_plate.png",
   },
   {
     id: 5,
     category: "SS & Brass Plates",
-    title: "PVDF Golden Coated & Heritage Brass Name Board",
+    title: "Brass & Gold Plate",
     code: "SG-BRS-302",
-    desc: "Mirror-polished and chemical-etched solid brass & PVDF gold coated plates for prestige corporate & industrial branding.",
-    thickness: "1.0mm – 4.0mm",
-    material: "Solid Brass / PVDF Gold SS",
-    process: "Etched + Lacquer Coated",
-    mounting: "Studs / Mirror Screws",
-    application: "Corporate & Architectural",
-    tag: "Golden Finish",
+    desc: "Etched solid brass & PVDF gold coated name boards.",
+    thickness: "1.0 – 4.0mm",
+    material: "Brass / Gold SS",
+    process: "Etched + Lacquer",
+    mounting: "Studs / Screws",
+    application: "Corporate Signage",
+    tag: "Gold Finish",
     img: "/Media/premium_gold_plate.png",
   },
   {
     id: 6,
     category: "Polycarbonate & Stickers",
-    title: "Polycarbonate Graphic Overlay & Membrane Sticker",
+    title: "Polycarbonate Sticker",
     code: "SG-PC-401",
-    desc: "Sub-surface printed velvet/matte polycarbonate stickers and fascia panels with strong 3M self-adhesive backing.",
-    thickness: "0.18mm – 0.5mm",
-    material: "Lexan Polycarbonate / PVC Foil",
-    process: "Reverse Screen & UV Print",
-    mounting: "3M 467MP Self-Adhesive",
-    application: "Control Panels & Electronics",
-    tag: "3M Adhesive",
+    desc: "Sub-surface printed polycarbonate overlays with 3M backing.",
+    thickness: "0.18 – 0.5mm",
+    material: "Lexan / PVC Foil",
+    process: "Reverse Print",
+    mounting: "3M Adhesive",
+    application: "Control Panels",
+    tag: "3M Backing",
     img: "/Media/office_metal_labels.png",
   },
   {
     id: 7,
     category: "Acrylic & Screen Print",
-    title: "Export Quality Safety Sign & Screen Printed Board",
+    title: "Danger & Safety Plate",
     code: "SG-PRT-501",
-    desc: "High-visibility single to four-colour industrial screen printed warning plates, instruction boards, and dial scales.",
-    thickness: "0.5mm – 2.0mm",
-    material: "Aluminium / Acrylic / PVC",
-    process: "1 to 4 Colour Screen Print",
-    mounting: "Corner Holes / Adhesive",
-    application: "Safety & Electrical Compliance",
-    tag: "1–4 Colour Print",
+    desc: "1 to 4 colour industrial screen printed safety & warning boards.",
+    thickness: "0.5 – 2.0mm",
+    material: "Aluminium / PVC",
+    process: "1–4 Colour Print",
+    mounting: "Holes / 3M",
+    application: "Electrical Safety",
+    tag: "1–4 Colour",
     img: "/Media/warning_signage.png",
   },
   {
     id: 8,
     category: "Industrial Tags & Labels",
-    title: "Matte Black Anodized Aluminium Rating Tag",
+    title: "Black Anodized Tag",
     code: "SG-TAG-202",
-    desc: "Scratch-proof electrochemically oxidized matte black aluminium tag with high-contrast silver laser engraving.",
-    thickness: "0.5mm – 2.0mm",
-    material: "Black Anodized Aluminium",
-    process: "High-Precision Fiber Laser",
-    mounting: "1mm–5mm Holes / 3M Backing",
-    application: "Valves, Pumps & Compressors",
-    tag: "Ano-Etching",
+    desc: "Scratch-proof matte black aluminium tag with laser engraving.",
+    thickness: "0.5 – 2.0mm",
+    material: "Black Aluminium",
+    process: "Fiber Laser",
+    mounting: "1–5mm Holes",
+    application: "Switchgear & Pumps",
+    tag: "Ano-Etch",
     img: "/Media/anodized_aluminum_tag.png",
   },
   {
     id: 9,
     category: "SS & Brass Plates",
-    title: "Executive Solid Metal Desk & Door Name Plate",
+    title: "Cabin & Door Plate",
     code: "SG-DSK-303",
-    desc: "Heavy-duty CNC-chamfered metallic block and architectural door plates for offices, cabins, and residences.",
-    thickness: "2.0mm – 12.0mm",
-    material: "Solid Billet Aluminium / Brass",
-    process: "Diamond Bevel + Laser",
-    mounting: "Free-Standing / Standoffs",
-    application: "Office Cabins & Houses",
-    tag: "Custom Size",
+    desc: "CNC-chamfered metal door & desk plates for offices.",
+    thickness: "2.0 – 12mm",
+    material: "Aluminium / Brass",
+    process: "Bevel + Laser",
+    mounting: "Standoffs",
+    application: "Offices & Cabins",
+    tag: "Custom",
     img: "/Media/desk_name_plate.png",
   },
   {
     id: 10,
     category: "Acrylic & Screen Print",
-    title: "Custom Acrylic Sign Board & House Name Plate",
+    title: "Acrylic Sign Board",
     code: "SG-ACR-502",
-    desc: "Weatherproof laser-cut cast acrylic sign boards with single/double side UV printing and stainless steel studs.",
-    thickness: "2.0mm – 6.0mm",
-    material: "Cast Acrylic + Metal Layer",
-    process: "Laser Cut + UV Screen Print",
-    mounting: "SS Standoff Studs",
-    application: "Commercial & Residential",
-    tag: "Weatherproof",
+    desc: "Weatherproof laser-cut cast acrylic & house name plates.",
+    thickness: "2.0 – 6.0mm",
+    material: "Cast Acrylic",
+    process: "UV Screen Print",
+    mounting: "SS Studs",
+    application: "House & Office",
+    tag: "Outdoor",
     img: "/Media/brushed_aluminum_sign.png",
   },
   {
     id: 11,
     category: "Polycarbonate & Stickers",
-    title: "PVC Silver Foil & Metallic Promotional Stickers",
+    title: "Inspection Punch Tag",
     code: "SG-PC-402",
-    desc: "Waterproof die-cut metallic foil stickers, brand logo badges, and structured self-adhesive industrial labels.",
-    thickness: "0.1mm – 0.5mm",
-    material: "Metallic Foil / Polyester",
-    process: "Die-Cut + Multi-Colour Print",
-    mounting: "High-Tack Self-Adhesive",
-    application: "Appliances, Cartons & Branding",
-    tag: "Custom Die-Cut",
+    desc: "Monthly maintenance & inspection punch grid metal labels.",
+    thickness: "0.3 – 1.0mm",
+    material: "Anodized Foil / Alu",
+    process: "Etched Grid",
+    mounting: "Rivet / 3M",
+    application: "AMC & Maintenance",
+    tag: "Punch Grid",
     img: "/Media/office_metal_labels.png",
   },
   {
     id: 12,
     category: "Aluminium Nameplates",
-    title: "CNG Cylinder & Pressure Vessel Compliance Plate",
+    title: "CNG Compliance Plate",
     code: "SG-ALU-104",
-    desc: "Stamped and deep-etched compliance plates for CNG cylinders, boilers, transformers, and heavy automotive kits.",
-    thickness: "0.7mm – 2.0mm",
-    material: "Hard Anodized Aluminium / SS",
-    process: "Deep Etch + Serial Punching",
-    mounting: "Rivet Holes / Weldable",
-    application: "Automotive & Gas Cylinders",
-    tag: "Compliance Grade",
+    desc: "Deep-etched compliance plates for CNG cylinders & vessels.",
+    thickness: "0.7 – 2.0mm",
+    material: "Hard Anodized Alu",
+    process: "Deep Stamp",
+    mounting: "Rivet Holes",
+    application: "CNG & Boilers",
+    tag: "PESO Grade",
     img: "/Media/equipment_tag.png",
   },
 ];
@@ -414,7 +414,7 @@ export default function LandingClient() {
       if (res.ok && data?.success && data.enquiry) {
         createdLead = data.enquiry;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     if (!createdLead) {
       createdLead = {
@@ -447,7 +447,7 @@ export default function LandingClient() {
         ...existing.filter((item) => item.id !== createdLead.id),
       ];
       localStorage.setItem("sourav_admin_leads", JSON.stringify(merged));
-    } catch (err) {}
+    } catch (err) { }
 
     return createdLead;
   };
@@ -528,11 +528,10 @@ export default function LandingClient() {
           FLUID FULL-WIDTH STICKY HEADER WITH SEARCH & DIRECT ENQUIRY CTAS
          ══════════════════════════════════════════════════════════════════ */}
       <header
-        className={`fixed top-0 inset-x-0 z-40 transition-all duration-200 border-b ${
-          scrolled
+        className={`fixed top-0 inset-x-0 z-40 transition-all duration-200 border-b ${scrolled
             ? "bg-card/95 dark:bg-[#0c0e14]/95 backdrop-blur-xl border-border shadow-md py-2"
             : "bg-background/90 backdrop-blur-md border-border/60 py-2.5"
-        }`}
+          }`}
       >
         <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-10 2xl:px-14 flex items-center justify-between gap-3">
           {/* Left: Brand Logo + Verified Badge */}
@@ -710,11 +709,10 @@ export default function LandingClient() {
                     src={FEATURED_SPECIMEN_SLIDES[specimenSlide].src}
                     alt={FEATURED_SPECIMEN_SLIDES[specimenSlide].alt}
                     fill
-                    className={`object-contain ${
-                      specimenSlide === 0
+                    className={`object-contain ${specimenSlide === 0
                         ? "scale-110 p-1 drop-shadow-md"
                         : "scale-[1.14]"
-                    }`}
+                      }`}
                     sizes="(max-width: 1024px) 100vw, 420px"
                     priority
                   />
@@ -845,99 +843,34 @@ export default function LandingClient() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          MAIN B2B CATALOG SECTION: LEFT SIDEBAR CATEGORIES + RIGHT PRODUCT GRID
-          (Exact Samarth Metal Labels B2B Directory Structure, Sleek & Modern)
+          OPTIMIZED FULL-WIDTH B2B PRODUCT CATALOG SECTION
+          (Sticky Category Filter Bar + Unobstructed Real Black Plate Specimens + Compact 2x2 Spec Pills)
          ══════════════════════════════════════════════════════════════════ */}
       <section
         id="products"
-        className="py-6 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto"
+        className="py-5 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-          {/* LEFT SIDEBAR (3 Cols on Desktop / 2.5 Cols on Ultrawide): Product Range Directory + Direct Upload Card */}
-          <aside className="lg:col-span-3 2xl:col-span-2 lg:sticky lg:top-16 space-y-3.5">
-            <div className="bg-card border border-border rounded-2xl p-3.5 shadow-2xs">
-              <div className="pb-2.5 mb-2.5 border-b border-border flex items-center justify-between">
-                <h2 className="text-xs font-black uppercase tracking-wider text-foreground">
-                  Our Product Range
+        {/* Top Unified Category & Filter Control Bar */}
+        <div className="bg-card border border-border rounded-2xl p-3 sm:p-4 mb-4 shadow-2xs space-y-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-black text-foreground uppercase tracking-tight">
+                  Industrial Product Range
                 </h2>
-                <span className="text-[10px] font-mono text-amber-500 font-bold">
-                  {CATALOG_PRODUCTS.length} Items
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-mono text-[10px] font-extrabold">
+                  {filteredProducts.length} / {CATALOG_PRODUCTS.length} Items
                 </span>
               </div>
-
-              <div className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0">
-                {PRODUCT_CATEGORIES.map((cat) => {
-                  const isActive = activeCategory === cat.id;
-                  const count =
-                    cat.id === "All"
-                      ? CATALOG_PRODUCTS.length
-                      : CATALOG_PRODUCTS.filter((p) => p.category === cat.id)
-                          .length;
-                  return (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => setActiveCategory(cat.id)}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between gap-2 shrink-0 lg:shrink cursor-pointer ${
-                        isActive
-                          ? "bg-amber-500 text-zinc-950 font-black shadow-xs"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                      }`}
-                    >
-                      <span className="truncate">{cat.short}</span>
-                      <span
-                        className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                          isActive
-                            ? "bg-zinc-950/15 text-zinc-950"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {count}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Direct Custom Artwork Upload CTA Card in Sidebar */}
-            <div className="hidden lg:block bg-card border border-amber-500/30 rounded-2xl p-4 shadow-2xs space-y-2.5">
-              <span className="px-2 py-0.5 rounded bg-amber-500/15 text-amber-500 text-[10px] font-mono font-bold uppercase">
-                Custom Fabrication
-              </span>
-              <h3 className="text-xs font-black text-foreground">
-                Have a Drawing or Sample Photo?
-              </h3>
-              <p className="text-[11px] text-muted-foreground leading-snug">
-                Upload your photo directly, choose Thickness (0.3–2.0mm), Holes (1–5mm), Single/Double Side & Colour.
+              <p className="text-[11px] text-muted-foreground">
+                Real anodized & etched industrial plates • Select any item to{" "}
+                <strong className="text-foreground">Get Best Quote</strong> or{" "}
+                <strong className="text-foreground">Upload Sample Photo</strong>
               </p>
-              <Link
-                href="/customize"
-                className="w-full py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[11px] uppercase tracking-wide flex items-center justify-center gap-1.5 transition-all"
-              >
-                <Upload size={12} />
-                <span>Upload Design Photo</span>
-              </Link>
             </div>
-          </aside>
 
-          {/* RIGHT CATALOG GRID (9 Cols on Desktop / 10 Cols on Ultrawide) */}
-          <div className="lg:col-span-9 2xl:col-span-10">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3.5">
-              <div>
-                <h2 className="text-base sm:text-lg font-black text-foreground">
-                  {activeCategory === "All"
-                    ? "All Industrial Nameplates, Metal Labels & Tags"
-                    : activeCategory}
-                </h2>
-                <p className="text-[11px] text-muted-foreground">
-                  Showing {filteredProducts.length} industrial products • Click{" "}
-                  <strong>Get Best Quote</strong> to send requirement
-                </p>
-              </div>
-
-              {/* Mobile / Tablet Search Input */}
-              <div className="relative lg:hidden w-full sm:w-64">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative flex-1 sm:w-60">
                 <Search
                   size={13}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -946,109 +879,127 @@ export default function LandingClient() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products..."
-                  className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-card border border-border text-xs"
+                  placeholder="Filter by material, QR, SS 304..."
+                  className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-background border border-border text-xs focus:outline-none focus:border-amber-500"
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3.5">
-              {filteredProducts.map((product) => (
-                <motion.div
-                  key={product.id}
-                  layout
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="group bg-card border border-border hover:border-amber-500/80 rounded-2xl overflow-hidden shadow-2xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between"
-                >
-                  <div>
-                    {/* Real Black Industrial Plate Specimen Header (No AI Background) */}
-                    <div className="relative h-40 bg-[#07080b] overflow-hidden border-b border-border/60">
-                      <div className="w-full h-full group-hover:scale-[1.02] transition-transform duration-300">
-                        <RealBlackPlateSpecimen variant={product.id} />
-                      </div>
-                      <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-amber-500 text-zinc-950 text-[9px] font-black uppercase tracking-wider shadow-sm z-30">
-                        {product.tag}
-                      </div>
-                      <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-zinc-950/90 text-zinc-200 border border-white/15 text-[8.5px] font-mono font-bold z-30">
-                        {product.code}
-                      </div>
-                    </div>
-
-                    {/* Product Details & Spec Table */}
-                    <div className="p-3.5">
-                      <h3 className="text-xs sm:text-sm font-extrabold text-foreground line-clamp-1 group-hover:text-amber-500 transition-colors">
-                        {product.title}
-                      </h3>
-                      <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2 leading-snug">
-                        {product.desc}
-                      </p>
-
-                      {/* Structured B2B Spec Rows (Like Samarth Metal Labels) */}
-                      <div className="mt-2.5 pt-2 border-t border-border/60 space-y-1 text-[10px]">
-                        <div className="flex justify-between gap-2">
-                          <span className="text-muted-foreground shrink-0">
-                            Material:
-                          </span>
-                          <strong className="text-foreground truncate text-right">
-                            {product.material}
-                          </strong>
-                        </div>
-                        <div className="flex justify-between gap-2">
-                          <span className="text-muted-foreground shrink-0">
-                            Thickness:
-                          </span>
-                          <strong className="font-mono text-amber-600 dark:text-amber-400 truncate text-right">
-                            {product.thickness}
-                          </strong>
-                        </div>
-                        <div className="flex justify-between gap-2">
-                          <span className="text-muted-foreground shrink-0">
-                            Process:
-                          </span>
-                          <strong className="text-foreground truncate text-right">
-                            {product.process}
-                          </strong>
-                        </div>
-                        <div className="flex justify-between gap-2">
-                          <span className="text-muted-foreground shrink-0">
-                            Mounting:
-                          </span>
-                          <strong className="text-foreground truncate text-right">
-                            {product.mounting}
-                          </strong>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Dual High-Conversion Quote & Upload Buttons */}
-                  <div className="px-3.5 pb-3.5 pt-1 flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setModalProduct(product);
-                        setModalSuccessId("");
-                      }}
-                      className="flex-1 py-2 px-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[11px] uppercase tracking-wide transition-all flex items-center justify-center gap-1 cursor-pointer"
-                    >
-                      <span>Get Best Quote</span>
-                      <ArrowRight size={11} />
-                    </button>
-                    <Link
-                      href="/customize"
-                      prefetch={true}
-                      className="py-2 px-2.5 rounded-xl bg-muted hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-950 border border-border text-[11px] font-bold transition-colors flex items-center justify-center gap-1"
-                      title="Upload Design Photo"
-                    >
-                      <Upload size={11} />
-                      <span>Upload</span>
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
+              <Link
+                href="/customize"
+                prefetch={true}
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[11px] uppercase tracking-wide flex items-center gap-1.5 transition-all shrink-0 shadow-xs"
+              >
+                <Upload size={12} />
+                <span>Upload Custom Drawing</span>
+              </Link>
             </div>
           </div>
+
+          {/* Horizontal Category Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 pt-2 border-t border-border/60 no-scrollbar">
+            {PRODUCT_CATEGORIES.map((cat) => {
+              const isActive = activeCategory === cat.id;
+              const count =
+                cat.id === "All"
+                  ? CATALOG_PRODUCTS.length
+                  : CATALOG_PRODUCTS.filter((p) => p.category === cat.id)
+                    .length;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer border ${isActive
+                      ? "bg-amber-500 text-zinc-950 border-amber-500 font-black shadow-xs"
+                      : "bg-muted/50 text-muted-foreground border-border hover:text-foreground hover:bg-muted"
+                    }`}
+                >
+                  <span>{cat.short}</span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${isActive
+                        ? "bg-zinc-950/15 text-zinc-950"
+                        : "bg-background text-muted-foreground"
+                      }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Micro-Compact 6-Column Product Grid (Small Cards on All Laptop & Desktop Screens) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+          {filteredProducts.map((product) => (
+            <motion.div
+              key={product.id}
+              layout
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="group bg-card border border-border hover:border-amber-500/80 rounded-xl overflow-hidden shadow-2xs hover:shadow-md transition-all duration-150 flex flex-col justify-between"
+            >
+              <div>
+                {/* Compact Die-Cut Black Metal Specimen Stage (74px height) */}
+                <div
+                  onClick={() => {
+                    setModalProduct(product);
+                    setModalSuccessId("");
+                  }}
+                  className="relative h-[74px] bg-[#0b0d12] overflow-hidden border-b border-border/60 cursor-pointer flex items-center justify-center"
+                >
+                  <div className="w-full h-full scale-[0.82] group-hover:scale-[0.86] transition-transform duration-200 flex items-center justify-center">
+                    <RealBlackPlateSpecimen variant={product.id} />
+                  </div>
+                </div>
+
+                {/* Micro-Compact Card Info */}
+                <div className="px-2 pt-1.5 pb-1">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-[8px] font-mono font-bold text-muted-foreground">
+                      {product.code}
+                    </span>
+                    <span className="px-1 py-0.1 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[7.5px] font-black uppercase">
+                      {product.tag}
+                    </span>
+                  </div>
+
+                  <h3 className="text-[10.5px] font-extrabold text-foreground line-clamp-1 group-hover:text-amber-500 transition-colors mt-0.5 leading-tight">
+                    {product.title}
+                  </h3>
+
+                  <div className="mt-0.5 flex items-center justify-between gap-1 text-[8.5px] text-muted-foreground font-mono">
+                    <span className="truncate">{product.thickness}</span>
+                    <span className="text-amber-600 dark:text-amber-400 font-bold shrink-0">
+                      • {product.mounting.split(" ")[0]}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Micro-Compact Action Row */}
+              <div className="px-2 pb-1.5 pt-0.5 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModalProduct(product);
+                    setModalSuccessId("");
+                  }}
+                  className="flex-1 py-1 px-1.5 rounded-md bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[9.5px] uppercase tracking-wide transition-all flex items-center justify-center gap-0.5 cursor-pointer"
+                >
+                  <span>Get Quote</span>
+                  <ArrowRight size={9} />
+                </button>
+                <Link
+                  href="/customize"
+                  prefetch={true}
+                  className="py-1 px-1.5 rounded-md bg-muted hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-950 border border-border text-[9.5px] font-bold transition-colors flex items-center justify-center"
+                  title="Upload Custom Design Photo"
+                >
+                  <Upload size={10} />
+                </Link>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 

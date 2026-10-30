@@ -22,7 +22,7 @@ const availableFonts = [
 
 export default function ProductBuilder({ isPreview = false, onExitPreview = null }) {
   const { isDarkMode, setTheme } = useTheme();
-  
+
   const [config, setConfig] = useState({
     layers: [
       {
@@ -94,61 +94,61 @@ export default function ProductBuilder({ isPreview = false, onExitPreview = null
       )}
 
       <div className="flex flex-col lg:flex-row flex-1">
-      {/* Sleek Top Navigation Bar for Builder */}
-      <header className="w-full lg:hidden flex items-center justify-between p-4 border-b border-border/60 bg-background/80 backdrop-blur-md sticky top-0 z-50">
-        <SweepButton href="/" label="Home" type="back" size="sm" />
-        <Link href="/" prefetch={true} className="relative h-7 w-24 block cursor-pointer active:scale-95 transition-transform duration-75">
-          <Image src="/Media/Logo.png" alt="Logo" fill sizes="100px" className="object-contain" priority />
-        </Link>
-        <ThemeToggle size="sm" />
-      </header>
+        {/* Sleek Top Navigation Bar for Builder */}
+        <header className="w-full lg:hidden flex items-center justify-between p-4 border-b border-border/60 bg-background/80 backdrop-blur-md sticky top-0 z-50">
+          <SweepButton href="/" label="Home" type="back" size="sm" />
+          <Link href="/" prefetch={true} className="relative h-7 w-24 block cursor-pointer active:scale-95 transition-transform duration-75">
+            <Image src="/Media/Logo.png" alt="Logo" fill sizes="100px" className="object-contain" priority />
+          </Link>
+          <ThemeToggle size="sm" />
+        </header>
 
-      {/* Left side: Canvas & Realtime 3D Specimen Preview */}
-      <div className="w-full lg:flex-1 flex flex-col justify-between relative bg-muted/10 lg:h-screen lg:overflow-y-auto">
-        
-        {/* Desktop Header */}
-        <div className="hidden lg:flex items-center justify-between p-5 border-b border-border/40 shrink-0">
-          <div className="flex items-center gap-4">
-            <SweepButton href="/" label="Back to Home" type="back" size="sm" />
-            <div className="h-4 w-px bg-border/60" />
-            <Link href="/" prefetch={true} className="relative h-8 w-28 block cursor-pointer active:scale-95 transition-transform duration-75">
-              <Image src="/Media/Logo.png" alt="Logo" fill sizes="120px" className="object-contain object-left" priority />
-            </Link>
-          </div>
+        {/* Left side: Canvas & Realtime 3D Specimen Preview */}
+        <div className="w-full lg:flex-1 flex flex-col justify-between relative bg-muted/10 lg:h-screen lg:overflow-y-auto">
 
-          <div className="flex items-center gap-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] text-muted-foreground">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Laser Proof • 1:1 Scale Preview</span>
+          {/* Desktop Header */}
+          <div className="hidden lg:flex items-center justify-between p-5 border-b border-border/40 shrink-0">
+            <div className="flex items-center gap-4">
+              <SweepButton href="/" label="Back to Home" type="back" size="sm" />
+              <div className="h-4 w-px bg-border/60" />
+              <Link href="/" prefetch={true} className="relative h-8 w-28 block cursor-pointer active:scale-95 transition-transform duration-75">
+                <Image src="/Media/Logo.png" alt="Logo" fill sizes="120px" className="object-contain object-left" priority />
+              </Link>
             </div>
-            <ThemeToggle size="sm" />
+
+            <div className="flex items-center gap-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] text-muted-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Laser Proof • 1:1 Scale Preview</span>
+              </div>
+              <ThemeToggle size="sm" />
+            </div>
           </div>
+
+          {/* Center Canvas */}
+          <div className="flex-1 flex items-center justify-center p-4 sm:p-8 min-h-[360px] relative">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.03)_0%,transparent_70%)] pointer-events-none" />
+            <PreviewPanel config={config} setConfig={setConfig} previewRef={previewRef} />
+          </div>
+
+          {/* Bottom Checkout & Export Block */}
+          <div className="w-full max-w-2xl mx-auto px-4 pb-6 shrink-0">
+            <CheckoutBlock config={config} setConfig={setConfig} price={price} previewRef={previewRef} isPreview={isPreview} />
+          </div>
+
         </div>
 
-        {/* Center Canvas */}
-        <div className="flex-1 flex items-center justify-center p-4 sm:p-8 min-h-[360px] relative">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.03)_0%,transparent_70%)] pointer-events-none" />
-          <PreviewPanel config={config} setConfig={setConfig} previewRef={previewRef} />
+        {/* Right side: Modern Sleek Controls Drawer */}
+        <div className="flex flex-col w-full lg:w-[500px] xl:w-[540px] h-full lg:max-h-screen border-l border-border/60 bg-card">
+          <ControlsPanel
+            config={config}
+            setConfig={setConfig}
+            price={price}
+            previewRef={previewRef}
+            isDarkMode={isDarkMode}
+            setIsDarkMode={setTheme}
+          />
         </div>
-
-        {/* Bottom Checkout & Export Block */}
-        <div className="w-full max-w-2xl mx-auto px-4 pb-6 shrink-0">
-          <CheckoutBlock config={config} setConfig={setConfig} price={price} previewRef={previewRef} isPreview={isPreview} />
-        </div>
-
-      </div>
-
-      {/* Right side: Modern Sleek Controls Drawer */}
-      <div className="flex flex-col w-full lg:w-[500px] xl:w-[540px] h-full lg:max-h-screen border-l border-border/60 bg-card">
-        <ControlsPanel 
-          config={config} 
-          setConfig={setConfig} 
-          price={price} 
-          previewRef={previewRef} 
-          isDarkMode={isDarkMode} 
-          setIsDarkMode={setTheme} 
-        />
-      </div>
       </div>
 
     </div>
