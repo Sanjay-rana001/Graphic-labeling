@@ -584,14 +584,18 @@ export default function LandingClient() {
         <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-10 2xl:px-14 flex items-center justify-between gap-3">
           {/* Left: Brand Logo + Verified Badge */}
           <div className="flex items-center gap-3 shrink-0">
-            <Link href="/" prefetch={true} className="flex items-center group">
-              <div className="relative h-8 sm:h-9 w-28 sm:w-32 transition-transform duration-150 group-hover:scale-103">
+            <Link
+              href="/"
+              prefetch={true}
+              className="relative flex items-center h-8 sm:h-9 w-24 sm:w-28 group shrink-0"
+            >
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[68px] sm:h-[76px] w-24 sm:w-28 transition-transform duration-150 group-hover:scale-105 pointer-events-none">
                 <Image
                   src="/Media/Logo.png"
                   alt="Sourav Graphic"
                   fill
-                  sizes="140px"
-                  className="object-contain object-left dark:brightness-110"
+                  sizes="180px"
+                  className="object-contain object-center scale-[1.08] dark:brightness-110"
                   priority
                 />
               </div>
