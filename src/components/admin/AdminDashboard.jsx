@@ -943,8 +943,17 @@ export default function AdminDashboard() {
       const savedAuth = localStorage.getItem("sourav_super_admin_auth");
       if (savedAuth) {
         const parsed = JSON.parse(savedAuth);
-        setAdminAuth(parsed);
-        setCredForm((prev) => ({ ...prev, email: parsed.email }));
+        if (parsed?.userCustomized) {
+          setAdminAuth(parsed);
+          setCredForm((prev) => ({ ...prev, email: parsed.email }));
+        } else {
+          localStorage.setItem(
+            "sourav_super_admin_auth",
+            JSON.stringify(DEFAULT_ADMIN_AUTH)
+          );
+          setAdminAuth(DEFAULT_ADMIN_AUTH);
+          setCredForm((prev) => ({ ...prev, email: DEFAULT_ADMIN_AUTH.email }));
+        }
       } else {
         localStorage.setItem(
           "sourav_super_admin_auth",
@@ -1220,6 +1229,7 @@ export default function AdminDashboard() {
       ...auth,
       email: nextEmail || auth.email,
       password: wantsPasswordChange ? credForm.newPassword : auth.password,
+      userCustomized: true,
       lastUpdated: new Date().toISOString(),
     };
 

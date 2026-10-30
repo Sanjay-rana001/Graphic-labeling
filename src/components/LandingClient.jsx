@@ -40,6 +40,7 @@ import RealBlackPlateSpecimen from "./RealBlackPlateSpecimen";
 import PremiumLoader, { isScreenLoaderEnabled } from "./PremiumLoader";
 import MetalScrollToTop from "./MetalScrollToTop";
 import { INITIAL_LEADS } from "@/lib/adminData";
+import { getProductSpecs } from "@/lib/productSpecs";
 
 function WhatsAppLogo({ size = 15, className = "" }) {
   return (
@@ -358,6 +359,42 @@ export default function LandingClient() {
   const [modalSubmitting, setModalSubmitting] = useState(false);
   const [modalSuccessId, setModalSuccessId] = useState("");
   const [showInitialLoader, setShowInitialLoader] = useState(false);
+
+  const openProductModal = (product) => {
+    const specs = getProductSpecs(product?.title || product?.category);
+    setModalProduct(product);
+    setModalSuccessId("");
+    setModalForm((prev) => ({
+      ...prev,
+      thickness: specs.defaultSpecs.thickness,
+      holes: specs.defaultSpecs.holes,
+      side: specs.defaultSpecs.side,
+      colour: specs.defaultSpecs.colour,
+    }));
+  };
+
+  const handleHeroProductChange = (newProduct) => {
+    const specs = getProductSpecs(newProduct);
+    setHeroForm((prev) => ({
+      ...prev,
+      product: newProduct,
+      thickness: specs.defaultSpecs.thickness,
+      holes: specs.defaultSpecs.holes,
+      colour: specs.defaultSpecs.colour,
+    }));
+  };
+
+  const handleBulkProductChange = (newProduct) => {
+    const specs = getProductSpecs(newProduct);
+    setFormData((prev) => ({
+      ...prev,
+      product: newProduct,
+      thickness: specs.defaultSpecs.thickness,
+      holes: specs.defaultSpecs.holes,
+      side: specs.defaultSpecs.side,
+      colour: specs.defaultSpecs.colour,
+    }));
+  };
 
   // High-Res Product Photo Zoom / Specimen Inspection Lightbox State
   const [lightboxProduct, setLightboxProduct] = useState(null);
@@ -904,7 +941,7 @@ export default function LandingClient() {
                     key={item}
                     type="button"
                     onClick={() => {
-                      setHeroForm((prev) => ({ ...prev, product: item }));
+                      handleHeroProductChange(item);
                       document
                         .getElementById("products")
                         ?.scrollIntoView({ behavior: "smooth" });
@@ -1012,95 +1049,95 @@ export default function LandingClient() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleHeroQuoteSubmit} className="space-y-2 text-xs">
-                <div className="grid grid-cols-12 gap-1.5">
-                  <div className="col-span-6">
-                    <label className="text-[9px] font-bold uppercase text-muted-foreground block mb-0.5">
-                      Product
-                    </label>
-                    <select
-                      value={heroForm.product}
-                      onChange={(e) =>
-                        setHeroForm({ ...heroForm, product: e.target.value })
-                      }
-                      className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-bold text-[11px]"
-                    >
-                      <option>Aluminium Name Plate</option>
-                      <option>Acrylic Sign Board</option>
-                      <option>Industrial Screen Printing</option>
-                      <option>Anodize Aluminium Tag</option>
-                      <option>SS 304 Etched Plate</option>
-                      <option>Polycarbonate Stickers</option>
-                      <option>House Name Plate</option>
-                    </select>
-                  </div>
-                  <div className="col-span-3">
-                    <label className="text-[9px] font-bold uppercase text-muted-foreground block mb-0.5">
-                      Thickness
-                    </label>
-                    <select
-                      value={heroForm.thickness}
-                      onChange={(e) =>
-                        setHeroForm({ ...heroForm, thickness: e.target.value })
-                      }
-                      className="w-full px-1.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px]"
-                    >
-                      <option>0.3 mm</option>
-                      <option>0.5 mm</option>
-                      <option>0.7 mm</option>
-                      <option>0.91 mm</option>
-                      <option>1.5 mm</option>
-                      <option>2.0 mm</option>
-                    </select>
-                  </div>
-                  <div className="col-span-3">
-                    <label className="text-[9px] font-bold uppercase text-muted-foreground block mb-0.5">
-                      Qty
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      value={heroForm.quantity}
-                      onChange={(e) =>
-                        setHeroForm({ ...heroForm, quantity: e.target.value })
-                      }
-                      className="w-full px-1.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px] text-center"
-                    />
-                  </div>
-                </div>
+              (() => {
+                const heroSpecs = getProductSpecs(heroForm.product);
+                return (
+                  <form onSubmit={handleHeroQuoteSubmit} className="space-y-2 text-xs">
+                    <div className="grid grid-cols-12 gap-1.5">
+                      <div className="col-span-6">
+                        <label className="text-[9px] font-bold uppercase text-muted-foreground block mb-0.5 truncate">
+                          Product
+                        </label>
+                        <select
+                          value={heroForm.product}
+                          onChange={(e) => handleHeroProductChange(e.target.value)}
+                          className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-bold text-[11px]"
+                        >
+                          {CATALOG_PRODUCTS.map((p) => (
+                            <option key={p.id} value={p.title}>
+                              {p.title}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-span-3">
+                        <label className="text-[9px] font-bold uppercase text-muted-foreground block mb-0.5 truncate">
+                          {heroSpecs.labels.thickness}
+                        </label>
+                        <select
+                          value={heroForm.thickness}
+                          onChange={(e) =>
+                            setHeroForm({ ...heroForm, thickness: e.target.value })
+                          }
+                          className="w-full px-1.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px]"
+                        >
+                          {heroSpecs.thicknessOptions.map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-span-3">
+                        <label className="text-[9px] font-bold uppercase text-muted-foreground block mb-0.5">
+                          Qty
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          value={heroForm.quantity}
+                          onChange={(e) =>
+                            setHeroForm({ ...heroForm, quantity: e.target.value })
+                          }
+                          className="w-full px-1.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px] text-center"
+                        />
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-2 gap-1.5">
-                  <input
-                    type="text"
-                    required
-                    placeholder="Your Name / Company *"
-                    value={heroForm.name}
-                    onChange={(e) =>
-                      setHeroForm({ ...heroForm, name: e.target.value })
-                    }
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
-                  />
-                  <input
-                    type="tel"
-                    required
-                    placeholder="Mobile / WhatsApp No. *"
-                    value={heroForm.phone}
-                    onChange={(e) =>
-                      setHeroForm({ ...heroForm, phone: e.target.value })
-                    }
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-semibold text-[11px]"
-                  />
-                </div>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Your Name / Company *"
+                        value={heroForm.name}
+                        onChange={(e) =>
+                          setHeroForm({ ...heroForm, name: e.target.value })
+                        }
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
+                      />
+                      <input
+                        type="tel"
+                        required
+                        placeholder="Mobile / WhatsApp No. *"
+                        value={heroForm.phone}
+                        onChange={(e) =>
+                          setHeroForm({ ...heroForm, phone: e.target.value })
+                        }
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-semibold text-[11px]"
+                      />
+                    </div>
 
-                <button
-                  type="submit"
-                  disabled={heroSubmitting}
-                  className="w-full py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-zinc-950 font-black text-xs uppercase tracking-wider shadow-sm hover:brightness-110 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Send size={12} />
-                  <span>{heroSubmitting ? "Submitting..." : "Submit Requirement"}</span>
-                </button>
-              </form>
+                    <button
+                      type="submit"
+                      disabled={heroSubmitting}
+                      className="w-full py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-zinc-950 font-black text-xs uppercase tracking-wider shadow-sm hover:brightness-110 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Send size={12} />
+                      <span>{heroSubmitting ? "Submitting..." : "Submit Requirement"}</span>
+                    </button>
+                  </form>
+                );
+              })()
             )}
           </div>
         </div>
@@ -1266,10 +1303,7 @@ export default function LandingClient() {
               <div className="px-2 pb-1.5 pt-0.5 flex items-center gap-1">
                 <button
                   type="button"
-                  onClick={() => {
-                    setModalProduct(product);
-                    setModalSuccessId("");
-                  }}
+                  onClick={() => openProductModal(product)}
                   className="flex-1 py-1 px-1.5 rounded-md bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[9.5px] uppercase tracking-wide transition-all flex items-center justify-center gap-0.5 cursor-pointer"
                 >
                   <span>Get Quote</span>
@@ -1494,125 +1528,125 @@ export default function LandingClient() {
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleQuoteSubmit} className="space-y-2 text-xs">
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                    <div className="col-span-2 sm:col-span-2">
-                      <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5">
-                        Product Category
-                      </label>
-                      <select
-                        value={formData.product}
-                        onChange={(e) =>
-                          setFormData({ ...formData, product: e.target.value })
-                        }
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-bold text-[11px]"
-                      >
-                        <option>Aluminium Name Plate</option>
-                        <option>Acrylic Sign Board</option>
-                        <option>Industrial Screen Printing</option>
-                        <option>House Name Plate</option>
-                        <option>Anodize Aluminium Tag</option>
-                        <option>SS 304 Etched Plate</option>
-                        <option>Polycarbonate Stickers</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5">
-                        Thickness
-                      </label>
-                      <select
-                        value={formData.thickness}
-                        onChange={(e) =>
-                          setFormData({ ...formData, thickness: e.target.value })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px]"
-                      >
-                        <option>0.3 mm</option>
-                        <option>0.5 mm</option>
-                        <option>0.7 mm</option>
-                        <option>0.91 mm</option>
-                        <option>1.5 mm</option>
-                        <option>2.0 mm</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5">
-                        Holes
-                      </label>
-                      <select
-                        value={formData.holes}
-                        onChange={(e) =>
-                          setFormData({ ...formData, holes: e.target.value })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px]"
-                      >
-                        <option>1 mm</option>
-                        <option>2 mm</option>
-                        <option>3 mm</option>
-                        <option>4 mm</option>
-                        <option>5 mm</option>
-                        <option>No Holes</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5">
-                        Colour
-                      </label>
-                      <select
-                        value={formData.colour}
-                        onChange={(e) =>
-                          setFormData({ ...formData, colour: e.target.value })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-bold text-[11px]"
-                      >
-                        <option>Single Colour</option>
-                        <option>Double Colour</option>
-                        <option>Three Colour</option>
-                        <option>Four Colour</option>
-                      </select>
-                    </div>
-                  </div>
+                (() => {
+                  const bulkSpecs = getProductSpecs(formData.product);
+                  return (
+                    <form onSubmit={handleQuoteSubmit} className="space-y-2 text-xs">
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                        <div className="col-span-2 sm:col-span-2">
+                          <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5">
+                            Product Category
+                          </label>
+                          <select
+                            value={formData.product}
+                            onChange={(e) => handleBulkProductChange(e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-bold text-[11px]"
+                          >
+                            {CATALOG_PRODUCTS.map((p) => (
+                              <option key={p.id} value={p.title}>
+                                {p.title}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5 truncate">
+                            {bulkSpecs.labels.thickness}
+                          </label>
+                          <select
+                            value={formData.thickness}
+                            onChange={(e) =>
+                              setFormData({ ...formData, thickness: e.target.value })
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px]"
+                          >
+                            {bulkSpecs.thicknessOptions.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5 truncate">
+                            {bulkSpecs.labels.holes}
+                          </label>
+                          <select
+                            value={formData.holes}
+                            onChange={(e) =>
+                              setFormData({ ...formData, holes: e.target.value })
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px]"
+                          >
+                            {bulkSpecs.holesOptions.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5 truncate">
+                            {bulkSpecs.labels.colour}
+                          </label>
+                          <select
+                            value={formData.colour}
+                            onChange={(e) =>
+                              setFormData({ ...formData, colour: e.target.value })
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-bold text-[11px]"
+                          >
+                            {bulkSpecs.colourOptions.map((opt) => (
+                              <option key={opt.label} value={opt.label}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                    <input
-                      type="text"
-                      required
-                      placeholder="Your Name / Company *"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      className="sm:col-span-3 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
-                    />
-                    <input
-                      type="tel"
-                      required
-                      placeholder="WhatsApp / Mobile No. *"
-                      value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                      className="sm:col-span-3 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-semibold text-[11px]"
-                    />
-                    <input
-                      type="text"
-                      required
-                      placeholder="Delivery Address & Custom Requirement *"
-                      value={formData.notes}
-                      onChange={(e) =>
-                        setFormData({ ...formData, notes: e.target.value })
-                      }
-                      className="sm:col-span-4 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
-                    />
-                    <button
-                      type="submit"
-                      className="sm:col-span-2 py-1.5 px-3 rounded-lg text-xs font-black uppercase bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 hover:brightness-110 transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-                    >
-                      <Send size={11} />
-                      <span>Submit</span>
-                    </button>
-                  </div>
-                </form>
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                        <input
+                          type="text"
+                          required
+                          placeholder="Your Name / Company *"
+                          value={formData.name}
+                          onChange={(e) =>
+                            setFormData({ ...formData, name: e.target.value })
+                          }
+                          className="sm:col-span-3 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
+                        />
+                        <input
+                          type="tel"
+                          required
+                          placeholder="WhatsApp / Mobile No. *"
+                          value={formData.phone}
+                          onChange={(e) =>
+                            setFormData({ ...formData, phone: e.target.value })
+                          }
+                          className="sm:col-span-3 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-semibold text-[11px]"
+                        />
+                        <input
+                          type="text"
+                          required
+                          placeholder="Delivery Address & Custom Requirement *"
+                          value={formData.notes}
+                          onChange={(e) =>
+                            setFormData({ ...formData, notes: e.target.value })
+                          }
+                          className="sm:col-span-4 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
+                        />
+                        <button
+                          type="submit"
+                          className="sm:col-span-2 py-1.5 px-3 rounded-lg text-xs font-black uppercase bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 hover:brightness-110 transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                        >
+                          <Send size={11} />
+                          <span>Submit</span>
+                        </button>
+                      </div>
+                    </form>
+                  );
+                })()
               )}
             </div>
           </div>
@@ -1775,129 +1809,135 @@ export default function LandingClient() {
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleModalQuoteSubmit} className="p-4 space-y-3 text-xs">
-                  <div className="grid grid-cols-4 gap-2">
-                    <div>
-                      <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
-                        Thickness
-                      </label>
-                      <select
-                        value={modalForm.thickness}
-                        onChange={(e) =>
-                          setModalForm({ ...modalForm, thickness: e.target.value })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-mono font-bold text-[11px]"
-                      >
-                        <option>0.3 mm</option>
-                        <option>0.5 mm</option>
-                        <option>0.7 mm</option>
-                        <option>0.91 mm</option>
-                        <option>1.5 mm</option>
-                        <option>2.0 mm</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
-                        Holes
-                      </label>
-                      <select
-                        value={modalForm.holes}
-                        onChange={(e) =>
-                          setModalForm({ ...modalForm, holes: e.target.value })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-mono font-bold text-[11px]"
-                      >
-                        <option>1 mm</option>
-                        <option>2 mm</option>
-                        <option>3 mm</option>
-                        <option>4 mm</option>
-                        <option>5 mm</option>
-                        <option>No Holes</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
-                        Colour
-                      </label>
-                      <select
-                        value={modalForm.colour}
-                        onChange={(e) =>
-                          setModalForm({ ...modalForm, colour: e.target.value })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-bold text-[11px]"
-                      >
-                        <option>Single Colour</option>
-                        <option>Double Colour</option>
-                        <option>Three Colour</option>
-                        <option>Four Colour</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
-                        Qty
-                      </label>
+                (() => {
+                  const modalSpecs = getProductSpecs(
+                    modalProduct?.title || modalProduct?.category
+                  );
+                  return (
+                    <form onSubmit={handleModalQuoteSubmit} className="p-4 space-y-3 text-xs">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div>
+                          <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1 truncate">
+                            {modalSpecs.labels.thickness}
+                          </label>
+                          <select
+                            value={modalForm.thickness}
+                            onChange={(e) =>
+                              setModalForm({ ...modalForm, thickness: e.target.value })
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-mono font-bold text-[11px]"
+                          >
+                            {modalSpecs.thicknessOptions.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1 truncate">
+                            {modalSpecs.labels.holes}
+                          </label>
+                          <select
+                            value={modalForm.holes}
+                            onChange={(e) =>
+                              setModalForm({ ...modalForm, holes: e.target.value })
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-mono font-bold text-[11px]"
+                          >
+                            {modalSpecs.holesOptions.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1 truncate">
+                            {modalSpecs.labels.colour}
+                          </label>
+                          <select
+                            value={modalForm.colour}
+                            onChange={(e) =>
+                              setModalForm({ ...modalForm, colour: e.target.value })
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-bold text-[11px]"
+                          >
+                            {modalSpecs.colourOptions.map((opt) => (
+                              <option key={opt.label} value={opt.label}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                            Qty
+                          </label>
+                          <input
+                            type="number"
+                            min={1}
+                            value={modalForm.quantity}
+                            onChange={(e) =>
+                              setModalForm({ ...modalForm, quantity: e.target.value })
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-mono font-bold text-center text-[11px]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          required
+                          placeholder="Your Full Name *"
+                          value={modalForm.name}
+                          onChange={(e) =>
+                            setModalForm({ ...modalForm, name: e.target.value })
+                          }
+                          className="w-full px-3 py-2 rounded-lg bg-background border border-border font-medium"
+                        />
+                        <input
+                          type="tel"
+                          required
+                          placeholder="Mobile / WhatsApp *"
+                          value={modalForm.phone}
+                          onChange={(e) =>
+                            setModalForm({ ...modalForm, phone: e.target.value })
+                          }
+                          className="w-full px-3 py-2 rounded-lg bg-background border border-border font-mono font-semibold"
+                        />
+                      </div>
+
                       <input
-                        type="number"
-                        min={1}
-                        value={modalForm.quantity}
+                        type="text"
+                        required
+                        placeholder="Delivery Address / City *"
+                        value={modalForm.address}
                         onChange={(e) =>
-                          setModalForm({ ...modalForm, quantity: e.target.value })
+                          setModalForm({ ...modalForm, address: e.target.value })
                         }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-mono font-bold text-center text-[11px]"
+                        className="w-full px-3 py-2 rounded-lg bg-background border border-border font-medium"
                       />
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      required
-                      placeholder="Your Full Name *"
-                      value={modalForm.name}
-                      onChange={(e) =>
-                        setModalForm({ ...modalForm, name: e.target.value })
-                      }
-                      className="w-full px-3 py-2 rounded-lg bg-background border border-border font-medium"
-                    />
-                    <input
-                      type="tel"
-                      required
-                      placeholder="Mobile / WhatsApp *"
-                      value={modalForm.phone}
-                      onChange={(e) =>
-                        setModalForm({ ...modalForm, phone: e.target.value })
-                      }
-                      className="w-full px-3 py-2 rounded-lg bg-background border border-border font-mono font-semibold"
-                    />
-                  </div>
-
-                  <input
-                    type="text"
-                    required
-                    placeholder="Delivery Address / City *"
-                    value={modalForm.address}
-                    onChange={(e) =>
-                      setModalForm({ ...modalForm, address: e.target.value })
-                    }
-                    className="w-full px-3 py-2 rounded-lg bg-background border border-border font-medium"
-                  />
-
-                  <div className="flex items-center gap-2 pt-1">
-                    <button
-                      type="submit"
-                      disabled={modalSubmitting}
-                      className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 font-black uppercase tracking-wider shadow-md hover:brightness-110 transition-all cursor-pointer"
-                    >
-                      {modalSubmitting ? "Sending..." : "Submit Enquiry"}
-                    </button>
-                    <Link
-                      href="/customize"
-                      className="py-2.5 px-3 rounded-xl bg-muted hover:bg-muted/80 border border-border font-bold flex items-center gap-1"
-                    >
-                      <Upload size={12} /> Upload Photo
-                    </Link>
-                  </div>
-                </form>
+                      <div className="flex items-center gap-2 pt-1">
+                        <button
+                          type="submit"
+                          disabled={modalSubmitting}
+                          className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 font-black uppercase tracking-wider shadow-md hover:brightness-110 transition-all cursor-pointer"
+                        >
+                          {modalSubmitting ? "Sending..." : "Submit Enquiry"}
+                        </button>
+                        <Link
+                          href="/customize"
+                          className="py-2.5 px-3 rounded-xl bg-muted hover:bg-muted/80 border border-border font-bold flex items-center gap-1"
+                        >
+                          <Upload size={12} /> Upload Photo
+                        </Link>
+                      </div>
+                    </form>
+                  );
+                })()
               )}
             </motion.div>
           </motion.div>
@@ -2019,8 +2059,7 @@ export default function LandingClient() {
                     onClick={() => {
                       const prod = lightboxProduct;
                       setLightboxProduct(null);
-                      setModalProduct(prod);
-                      setModalSuccessId("");
+                      openProductModal(prod);
                     }}
                     className="flex-1 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
                   >

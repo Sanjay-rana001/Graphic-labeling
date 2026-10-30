@@ -37,6 +37,7 @@ import { useTheme } from "./ThemeProvider";
 import SweepButton from "./SweepButton";
 import ThemeToggle from "./ThemeToggle";
 import { INITIAL_LEADS } from "@/lib/adminData";
+import { getProductSpecs } from "@/lib/productSpecs";
 
 const PRODUCT_OPTIONS = [
   {
@@ -113,16 +114,6 @@ const PRODUCT_OPTIONS = [
   },
 ];
 
-const THICKNESS_OPTIONS = ["0.3 mm", "0.5 mm", "0.7 mm", "0.91 mm", "1.5 mm", "2.0 mm"];
-const HOLES_OPTIONS = ["1 mm", "2 mm", "3 mm", "4 mm", "5 mm", "No Holes"];
-const SIDE_OPTIONS = ["Single Side", "Double Side"];
-const COLOUR_OPTIONS = [
-  { label: "Single Colour", dots: ["#f59e0b"] },
-  { label: "Double Colour", dots: ["#f59e0b", "#3b82f6"] },
-  { label: "Three Colour", dots: ["#f59e0b", "#3b82f6", "#10b981"] },
-  { label: "Four Colour", dots: ["#ef4444", "#f59e0b", "#3b82f6", "#10b981"] },
-];
-
 export default function StudioEnquiryForm({
   studioSettings = {},
   isPreview = false,
@@ -138,6 +129,8 @@ export default function StudioEnquiryForm({
   const [imageFit, setImageFit] = useState("contain"); // 'contain' | 'cover'
   const [showHoleOverlay, setShowHoleOverlay] = useState(true);
 
+  const specsMeta = getProductSpecs(selectedProduct);
+
   const [specs, setSpecs] = useState({
     thickness: "0.7 mm",
     holes: "2 mm",
@@ -145,6 +138,26 @@ export default function StudioEnquiryForm({
     quantity: Math.max(1, Number(studioSettings.minQuantity) || 1),
     colour: "Single Colour",
   });
+
+  const handleProductChange = (productId) => {
+    setSelectedProduct(productId);
+    const meta = getProductSpecs(productId);
+    setSpecs((prev) => ({
+      ...prev,
+      thickness: meta.thicknessOptions.includes(prev.thickness)
+        ? prev.thickness
+        : meta.defaultSpecs.thickness,
+      holes: meta.holesOptions.includes(prev.holes)
+        ? prev.holes
+        : meta.defaultSpecs.holes,
+      side: meta.sideOptions.includes(prev.side)
+        ? prev.side
+        : meta.defaultSpecs.side,
+      colour: meta.colourOptions.some((c) => c.label === prev.colour)
+        ? prev.colour
+        : meta.defaultSpecs.colour,
+    }));
+  };
 
   const [customer, setCustomer] = useState({
     name: "",
@@ -273,19 +286,30 @@ export default function StudioEnquiryForm({
     }
   };
 
-  // Hole indicator size in px for visual preview
-  const holeRadiusPx =
-    specs.holes === "No Holes"
-      ? 0
-      : specs.holes === "1 mm"
-      ? 6
-      : specs.holes === "2 mm"
-      ? 8
-      : specs.holes === "3 mm"
-      ? 10
-      : specs.holes === "4 mm"
-      ? 12
-      : 14;
+  // Dynamic Hole / Attachment Indicator in visual preview
+  const holeStr = String(specs.holes || "").toLowerCase();
+  const hasNoHoles =
+    holeStr.includes("no holes") ||
+    holeStr.includes("adhesive") ||
+    holeStr.includes("tape") ||
+    holeStr.includes("gum") ||
+    holeStr.includes("overlay");
+
+  const holeRadiusPx = hasNoHoles
+    ? 0
+    : holeStr.includes("1 mm")
+    ? 6
+    : holeStr.includes("2 mm")
+    ? 8
+    : holeStr.includes("3 mm")
+    ? 10
+    : holeStr.includes("4 mm")
+    ? 12
+    : holeStr.includes("5 mm")
+    ? 14
+    : holeStr.includes("standoff")
+    ? 16
+    : 8;
 
   return (
     <div className="flex flex-col min-h-screen lg:h-screen lg:overflow-hidden bg-background text-foreground relative select-none">
@@ -814,7 +838,7 @@ export default function StudioEnquiryForm({
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setSelectedProduct(item.id)}
+                          onClick={() => handleProductChange(item.id)}
                           className={`p-2 rounded-xl border text-left transition-all flex items-center gap-2 ${
                             isSelected
                               ? "border-amber-500 bg-amber-500/15 text-foreground shadow-sm"
@@ -839,30 +863,31 @@ export default function StudioEnquiryForm({
                   </div>
                 </div>
 
-                {/* 2. THICKNESS & HOLES (2-Column Compact Grid) */}
+                {/* 2. THICKNESS & MOUNTING / HOLES (Dynamic Product-Specific Grid) */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {/* Thickness */}
+                  {/* Thickness / Gauge */}
                   <div className="p-2.5 rounded-2xl bg-muted/30 border border-border/60">
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                         <Layers size={11} className="text-amber-500" />
-                        Thickness
+                        {specsMeta.labels.thickness}
                       </span>
-                      <span className="text-[10px] font-mono font-bold text-amber-500">
+                      <span className="text-[10px] font-mono font-bold text-amber-500 truncate max-w-[140px] text-right">
                         {specs.thickness}
                       </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-1">
-                      {THICKNESS_OPTIONS.map((t) => (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1">
+                      {specsMeta.thicknessOptions.map((t) => (
                         <button
                           key={t}
                           type="button"
                           onClick={() => setSpecs({ ...specs, thickness: t })}
-                          className={`py-1.5 px-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                          className={`py-1.5 px-1.5 rounded-lg text-[10.5px] font-bold transition-all truncate text-center ${
                             specs.thickness === t
                               ? "bg-amber-500 text-zinc-950 font-black shadow-2xs"
                               : "bg-background/80 hover:bg-background text-muted-foreground hover:text-foreground border border-border/50"
                           }`}
+                          title={t}
                         >
                           {t}
                         </button>
@@ -870,28 +895,29 @@ export default function StudioEnquiryForm({
                     </div>
                   </div>
 
-                  {/* Holes */}
+                  {/* Mounting / Holes / Adhesive */}
                   <div className="p-2.5 rounded-2xl bg-muted/30 border border-border/60">
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                         <CircleDot size={11} className="text-amber-500" />
-                        Corner Holes
+                        {specsMeta.labels.holes}
                       </span>
-                      <span className="text-[10px] font-mono font-bold text-amber-500">
+                      <span className="text-[10px] font-mono font-bold text-amber-500 truncate max-w-[140px] text-right">
                         {specs.holes}
                       </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-1">
-                      {HOLES_OPTIONS.map((h) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 max-h-[140px] overflow-y-auto pr-0.5">
+                      {specsMeta.holesOptions.map((h) => (
                         <button
                           key={h}
                           type="button"
                           onClick={() => setSpecs({ ...specs, holes: h })}
-                          className={`py-1.5 px-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold transition-all text-left truncate ${
                             specs.holes === h
                               ? "bg-amber-500 text-zinc-950 font-black shadow-2xs"
                               : "bg-background/80 hover:bg-background text-muted-foreground hover:text-foreground border border-border/50"
                           }`}
+                          title={h}
                         >
                           {h}
                         </button>
@@ -900,24 +926,25 @@ export default function StudioEnquiryForm({
                   </div>
                 </div>
 
-                {/* 3. PRINTING SIDE, QUANTITY & COLOUR */}
+                {/* 3. PRINTING SIDE / PROCESS, QUANTITY & COLOUR */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-                  {/* Double Side / Single Side */}
+                  {/* Side / Process */}
                   <div className="sm:col-span-4 p-2.5 rounded-2xl bg-muted/30 border border-border/60 flex flex-col justify-between">
                     <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground block mb-1.5">
-                      Printing Side
+                      {specsMeta.labels.side}
                     </span>
-                    <div className="grid grid-cols-2 sm:grid-cols-1 gap-1">
-                      {SIDE_OPTIONS.map((s) => (
+                    <div className="grid grid-cols-1 gap-1">
+                      {specsMeta.sideOptions.map((s) => (
                         <button
                           key={s}
                           type="button"
                           onClick={() => setSpecs({ ...specs, side: s })}
-                          className={`py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all ${
+                          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold transition-all text-left truncate ${
                             specs.side === s
                               ? "bg-amber-500 text-zinc-950 font-black"
                               : "bg-background/80 hover:bg-background text-muted-foreground border border-border/50"
                           }`}
+                          title={s}
                         >
                           {s}
                         </button>
@@ -939,7 +966,7 @@ export default function StudioEnquiryForm({
                             quantity: Math.max(1, (Number(p.quantity) || 1) - 1),
                           }))
                         }
-                        className="w-6 h-6 rounded-lg bg-muted hover:bg-amber-500 hover:text-zinc-950 flex items-center justify-center transition-colors"
+                        className="w-6 h-6 rounded-lg bg-muted hover:bg-amber-500 hover:text-zinc-950 flex items-center justify-center transition-colors cursor-pointer"
                       >
                         <Minus size={11} />
                       </button>
@@ -963,45 +990,48 @@ export default function StudioEnquiryForm({
                             quantity: (Number(p.quantity) || 1) + 1,
                           }))
                         }
-                        className="w-6 h-6 rounded-lg bg-muted hover:bg-amber-500 hover:text-zinc-950 flex items-center justify-center transition-colors"
+                        className="w-6 h-6 rounded-lg bg-muted hover:bg-amber-500 hover:text-zinc-950 flex items-center justify-center transition-colors cursor-pointer"
                       >
                         <Plus size={11} />
                       </button>
                     </div>
                   </div>
 
-                  {/* Colour Options */}
+                  {/* Colour / Infill Options */}
                   <div className="sm:col-span-5 p-2.5 rounded-2xl bg-muted/30 border border-border/60">
                     <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1 mb-1.5">
                       <Palette size={11} className="text-amber-500" />
-                      Colour Option
+                      {specsMeta.labels.colour}
                     </span>
-                    <div className="grid grid-cols-2 gap-1">
-                      {COLOUR_OPTIONS.map((c) => {
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                      {specsMeta.colourOptions.map((c) => {
                         const active = specs.colour === c.label;
                         return (
                           <button
                             key={c.label}
                             type="button"
                             onClick={() => setSpecs({ ...specs, colour: c.label })}
-                            className={`py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-between gap-1 transition-all ${
+                            className={`py-1.5 px-2 rounded-lg text-[9.5px] font-bold flex items-center justify-between gap-1 transition-all ${
                               active
-                                ? "bg-amber-500 text-zinc-950 font-black"
+                                ? "bg-amber-500 text-zinc-950 font-black shadow-2xs"
                                 : "bg-background/80 hover:bg-background text-muted-foreground border border-border/50"
                             }`}
+                            title={c.label}
                           >
                             <span className="truncate">
-                              {c.label.replace(" Colour", "")}
+                              {c.label}
                             </span>
-                            <span className="flex items-center -space-x-1 shrink-0">
-                              {c.dots.map((dot, idx) => (
-                                <span
-                                  key={idx}
-                                  style={{ backgroundColor: dot }}
-                                  className="w-2 h-2 rounded-full border border-black/20"
-                                />
-                              ))}
-                            </span>
+                            {c.dots && c.dots.length > 0 && (
+                              <span className="flex items-center -space-x-1 shrink-0">
+                                {c.dots.map((dot, idx) => (
+                                  <span
+                                    key={idx}
+                                    style={{ backgroundColor: dot }}
+                                    className="w-2 h-2 rounded-full border border-black/20"
+                                  />
+                                ))}
+                              </span>
+                            )}
                           </button>
                         );
                       })}
