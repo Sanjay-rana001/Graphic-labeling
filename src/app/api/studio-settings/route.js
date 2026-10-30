@@ -97,6 +97,9 @@ export async function POST(request) {
             ...body.factoryInfo,
           }
         : store.studioSettings?.factoryInfo || DEFAULT_STUDIO_SETTINGS.factoryInfo,
+      catalogItems: Array.isArray(body.catalogItems)
+        ? body.catalogItems
+        : store.studioSettings?.catalogItems || null,
       updatedAt,
       updatedBy: String(body.updatedBy || "admin").slice(0, 100),
     };

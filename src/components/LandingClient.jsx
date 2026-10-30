@@ -362,6 +362,8 @@ export default function LandingClient() {
   // High-Res Product Photo Zoom / Specimen Inspection Lightbox State
   const [lightboxProduct, setLightboxProduct] = useState(null);
   const [lightboxZoom, setLightboxZoom] = useState(1);
+  const [adminCatalog, setAdminCatalog] = useState(null);
+  const [openFaqIdx, setOpenFaqIdx] = useState(0);
 
   // Dynamic Factory & Contact Info (Synced with Admin Factory Settings)
   const [factoryInfo, setFactoryInfo] = useState({
@@ -386,6 +388,13 @@ export default function LandingClient() {
         const parsed = JSON.parse(localAdmin);
         if (parsed) setFactoryInfo((prev) => ({ ...prev, ...parsed }));
       }
+      const savedMats = localStorage.getItem("sourav_admin_materials");
+      if (savedMats) {
+        const parsedMats = JSON.parse(savedMats);
+        if (Array.isArray(parsedMats) && parsedMats.length > 0) {
+          setAdminCatalog(parsedMats);
+        }
+      }
     } catch (e) {}
 
     let channel = null;
@@ -395,6 +404,9 @@ export default function LandingClient() {
         channel.onmessage = (event) => {
           if (event?.data?.factoryInfo) {
             setFactoryInfo((prev) => ({ ...prev, ...event.data.factoryInfo }));
+          }
+          if (Array.isArray(event?.data?.catalogItems)) {
+            setAdminCatalog(event.data.catalogItems);
           }
         };
       }
@@ -414,6 +426,9 @@ export default function LandingClient() {
             if (data.settings.factoryInfo && active) {
               setFactoryInfo((prev) => ({ ...prev, ...data.settings.factoryInfo }));
             }
+            if (Array.isArray(data.settings.catalogItems) && active) {
+              setAdminCatalog(data.settings.catalogItems);
+            }
             try {
               localStorage.setItem("sourav_screen_loader", String(loaderOn));
             } catch (e) {}
@@ -431,8 +446,13 @@ export default function LandingClient() {
       fetch("/api/studio-settings", { cache: "no-store" })
         .then((r) => r.json())
         .then((data) => {
-          if (active && data?.success && data.settings?.factoryInfo) {
-            setFactoryInfo((prev) => ({ ...prev, ...data.settings.factoryInfo }));
+          if (active && data?.success && data.settings) {
+            if (data.settings.factoryInfo) {
+              setFactoryInfo((prev) => ({ ...prev, ...data.settings.factoryInfo }));
+            }
+            if (Array.isArray(data.settings.catalogItems)) {
+              setAdminCatalog(data.settings.catalogItems);
+            }
           }
         })
         .catch(() => {});
@@ -466,7 +486,49 @@ export default function LandingClient() {
     return () => clearInterval(timer);
   }, []);
 
-  const filteredProducts = CATALOG_PRODUCTS.filter((p) => {
+  const liveCatalogProducts = (() => {
+    if (!Array.isArray(adminCatalog) || adminCatalog.length === 0) {
+      return CATALOG_PRODUCTS;
+    }
+    const baseTitles = new Set(
+      CATALOG_PRODUCTS.map((p) => p.title.toLowerCase())
+    );
+    const updatedBase = CATALOG_PRODUCTS.map((p) => {
+      const match = adminCatalog.find(
+        (m) => (m.name || "").toLowerCase() === p.title.toLowerCase()
+      );
+      if (!match) return p;
+      return {
+        ...p,
+        thickness: match.thickness || p.thickness,
+        status: match.status || "Available",
+        tag:
+          match.status === "Out of Stock"
+            ? "Out of Stock"
+            : match.popular
+            ? "Top Seller"
+            : p.tag,
+      };
+    });
+    const extraProducts = adminCatalog
+      .filter((m) => m.name && !baseTitles.has(m.name.toLowerCase()))
+      .map((m, idx) => ({
+        id: m.id || `custom-${idx}`,
+        code: `SG-C${idx + 1}`,
+        title: m.name,
+        category: m.category || "Industrial Tags & Labels",
+        desc: `Custom B2B industrial ${m.name} manufactured to OEM drawing & gauge specifications.`,
+        material: m.name,
+        thickness: m.thickness || "0.5mm – 2.0mm",
+        mounting: "Holes / 3M Adhesive",
+        tag: m.status === "Out of Stock" ? "Out of Stock" : "New Addition",
+        status: m.status || "Available",
+        img: m.img || "/Media/metal labels.jpg",
+      }));
+    return [...extraProducts, ...updatedBase];
+  })();
+
+  const filteredProducts = liveCatalogProducts.filter((p) => {
     const matchesCat = activeCategory === "All" || p.category === activeCategory;
     const q = searchQuery.trim().toLowerCase();
     const matchesSearch =
@@ -1176,7 +1238,13 @@ export default function LandingClient() {
                     <span className="text-[8px] font-mono font-bold text-muted-foreground">
                       {product.code}
                     </span>
-                    <span className="px-1 py-0.1 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[7.5px] font-black uppercase">
+                    <span
+                      className={`px-1 py-0.1 rounded text-[7.5px] font-black uppercase ${
+                        product.status === "Out of Stock"
+                          ? "bg-red-500/15 text-red-500"
+                          : "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                      }`}
+                    >
                       {product.tag}
                     </span>
                   </div>
@@ -1548,6 +1616,84 @@ export default function LandingClient() {
               )}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          COMPACT B2B TECHNICAL FAQ & MATERIAL SELECTION GUIDE (#faq)
+         ══════════════════════════════════════════════════════════════════ */}
+      <section
+        id="faq"
+        className="py-5 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto border-t border-border/50"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div>
+            <span className="text-[10px] font-mono font-bold uppercase text-amber-500 block">
+              B2B Procurement & Technical Guide
+            </span>
+            <h2 className="text-base sm:text-lg font-black text-foreground">
+              Frequently Asked Questions — Industrial Metal Labels
+            </h2>
+          </div>
+          <span className="text-[11px] font-mono text-muted-foreground">
+            Click any question to view specification answer
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          {[
+            {
+              q: "1. What is the difference between SS 304 Etched Plates and Anodized Aluminium Nameplates?",
+              a: "SS 304/316 Chemical Etched Plates have recessed acid-etched lettering filled with oven-baked epoxy paint, ideal for extreme heat, chemical plants, marine valves, and outdoor switchgear. Anodized Aluminium Plates have sealed dye/laser graphics inside the anodic layer, making them lightweight and cost-effective for motors, pumps, and control panels.",
+            },
+            {
+              q: "2. What is your Minimum Order Quantity (MOQ) and bulk OEM pricing structure?",
+              a: "We accept prototype/sample orders starting from 1–10 pieces as well as recurring OEM production schedules of 500 to 50,000+ plates. Tiered wholesale discounts apply automatically at 50, 250, 1,000, and 5,000+ pieces.",
+            },
+            {
+              q: "3. Which artwork or design file formats can we upload for custom fabrication?",
+              a: "You can upload a clear photo/sketch of an existing nameplate, or vector/CAD files (.CDR, .AI, .PDF, .EPS, .SVG, .PNG, .JPG) directly on our /customize page. Our in-house CAD desk prepares a digital proof before bulk production.",
+            },
+            {
+              q: "4. What mounting options and hole sizes are available?",
+              a: "We provide precision CNC/die-punched corner holes (1 mm, 2 mm, 3 mm, 4 mm, 5 mm, or custom elongated cable-tie slots) as well as industrial 3M 467MP / 468MP high-tack peel-and-stick adhesive backing.",
+            },
+            {
+              q: "5. Can you print sequential serial numbers, QR codes, and barcodes on metal tags?",
+              a: "Yes. Using high-speed fiber laser marking, we engrave unique sequential serial numbers, UID matrices, QR codes, and barcodes from your Excel/CSV sheet with 100% scanner readability.",
+            },
+            {
+              q: "6. What is the standard manufacturing lead time and pan-India dispatch process?",
+              a: "Standard production takes 3 to 5 working days after artwork approval. Urgent OEM batches can be expedited within 48 hours. We ship pan-India via BlueDart, Delhivery, DTDC, and industrial transport with GST tax invoices.",
+            },
+          ].map((item, idx) => {
+            const isOpen = openFaqIdx === idx;
+            return (
+              <div
+                key={idx}
+                onClick={() => setOpenFaqIdx(isOpen ? -1 : idx)}
+                className={`rounded-xl border p-3 cursor-pointer transition-all ${
+                  isOpen
+                    ? "bg-card border-amber-500/60 shadow-xs"
+                    : "bg-card/60 border-border hover:border-amber-500/40"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-xs font-extrabold text-foreground leading-snug">
+                    {item.q}
+                  </h3>
+                  <span className="text-xs font-mono font-black text-amber-500 shrink-0">
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </div>
+                {isOpen && (
+                  <p className="text-[11px] text-muted-foreground mt-2 pt-2 border-t border-border/60 leading-relaxed">
+                    {item.a}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 

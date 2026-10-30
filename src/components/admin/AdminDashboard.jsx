@@ -1113,6 +1113,27 @@ export default function AdminDashboard() {
   function saveMaterials(updated) {
     setMaterials(updated);
     localStorage.setItem("sourav_admin_materials", JSON.stringify(updated));
+    try {
+      if (typeof BroadcastChannel !== "undefined") {
+        const ch = new BroadcastChannel("sourav_studio_mode_channel");
+        ch.postMessage({ catalogItems: updated });
+        ch.close();
+      }
+    } catch (e) {}
+    try {
+      fetch("/api/studio-settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-auth": "true",
+        },
+        body: JSON.stringify({
+          catalogItems: updated,
+          updatedAt: new Date().toISOString(),
+          updatedBy: adminAuth.email,
+        }),
+      }).catch(() => {});
+    } catch (e) {}
   }
 
   // ── Auth handlers ──
@@ -1247,12 +1268,15 @@ export default function AdminDashboard() {
   function handleAddMaterial(e) {
     e.preventDefault();
     if (!newMatName.trim()) return;
+    const trimmed = newMatName.trim();
     const item = {
       id: "mat-" + Date.now(),
-      name: newMatName.trim(),
-      thickness: newMatThickness || "3.0 mm",
+      name: trimmed,
+      category: "Industrial Tags & Labels",
+      thickness: newMatThickness || "0.5 mm – 2.0 mm",
       status: "Available",
-      popular: false,
+      popular: true,
+      img: PRODUCT_IMAGE_MAP[trimmed] || "/Media/metal labels.jpg",
     };
     saveMaterials([item, ...materials]);
     setNewMatName("");
@@ -1426,7 +1450,7 @@ export default function AdminDashboard() {
     { id: "dashboard", label: "B2B Overview", icon: LayoutDashboard },
     { id: "leads", label: "B2B Inquiries & Leads", icon: Users, badge: newLeadsCount },
     { id: "studio-mode", label: "Studio Display Mode", icon: Sliders },
-    { id: "materials", label: "B2B Product Catalog (12)", icon: Layers },
+    { id: "materials", label: `B2B Product Catalog (${materials.length || 12})`, icon: Layers },
     { id: "security", label: "Super Admin Security", icon: ShieldCheck },
     { id: "settings", label: "Factory Settings", icon: SettingsIcon },
   ];
