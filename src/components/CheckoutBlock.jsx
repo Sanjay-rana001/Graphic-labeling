@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, Download, Check, Send, Sparkles, X, CheckCircle2, ShieldCheck } from "lucide-react";
+import { MessageCircle, Download, Check, Send, X, CheckCircle2, ShieldCheck } from "lucide-react";
 import { toPng } from "html-to-image";
 import { useState } from "react";
 import { INITIAL_LEADS } from "@/lib/adminData";
@@ -153,7 +153,7 @@ Please provide quotation, production turnaround, and digital proof.`;
 
         {/* Lead Generation Prompt */}
         <div className="text-xs text-muted-foreground font-medium flex items-center gap-1.5 sm:text-right">
-          <Sparkles size={13} className="text-amber-500 shrink-0" />
+          <ShieldCheck size={13} className="text-amber-500 shrink-0" />
           <span>Instant Quote & Workshop Specs</span>
         </div>
 

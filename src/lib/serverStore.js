@@ -9,6 +9,7 @@ export const DEFAULT_STUDIO_SETTINGS = {
   displayMode: "enquiry", // "studio" | "enquiry"
   customizationStudioOn: false,
   enquiryFormOn: true,
+  screenLoaderOn: true,
   minQuantity: 1,
   maxFileSizeMB: 10,
   allowedFileTypes: [".png", ".jpg", ".jpeg", ".svg", ".pdf", ".ai", ".cdr", ".eps"],

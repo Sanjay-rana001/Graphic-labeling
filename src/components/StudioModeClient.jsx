@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import ProductBuilder from "./ProductBuilder";
 import StudioEnquiryForm from "./StudioEnquiryForm";
+import PremiumLoader, { isScreenLoaderEnabled } from "./PremiumLoader";
 
 function getTs(obj) {
   const raw = obj?.updatedAt;
@@ -16,17 +17,38 @@ export default function StudioModeClient({ initialSettings }) {
       displayMode: "enquiry",
       customizationStudioOn: false,
       enquiryFormOn: true,
+      screenLoaderOn: true,
       minQuantity: 1,
       maxFileSizeMB: 10,
       updatedAt: "2026-10-29T12:00:00.000Z",
     }
   );
+  const [showInitialLoader, setShowInitialLoader] = useState(() => {
+    if (initialSettings?.screenLoaderOn === false) return false;
+    return true;
+  });
+
+  useEffect(() => {
+    try {
+      if (!isScreenLoaderEnabled()) {
+        setShowInitialLoader(false);
+      } else {
+        const t = setTimeout(() => setShowInitialLoader(false), 500);
+        return () => clearTimeout(t);
+      }
+    } catch (e) {
+      setShowInitialLoader(false);
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;
 
     const applyNewestSettings = (incoming) => {
       if (!incoming || !incoming.displayMode) return;
+      if (incoming.screenLoaderOn === false) {
+        setShowInitialLoader(false);
+      }
       setSettings((prev) => {
         if (getTs(incoming) >= getTs(prev)) {
           try {
@@ -34,6 +56,12 @@ export default function StudioModeClient({ initialSettings }) {
               "sourav_studio_mode_settings",
               JSON.stringify(incoming)
             );
+            if (typeof incoming.screenLoaderOn === "boolean") {
+              localStorage.setItem(
+                "sourav_screen_loader",
+                String(incoming.screenLoaderOn)
+              );
+            }
           } catch (e) {}
           return { ...prev, ...incoming };
         }
@@ -41,7 +69,6 @@ export default function StudioModeClient({ initialSettings }) {
       });
     };
 
-    // 1. Immediately read localStorage if present
     try {
       const cached = localStorage.getItem("sourav_studio_mode_settings");
       if (cached) {
@@ -114,6 +141,10 @@ export default function StudioModeClient({ initialSettings }) {
       window.removeEventListener("focus", handleFocus);
     };
   }, []);
+
+  if (showInitialLoader && settings.screenLoaderOn !== false) {
+    return <PremiumLoader label="Loading B2B Specification Desk..." />;
+  }
 
   if (settings.displayMode === "enquiry") {
     return <StudioEnquiryForm studioSettings={settings} isPreview={false} />;

@@ -3,8 +3,8 @@
     "displayMode": "enquiry",
     "customizationStudioOn": false,
     "enquiryFormOn": true,
-    "minQuantity": 1,
-    "maxFileSizeMB": 10,
+    "minQuantity": 30,
+    "maxFileSizeMB": 5,
     "allowedFileTypes": [
       ".png",
       ".jpg",
@@ -40,7 +40,7 @@
       "Three Colour",
       "Four Colour"
     ],
-    "updatedAt": "2026-10-29T12:40:07.184Z",
+    "updatedAt": "2026-10-30T07:38:33.175Z",
     "updatedBy": "sanjay00002023@gmail.com"
   },
   "enquiries": []

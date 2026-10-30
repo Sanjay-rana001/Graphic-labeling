@@ -34,6 +34,7 @@ export default function StudioModeSettingsCard({
     displayMode: "enquiry",
     customizationStudioOn: false,
     enquiryFormOn: true,
+    screenLoaderOn: true,
     minQuantity: 1,
     maxFileSizeMB: 10,
     thicknessOptions: ["0.3 mm", "0.5 mm", "0.7 mm", "0.91 mm", "1.5 mm", "2.0 mm"],
@@ -54,15 +55,18 @@ export default function StudioModeSettingsCard({
   const [previewViewport, setPreviewViewport] = useState("desktop"); // 'desktop' | 'mobile'
 
   const persistEverywhere = (nextSettings) => {
+    const loaderVal = nextSettings.screenLoaderOn !== false;
     try {
       localStorage.setItem(
         "sourav_studio_mode_settings",
         JSON.stringify(nextSettings)
       );
+      localStorage.setItem("sourav_screen_loader", String(loaderVal));
     } catch (e) {}
 
     try {
       document.cookie = `sourav_display_mode=${nextSettings.displayMode}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `sourav_screen_loader=${loaderVal}; path=/; max-age=31536000; SameSite=Lax`;
       document.cookie = `sourav_mode_updated_at=${encodeURIComponent(
         nextSettings.updatedAt
       )}; path=/; max-age=31536000; SameSite=Lax`;
@@ -109,6 +113,68 @@ export default function StudioModeSettingsCard({
   }, []);
 
   const isStudioMode = draftSettings.displayMode === "studio";
+  const isLoaderOn = draftSettings.screenLoaderOn !== false;
+
+  // Listen for cross-component updates (e.g. from Admin Top Bar Screen Loader toggle)
+  useEffect(() => {
+    let channel = null;
+    try {
+      if (typeof BroadcastChannel !== "undefined") {
+        channel = new BroadcastChannel("sourav_studio_mode_channel");
+        channel.onmessage = (event) => {
+          if (event?.data) {
+            setLiveSettings((prev) => ({ ...prev, ...event.data }));
+            setDraftSettings((prev) => ({ ...prev, ...event.data }));
+          }
+        };
+      }
+    } catch (e) {}
+    return () => {
+      if (channel) channel.close();
+    };
+  }, []);
+
+  const handleToggleScreenLoader = async () => {
+    setSaveMessage("");
+    setSaveError("");
+    const nextLoaderOn = !isLoaderOn;
+    const nowIso = new Date().toISOString();
+    const updatedDraft = {
+      ...draftSettings,
+      screenLoaderOn: nextLoaderOn,
+      updatedAt: nowIso,
+      updatedBy: adminEmail,
+    };
+
+    setDraftSettings(updatedDraft);
+    setLiveSettings(updatedDraft);
+    persistEverywhere(updatedDraft);
+
+    setSaveMessage(
+      `Screen Loader turned ${nextLoaderOn ? "ON" : "OFF"} across the website & CRM.`
+    );
+
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/studio-settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-auth": "true",
+        },
+        body: JSON.stringify(updatedDraft),
+      });
+      const data = await res.json();
+      if (res.ok && data?.success && data.settings) {
+        setLiveSettings(data.settings);
+        setDraftSettings(data.settings);
+        persistEverywhere(data.settings);
+      }
+    } catch (err) {
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleToggleMode = async (nextMode) => {
     setSaveMessage("");
@@ -214,50 +280,107 @@ export default function StudioModeSettingsCard({
   return (
     <>
       <div
-        className={`rounded-3xl border p-6 sm:p-7 relative overflow-hidden ${
+        className={`rounded-xl border p-2.5 sm:p-3 relative overflow-hidden ${
           isDarkMode
             ? "bg-[#0f1118] border-white/10 text-white"
             : "bg-white border-[#c3e2da] text-[#0d1e1b]"
         }`}
       >
-        {/* Card Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-white/10">
-          <div className="flex items-start gap-3.5">
-            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-400 shrink-0">
-              <Sliders size={22} />
+        {/* Row 1: Micro-Compact Header + Inline Mode Switcher + Preview Actions */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2 pb-2 border-b border-current/10">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-500 shrink-0">
+              <Sliders size={14} />
             </div>
             <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="font-extrabold text-base sm:text-lg">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <h2 className="font-extrabold text-xs">
                   Studio Builder Display Mode
                 </h2>
                 <span
-                  className={`px-3 py-1 rounded-full text-[11px] font-mono font-black uppercase border ${
+                  className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-black uppercase border ${
                     isStudioMode
-                      ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                      : "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                      ? "bg-emerald-500/15 text-emerald-500 border-emerald-500/30"
+                      : "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30"
                   }`}
                 >
-                  LIVE ON /customize:{" "}
-                  {isStudioMode ? "3D Customization Studio" : "Photo Upload Enquiry Form"}
+                  LIVE: {isStudioMode ? "3D Studio" : "Photo Enquiry Form"}
                 </span>
               </div>
-              <p className="text-xs opacity-65 mt-1">
-                Click either button below to immediately switch what customers see on{" "}
-                <code>/customize</code>.
+              <p className="text-[10px] opacity-60 leading-tight">
+                Switch what customers see on <code>/customize</code>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Right: Inline Quick Mode Toggle + Open / Preview */}
+          <div className="flex flex-wrap items-center gap-1">
+            <button
+              type="button"
+              onClick={() => handleToggleMode("studio")}
+              className={`px-2 py-1 rounded-md text-[10px] font-extrabold border transition-all flex items-center gap-1 cursor-pointer ${
+                isStudioMode
+                  ? "bg-emerald-500 text-zinc-950 border-emerald-400"
+                  : isDarkMode
+                  ? "bg-zinc-800/70 text-zinc-400 border-white/10 hover:text-white"
+                  : "bg-zinc-100 text-zinc-600 border-zinc-300 hover:text-zinc-950"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isStudioMode ? "bg-zinc-950" : "bg-zinc-400"
+                }`}
+              />
+              <span>3D Studio: {isStudioMode ? "ON" : "OFF"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleToggleMode("enquiry")}
+              className={`px-2 py-1 rounded-md text-[10px] font-extrabold border transition-all flex items-center gap-1 cursor-pointer ${
+                !isStudioMode
+                  ? "bg-amber-500 text-zinc-950 border-amber-400"
+                  : isDarkMode
+                  ? "bg-zinc-800/70 text-zinc-400 border-white/10 hover:text-white"
+                  : "bg-zinc-100 text-zinc-600 border-zinc-300 hover:text-zinc-950"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  !isStudioMode ? "bg-zinc-950" : "bg-zinc-400"
+                }`}
+              />
+              <span>Enquiry Form: {!isStudioMode ? "ON" : "OFF"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleToggleScreenLoader}
+              className={`px-2 py-1 rounded-md text-[10px] font-extrabold border transition-all flex items-center gap-1 cursor-pointer ${
+                isLoaderOn
+                  ? "bg-emerald-500 text-zinc-950 border-emerald-400"
+                  : isDarkMode
+                  ? "bg-zinc-800/70 text-zinc-400 border-white/10 hover:text-white"
+                  : "bg-zinc-100 text-zinc-600 border-zinc-300 hover:text-zinc-950"
+              }`}
+              title="Toggle Screen Loader ON or OFF across Website & Admin"
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isLoaderOn ? "bg-zinc-950" : "bg-zinc-400"
+                }`}
+              />
+              <span>Screen Loader: {isLoaderOn ? "ON" : "OFF"}</span>
+            </button>
+
             <a
               href="/customize"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3.5 py-2.5 rounded-xl bg-amber-500 text-zinc-950 font-black text-xs flex items-center gap-1.5 hover:bg-amber-400 transition-all"
+              className="px-2 py-1 rounded-md bg-amber-500 text-zinc-950 font-black text-[10px] flex items-center gap-1 hover:bg-amber-400 transition-all"
             >
               <span>Open /customize</span>
-              <ExternalLink size={13} />
+              <ExternalLink size={10} />
             </a>
             <button
               type="button"
@@ -265,271 +388,209 @@ export default function StudioModeSettingsCard({
                 setPreviewMode(draftSettings.displayMode);
                 setIsPreviewOpen(true);
               }}
-              className="px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-extrabold flex items-center gap-1.5 transition-all"
+              className={`px-2 py-1 rounded-md border text-[10px] font-extrabold flex items-center gap-1 transition-all cursor-pointer ${
+                isDarkMode
+                  ? "bg-white/5 hover:bg-white/10 border-white/15"
+                  : "bg-zinc-100 hover:bg-zinc-200 border-zinc-300"
+              }`}
             >
-              <Eye size={14} className="text-amber-400" />
-              <span>Preview Both</span>
+              <Eye size={11} className="text-amber-500" />
+              <span>Preview</span>
             </button>
           </div>
         </div>
 
-        {/* Status Messages */}
+        {/* Status Messages (Compact) */}
         <AnimatePresence>
           {saveMessage && (
             <motion.div
-              initial={{ opacity: 0, y: -6 }}
+              initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mt-5 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-bold flex flex-wrap items-center justify-between gap-3"
+              className="mt-2 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-500 text-[10px] font-bold flex flex-wrap items-center justify-between gap-2"
             >
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="shrink-0" />
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 size={12} className="shrink-0" />
                 <span>{saveMessage}</span>
               </div>
               <a
                 href="/customize"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 font-black text-[11px] flex items-center gap-1 shrink-0 hover:bg-emerald-400"
+                className="px-1.5 py-0.5 rounded bg-emerald-500 text-zinc-950 font-black text-[9.5px] flex items-center gap-1 shrink-0"
               >
-                <span>Verify Live Page</span>
-                <ExternalLink size={12} />
+                <span>Verify</span>
+                <ExternalLink size={9} />
               </a>
             </motion.div>
           )}
 
           {saveError && (
             <motion.div
-              initial={{ opacity: 0, y: -6 }}
+              initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mt-5 p-4 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-400 text-xs font-bold flex items-center gap-2"
+              className="mt-2 px-2.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/25 text-red-500 text-[10px] font-bold flex items-center gap-1.5"
             >
-              <AlertCircle size={16} className="shrink-0" />
+              <AlertCircle size={12} className="shrink-0" />
               <span>{saveError}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Master Clickable Toggle Switch Bar */}
-        <div className="mt-5 p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-3 text-xs">
-            <button
-              type="button"
-              onClick={() => handleToggleMode("studio")}
-              className={`px-4 py-2.5 rounded-xl font-extrabold border transition-all flex items-center gap-2 cursor-pointer ${
-                isStudioMode
-                  ? "bg-emerald-500 text-zinc-950 border-emerald-400 shadow-lg shadow-emerald-500/20"
-                  : "bg-zinc-800/60 text-zinc-400 border-white/10 hover:text-white"
-              }`}
-            >
-              <span
-                className={`w-2.5 h-2.5 rounded-full ${
-                  isStudioMode ? "bg-zinc-950" : "bg-zinc-500"
-                }`}
-              />
-              <span>Customization Studio: {isStudioMode ? "ON" : "OFF"}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleToggleMode("enquiry")}
-              className={`px-4 py-2.5 rounded-xl font-extrabold border transition-all flex items-center gap-2 cursor-pointer ${
-                !isStudioMode
-                  ? "bg-amber-500 text-zinc-950 border-amber-400 shadow-lg shadow-amber-500/20"
-                  : "bg-zinc-800/60 text-zinc-400 border-white/10 hover:text-white"
-              }`}
-            >
-              <span
-                className={`w-2.5 h-2.5 rounded-full ${
-                  !isStudioMode ? "bg-zinc-950" : "bg-zinc-500"
-                }`}
-              />
-              <span>Enquiry Form: {!isStudioMode ? "ON" : "OFF"}</span>
-            </button>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => handleToggleMode(isStudioMode ? "enquiry" : "studio")}
-            className="flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-400 text-xs font-extrabold transition-all cursor-pointer"
-          >
-            {isStudioMode ? (
-              <>
-                <ToggleRight size={22} className="text-emerald-400" />
-                <span>Turn ON Enquiry Form</span>
-              </>
-            ) : (
-              <>
-                <ToggleLeft size={22} className="text-amber-400" />
-                <span>Turn ON Customization Studio</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Mode A & Mode B Selection Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-          {/* Mode A: Customization Studio */}
+        {/* Row 2: Micro-Compact 3-Column Grid (Mode A + Mode B + Limits & Save) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 mt-2 items-center">
+          {/* Mode A: Customization Studio (4 Cols) */}
           <div
             onClick={() => handleToggleMode("studio")}
-            className={`cursor-pointer rounded-2xl p-5 border-2 transition-all flex flex-col justify-between ${
+            className={`lg:col-span-4 cursor-pointer rounded-lg p-2 border transition-all flex items-center justify-between gap-2 ${
               isStudioMode
-                ? "border-emerald-500 bg-emerald-500/[0.08] shadow-lg shadow-emerald-500/10"
-                : "border-white/10 bg-white/[0.02] opacity-75 hover:opacity-100"
+                ? "border-emerald-500 bg-emerald-500/[0.08]"
+                : isDarkMode
+                ? "border-white/10 bg-white/[0.02] opacity-75 hover:opacity-100"
+                : "border-zinc-200 bg-zinc-50/70 opacity-80 hover:opacity-100"
             }`}
           >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
-                  Mode A • 3D Customizer
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9.5px] font-mono font-bold uppercase text-emerald-600 dark:text-emerald-400">
+                  Mode A
                 </span>
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                  className={`px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase ${
                     isStudioMode
                       ? "bg-emerald-500 text-zinc-950"
-                      : "bg-zinc-800 text-zinc-400"
+                      : "bg-zinc-700 text-zinc-300"
                   }`}
                 >
-                  Customization Studio — {isStudioMode ? "ON" : "OFF"}
+                  {isStudioMode ? "ON" : "OFF"}
                 </span>
               </div>
-              <h3 className="font-extrabold text-sm sm:text-base">
-                Interactive 3D Customization Studio
+              <h3 className="font-extrabold text-[11px] truncate">
+                3D Customization Studio
               </h3>
-              <p className="text-xs opacity-65 mt-1.5 leading-relaxed">
-                Customers can type custom text, pick fonts, change metal textures, adjust sizes, and see a live 3D engraved nameplate.
-              </p>
             </div>
-
-            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
-              <span className="font-bold text-emerald-400">
-                {isStudioMode ? "● Currently LIVE on Website" : "Click to Activate Mode A"}
-              </span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPreviewMode("studio");
-                  setIsPreviewOpen(true);
-                }}
-                className="text-xs font-semibold underline opacity-80 hover:opacity-100"
-              >
-                Preview Studio →
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setPreviewMode("studio");
+                setIsPreviewOpen(true);
+              }}
+              className="text-[10px] font-bold underline opacity-80 hover:opacity-100 shrink-0"
+            >
+              Preview →
+            </button>
           </div>
 
-          {/* Mode B: Enquiry Form */}
+          {/* Mode B: Enquiry Form (4 Cols) */}
           <div
             onClick={() => handleToggleMode("enquiry")}
-            className={`cursor-pointer rounded-2xl p-5 border-2 transition-all flex flex-col justify-between ${
+            className={`lg:col-span-4 cursor-pointer rounded-lg p-2 border transition-all flex items-center justify-between gap-2 ${
               !isStudioMode
-                ? "border-amber-500 bg-amber-500/[0.08] shadow-lg shadow-amber-500/10"
-                : "border-white/10 bg-white/[0.02] opacity-75 hover:opacity-100"
+                ? "border-amber-500 bg-amber-500/[0.08]"
+                : isDarkMode
+                ? "border-white/10 bg-white/[0.02] opacity-75 hover:opacity-100"
+                : "border-zinc-200 bg-zinc-50/70 opacity-80 hover:opacity-100"
             }`}
           >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
-                  Mode B • Direct Upload & Lead Form
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9.5px] font-mono font-bold uppercase text-amber-600 dark:text-amber-400">
+                  Mode B
                 </span>
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                  className={`px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase ${
                     !isStudioMode
                       ? "bg-amber-500 text-zinc-950"
-                      : "bg-zinc-800 text-zinc-400"
+                      : "bg-zinc-700 text-zinc-300"
                   }`}
                 >
-                  Enquiry Form — {!isStudioMode ? "ON" : "OFF"}
+                  {!isStudioMode ? "ON" : "OFF"}
                 </span>
               </div>
-              <h3 className="font-extrabold text-sm sm:text-base">
-                Direct Photo Upload & Specification Enquiry Form
+              <h3 className="font-extrabold text-[11px] truncate">
+                Photo Upload & Enquiry Form
               </h3>
-              <p className="text-xs opacity-65 mt-1.5 leading-relaxed">
-                Hides all customization tools. Customers directly upload their design photo with side-by-side photo preview, pick Thickness/Holes/Colour/Qty, and submit a lead.
-              </p>
             </div>
-
-            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
-              <span className="font-bold text-amber-400">
-                {!isStudioMode ? "● Currently LIVE on Website" : "Click to Activate Mode B"}
-              </span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPreviewMode("enquiry");
-                  setIsPreviewOpen(true);
-                }}
-                className="text-xs font-semibold underline opacity-80 hover:opacity-100"
-              >
-                Preview Enquiry Form →
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Configurable Enquiry Form Limits */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5 pt-5 border-t border-white/10 text-xs">
-          <div>
-            <label className="opacity-70 font-bold uppercase tracking-wider block mb-1.5">
-              Enquiry Form Minimum Order Quantity
-            </label>
-            <input
-              type="number"
-              min={1}
-              value={draftSettings.minQuantity}
-              onChange={(e) =>
-                setDraftSettings({
-                  ...draftSettings,
-                  minQuantity: Math.max(1, parseInt(e.target.value, 10) || 1),
-                })
-              }
-              className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-amber-500"
-            />
-          </div>
-          <div>
-            <label className="opacity-70 font-bold uppercase tracking-wider block mb-1.5">
-              Max Artwork Upload File Size (MB)
-            </label>
-            <input
-              type="number"
-              min={1}
-              max={50}
-              value={draftSettings.maxFileSizeMB}
-              onChange={(e) =>
-                setDraftSettings({
-                  ...draftSettings,
-                  maxFileSizeMB: Math.min(
-                    50,
-                    Math.max(1, parseInt(e.target.value, 10) || 10)
-                  ),
-                })
-              }
-              className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-amber-500"
-            />
-          </div>
-        </div>
-
-        {/* Save Action Bar */}
-        <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-xs opacity-70">
-            Mode switches are applied immediately to <code>/customize</code>.
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setPreviewMode("enquiry");
+                setIsPreviewOpen(true);
+              }}
+              className="text-[10px] font-bold underline opacity-80 hover:opacity-100 shrink-0"
+            >
+              Preview →
+            </button>
           </div>
 
-          <button
-            type="button"
-            disabled={isSaving}
-            onClick={handleSaveSettings}
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 hover:brightness-110 transition-all flex items-center justify-center gap-2 shrink-0"
+          {/* Col 3: Inline Form Limits + Save Button (4 Cols) */}
+          <div
+            className={`lg:col-span-4 rounded-lg p-1.5 border flex items-center gap-1.5 ${
+              isDarkMode
+                ? "border-white/10 bg-white/[0.02]"
+                : "border-zinc-200 bg-zinc-50/70"
+            }`}
           >
-            <Save size={15} />
-            <span>
-              {isSaving ? "Saving Setting..." : "Save Display Mode Setting"}
-            </span>
-          </button>
+            <div className="flex items-center gap-1 flex-1 min-w-0">
+              <span className="text-[9px] opacity-65 font-bold uppercase shrink-0">
+                Min Qty:
+              </span>
+              <input
+                type="number"
+                min={1}
+                value={draftSettings.minQuantity}
+                onChange={(e) =>
+                  setDraftSettings({
+                    ...draftSettings,
+                    minQuantity: Math.max(1, parseInt(e.target.value, 10) || 1),
+                  })
+                }
+                className={`w-12 border rounded px-1.5 py-1 text-[10.5px] font-mono text-center focus:outline-none focus:border-amber-500 ${
+                  isDarkMode
+                    ? "bg-zinc-900 border-white/10 text-white"
+                    : "bg-white border-zinc-300 text-zinc-900"
+                }`}
+              />
+            </div>
+            <div className="flex items-center gap-1 flex-1 min-w-0">
+              <span className="text-[9px] opacity-65 font-bold uppercase shrink-0">
+                Max MB:
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={50}
+                value={draftSettings.maxFileSizeMB}
+                onChange={(e) =>
+                  setDraftSettings({
+                    ...draftSettings,
+                    maxFileSizeMB: Math.min(
+                      50,
+                      Math.max(1, parseInt(e.target.value, 10) || 10)
+                    ),
+                  })
+                }
+                className={`w-12 border rounded px-1.5 py-1 text-[10.5px] font-mono text-center focus:outline-none focus:border-amber-500 ${
+                  isDarkMode
+                    ? "bg-zinc-900 border-white/10 text-white"
+                    : "bg-white border-zinc-300 text-zinc-900"
+                }`}
+              />
+            </div>
+
+            <button
+              type="button"
+              disabled={isSaving}
+              onClick={handleSaveSettings}
+              className="py-1 px-2.5 rounded bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[10px] uppercase tracking-wide transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+            >
+              <Save size={11} />
+              <span>{isSaving ? "..." : "Save"}</span>
+            </button>
+          </div>
         </div>
       </div>
 

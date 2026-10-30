@@ -1,8 +1,46 @@
 "use client";
 
-import Image from "next/image";
+import { useState, useEffect } from "react";
 
-export default function PremiumLoader({ label = "Initializing Studio", sublabel = "Sourav Graphic & Metal Labels" }) {
+export function isScreenLoaderEnabled() {
+  if (typeof window === "undefined") return true;
+  try {
+    const direct = localStorage.getItem("sourav_screen_loader");
+    if (direct === "false") return false;
+    if (direct === "true") return true;
+
+    const cached = localStorage.getItem("sourav_studio_mode_settings");
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (typeof parsed?.screenLoaderOn === "boolean") {
+        return parsed.screenLoaderOn;
+      }
+    }
+
+    if (typeof document !== "undefined" && document.cookie) {
+      if (document.cookie.includes("sourav_screen_loader=false")) return false;
+    }
+  } catch (e) {}
+  return true;
+}
+
+export default function PremiumLoader({
+  label = "Initializing Studio",
+  sublabel = "Sourav Graphic & Metal Label",
+  forcePreview = false,
+}) {
+  const [enabled, setEnabled] = useState(true);
+
+  useEffect(() => {
+    if (!forcePreview) {
+      setEnabled(isScreenLoaderEnabled());
+    }
+  }, [forcePreview]);
+
+  if (!forcePreview && !enabled) {
+    return null;
+  }
+
   return (
     <div className="fixed inset-0 z-[9999] bg-[#08090d] text-white flex flex-col items-center justify-center p-6 select-none overflow-hidden">
       {/* Ambient Champagne Gold & Obsidian Glows */}
@@ -51,7 +89,7 @@ export default function PremiumLoader({ label = "Initializing Studio", sublabel 
 
         {/* Bottom Precision Spec Caption */}
         <p className="mt-4 text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500">
-          Aerospace 6061-T6 • Precision Fiber Laser
+          Industrial Nameplates • SS 304 • Anodized Aluminium
         </p>
       </div>
     </div>

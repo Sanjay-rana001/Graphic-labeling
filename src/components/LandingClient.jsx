@@ -36,7 +36,23 @@ import { useTheme } from "./ThemeProvider";
 import SweepButton from "./SweepButton";
 import ThemeToggle from "./ThemeToggle";
 import RealBlackPlateSpecimen from "./RealBlackPlateSpecimen";
+import PremiumLoader, { isScreenLoaderEnabled } from "./PremiumLoader";
 import { INITIAL_LEADS } from "@/lib/adminData";
+
+function WhatsAppLogo({ size = 15, className = "" }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M12.031 2c-5.516 0-9.999 4.486-9.999 10.004 0 1.766.461 3.49 1.337 5.008L2 22l5.125-1.344a9.953 9.953 0 0 0 4.904 1.292h.004c5.515 0 9.998-4.486 9.998-10.004 0-2.673-1.04-5.186-2.928-7.075A9.936 9.936 0 0 0 12.031 2zm5.847 14.287c-.246.693-1.432 1.326-1.997 1.411-.513.077-1.163.11-1.878-.118-.434-.138-.99-.322-1.703-.63-2.996-1.294-4.953-4.312-5.102-4.512-.149-.199-1.218-1.621-1.218-3.092 0-1.471.771-2.194 1.045-2.493.274-.3.598-.375.797-.375.199 0 .398.002.573.01.184.009.43-.07.673.514.249.599.846 2.07.921 2.22.075.15.125.324.025.524-.1.2-.15.324-.299.499-.149.175-.314.39-.448.524-.15.149-.306.311-.131.611.174.3.774 1.278 1.662 2.071 1.142 1.018 2.104 1.334 2.403 1.484.299.15.473.125.648-.075.174-.2.747-.873.946-1.172.199-.3.399-.25.673-.15.274.1 1.743.823 2.042.972.299.15.498.225.573.35.075.124.075.723-.171 1.415z" />
+    </svg>
+  );
+}
 
 const FEATURED_SPECIMEN_SLIDES = [
   {
@@ -96,8 +112,7 @@ const CATALOG_PRODUCTS = [
     mounting: "1–5mm Holes",
     application: "Machinery & Motors",
     tag: "Bestseller",
-    img: "/Media/anodized-aluminium-labels-1000x1000-removebg-preview.png",
-    isContain: true,
+    img: "/Media/Aluminium Name Plate.webp",
   },
   {
     id: 2,
@@ -111,7 +126,7 @@ const CATALOG_PRODUCTS = [
     mounting: "Holes / Studs",
     application: "Valves & Equipment",
     tag: "Export",
-    img: "/Media/brushed_aluminum_sign.png",
+    img: "/Media/Aluminium Etching Plate.jpeg",
   },
   {
     id: 3,
@@ -125,7 +140,7 @@ const CATALOG_PRODUCTS = [
     mounting: "1–5mm Holes",
     application: "Asset & Cable ID",
     tag: "QR / ID",
-    img: "/Media/equipment_tag.png",
+    img: "/Media/QR & Barcode Metal Tag.webp",
   },
   {
     id: 4,
@@ -139,7 +154,7 @@ const CATALOG_PRODUCTS = [
     mounting: "2–5mm Holes",
     application: "Chemical & Marine",
     tag: "SS 304/316",
-    img: "/Media/aluminum_door_plate.png",
+    img: "/Media/SS 304 Etched Plate.webp",
   },
   {
     id: 5,
@@ -153,7 +168,7 @@ const CATALOG_PRODUCTS = [
     mounting: "Studs / Screws",
     application: "Corporate Signage",
     tag: "Gold Finish",
-    img: "/Media/premium_gold_plate.png",
+    img: "/Media/Brass & Gold Plate.jpg",
   },
   {
     id: 6,
@@ -167,7 +182,7 @@ const CATALOG_PRODUCTS = [
     mounting: "3M Adhesive",
     application: "Control Panels",
     tag: "3M Backing",
-    img: "/Media/office_metal_labels.png",
+    img: "/Media/Polycarbonate Sticker.webp",
   },
   {
     id: 7,
@@ -181,7 +196,7 @@ const CATALOG_PRODUCTS = [
     mounting: "Holes / 3M",
     application: "Electrical Safety",
     tag: "1–4 Colour",
-    img: "/Media/warning_signage.png",
+    img: "/Media/Danger & Safety Plate.webp",
   },
   {
     id: 8,
@@ -195,7 +210,7 @@ const CATALOG_PRODUCTS = [
     mounting: "1–5mm Holes",
     application: "Switchgear & Pumps",
     tag: "Ano-Etch",
-    img: "/Media/anodized_aluminum_tag.png",
+    img: "/Media/Black Anodized Tag.jpg",
   },
   {
     id: 9,
@@ -209,7 +224,7 @@ const CATALOG_PRODUCTS = [
     mounting: "Standoffs",
     application: "Offices & Cabins",
     tag: "Custom",
-    img: "/Media/desk_name_plate.png",
+    img: "/Media/Cabin & Door Plate.jpg",
   },
   {
     id: 10,
@@ -223,7 +238,7 @@ const CATALOG_PRODUCTS = [
     mounting: "SS Studs",
     application: "House & Office",
     tag: "Outdoor",
-    img: "/Media/brushed_aluminum_sign.png",
+    img: "/Media/Acrylic Sign Board.jpg",
   },
   {
     id: 11,
@@ -237,7 +252,7 @@ const CATALOG_PRODUCTS = [
     mounting: "Rivet / 3M",
     application: "AMC & Maintenance",
     tag: "Punch Grid",
-    img: "/Media/office_metal_labels.png",
+    img: "/Media/Inspection Punch Tag.jpg",
   },
   {
     id: 12,
@@ -251,7 +266,7 @@ const CATALOG_PRODUCTS = [
     mounting: "Rivet Holes",
     application: "CNG & Boilers",
     tag: "PESO Grade",
-    img: "/Media/equipment_tag.png",
+    img: "/Media/CNG Compliance Plate.jpg",
   },
 ];
 
@@ -340,6 +355,36 @@ export default function LandingClient() {
   });
   const [modalSubmitting, setModalSubmitting] = useState(false);
   const [modalSuccessId, setModalSuccessId] = useState("");
+  const [showInitialLoader, setShowInitialLoader] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const enabled = isScreenLoaderEnabled();
+    if (enabled) {
+      setShowInitialLoader(true);
+      const t = setTimeout(() => {
+        if (active) setShowInitialLoader(false);
+      }, 500);
+      fetch("/api/studio-settings", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.success && data.settings) {
+            const loaderOn = data.settings.screenLoaderOn !== false;
+            try {
+              localStorage.setItem("sourav_screen_loader", String(loaderOn));
+            } catch (e) {}
+            if (!loaderOn && active) setShowInitialLoader(false);
+          }
+        })
+        .catch(() => {});
+      return () => {
+        active = false;
+        clearTimeout(t);
+      };
+    } else {
+      setShowInitialLoader(false);
+    }
+  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -524,6 +569,9 @@ export default function LandingClient() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-amber-500/20 selection:text-amber-500 overflow-x-hidden">
+      {showInitialLoader && (
+        <PremiumLoader label="Loading B2B Industrial Catalog..." />
+      )}
       {/* ══════════════════════════════════════════════════════════════════
           FLUID FULL-WIDTH STICKY HEADER WITH SEARCH & DIRECT ENQUIRY CTAS
          ══════════════════════════════════════════════════════════════════ */}
@@ -548,9 +596,9 @@ export default function LandingClient() {
                 />
               </div>
             </Link>
-            <div className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">
-              <BadgeCheck size={13} />
-              <span>Manufacturer & Exporter of Metal Label</span>
+            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10.5px] font-extrabold uppercase tracking-wide">
+              <BadgeCheck size={13} className="text-emerald-500 shrink-0" />
+              <span>B2B OEM & Wholesale Manufacturer</span>
             </div>
           </div>
 
@@ -595,15 +643,21 @@ export default function LandingClient() {
 
           {/* Right: Direct Conversion Actions */}
           <div className="flex items-center gap-2 shrink-0">
-            <a
+            <motion.a
               href="https://wa.me/919876543210?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates."
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500 text-emerald-600 dark:text-emerald-400 hover:text-zinc-950 border border-emerald-500/30 text-[11px] font-extrabold transition-all"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96 }}
+              className="hidden sm:inline-flex relative overflow-hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:text-zinc-950 border border-emerald-500/35 text-[11px] font-extrabold transition-colors duration-500 group shadow-2xs hover:shadow-emerald-500/25 hover:shadow-md"
             >
-              <MessageCircle size={13} />
-              <span>WhatsApp</span>
-            </a>
+              <span className="absolute inset-0 bg-[#25D366] rounded-full -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] z-0 pointer-events-none" />
+              <WhatsAppLogo
+                size={14}
+                className="relative z-10 text-[#25D366] group-hover:text-zinc-950 transition-all duration-500 group-hover:rotate-12 group-hover:scale-110"
+              />
+              <span className="relative z-10">WhatsApp</span>
+            </motion.a>
             <ThemeToggle size="sm" />
             <SweepButton href="/customize" label="Upload Design / Enquire" size="nav" />
           </div>
@@ -614,24 +668,99 @@ export default function LandingClient() {
           COMPACT 3-COLUMN FLUID B2B HERO (Adapts to 13" up to 50"+ Screens)
          ══════════════════════════════════════════════════════════════════ */}
       <section className="relative pt-16 sm:pt-18 pb-4 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto z-10">
+        {/* Instant-Glance B2B Industrial Trust & Credentials Strip */}
+        <div className="mb-3 px-3.5 py-2 rounded-xl bg-card border border-border shadow-2xs flex flex-wrap items-center justify-between gap-2 text-[11px]">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded-md bg-amber-500 text-zinc-950 font-black text-[10px] uppercase tracking-wider">
+              B2B Factory Direct
+            </span>
+            <span className="font-extrabold text-foreground">
+              Dedicated B2B Industrial Manufacturing Partner for OEMs, Factories & Corporate Buyers
+            </span>
+          </div>
+          <div className="hidden xl:flex items-center gap-4 text-[10.5px] font-bold text-muted-foreground">
+            <span className="flex items-center gap-1 text-foreground">
+              <Check size={12} className="text-emerald-500" /> Direct Wholesale Factory Rates
+            </span>
+            <span className="flex items-center gap-1 text-foreground">
+              <Check size={12} className="text-emerald-500" /> 100% GST Tax Invoice
+            </span>
+            <span className="flex items-center gap-1 text-foreground">
+              <Check size={12} className="text-emerald-500" /> Bulk & Custom CAD Production
+            </span>
+            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+              <Check size={12} /> Pan-India Industrial Dispatch
+            </span>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
           {/* Col 1 (5 Cols): Manufacturer Value Proposition */}
           <div className="lg:col-span-5 bg-card border border-border rounded-2xl p-4 sm:p-5 flex flex-col justify-between relative overflow-hidden shadow-2xs">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                <span>Industrial Identification & Custom Signage Manufacturer</span>
+            <div className="relative z-10">
+              {/* Top B2B Authority Badge Row */}
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted border border-border text-foreground text-[10px] font-extrabold uppercase tracking-wider">
+                  <Factory size={11} className="text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>B2B Industrial Manufacturer • Bulk & OEM</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-md bg-muted border border-border text-muted-foreground text-[9.5px] font-mono font-bold uppercase tracking-wider">
+                  ISO-Grade Precision
+                </span>
               </div>
 
-              <h1 className="text-xl sm:text-2xl xl:text-3xl font-black tracking-tight text-foreground leading-tight uppercase">
-                Sourav Graphic &{" "}
-                <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 dark:from-amber-400 dark:to-yellow-500 bg-clip-text text-transparent">
-                  Metal Label
-                </span>
-              </h1>
+              {/* HERO COMPANY NAME SHOWCASE — Precision Metallic Nameplate Lockup */}
+              <div className="relative rounded-xl bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 dark:from-black dark:via-zinc-900/95 dark:to-zinc-950 border border-amber-500/40 p-3.5 sm:p-4 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.45)] overflow-hidden group">
+                {/* 4 Realistic Corner Nameplate Mounting Rivets */}
+                <span className="w-2 h-2 rounded-full bg-gradient-to-br from-zinc-200 to-zinc-500 border border-zinc-700 shadow-inner absolute top-2 left-2" />
+                <span className="w-2 h-2 rounded-full bg-gradient-to-br from-zinc-200 to-zinc-500 border border-zinc-700 shadow-inner absolute top-2 right-2" />
+                <span className="w-2 h-2 rounded-full bg-gradient-to-br from-zinc-200 to-zinc-500 border border-zinc-700 shadow-inner absolute bottom-2 left-2" />
+                <span className="w-2 h-2 rounded-full bg-gradient-to-br from-zinc-200 to-zinc-500 border border-zinc-700 shadow-inner absolute bottom-2 right-2" />
 
-              <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                Manufacturer & supplier of{" "}
+                {/* Brushed Metal Hairline Texture & Specular Sweep */}
+                <div
+                  className="absolute inset-0 opacity-15 pointer-events-none"
+                  style={{
+                    backgroundImage:
+                      "repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 1px, transparent 1px, transparent 4px)",
+                  }}
+                />
+                <div className="absolute -inset-y-full -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-amber-300/15 to-transparent rotate-12 translate-x-[-120%] group-hover:translate-x-[380%] transition-transform duration-1000 ease-out pointer-events-none" />
+
+                <div className="relative z-10 pl-1.5 pr-1.5">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[9px] font-mono font-extrabold uppercase tracking-[0.25em] text-amber-400/90">
+                      PRECISION ETCHED • ANODIZED • LASER ENGRAVED
+                    </span>
+                  </div>
+
+                  <h1 className="uppercase leading-none">
+                    {/* Line 1: SOURAV GRAPHIC in Brushed Silver/White Monumental Display */}
+                    <span className="block text-2xl sm:text-3xl xl:text-[32px] 2xl:text-[36px] font-black tracking-[-0.01em] bg-gradient-to-b from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(255,255,255,0.12)]">
+                      SOURAV GRAPHIC
+                    </span>
+
+                    {/* Line 2: & METAL LABEL in Embossed 24K Gold Metallic Nameplate Strip */}
+                    <span className="mt-2 inline-flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-zinc-950 font-black text-base sm:text-xl xl:text-[21px] tracking-[0.06em] shadow-[0_4px_20px_rgba(245,158,11,0.45),inset_0_1px_1px_rgba(255,255,255,0.8)] border border-amber-200/80">
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-950/75" />
+                        <span>&amp; METAL LABEL</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-950/75" />
+                      </span>
+                      <span className="text-[10px] font-mono font-bold text-zinc-300 tracking-wider uppercase px-2 py-1 rounded border border-white/15 bg-white/5">
+                        Direct Factory
+                      </span>
+                    </span>
+                  </h1>
+                </div>
+              </div>
+
+              <p className="mt-2.5 pl-2.5 border-l-3 border-amber-500 text-[11.5px] sm:text-xs font-extrabold text-amber-700 dark:text-amber-400 leading-snug">
+                India&apos;s Trusted B2B Supplier for OEMs, Machinery Builders & Electrical Panel Makers
+              </p>
+
+              <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+                Bulk manufacturer & exporter of{" "}
                 <strong className="text-foreground">
                   Anodized Aluminium Nameplates, SS 304/316 Etched Tags, Brass Boards, QR/Barcode Cable Tags, Polycarbonate Stickers
                 </strong>{" "}
@@ -695,7 +824,7 @@ export default function LandingClient() {
               </span>
             </div>
 
-            <div className="relative flex-1 w-full min-h-[195px] sm:min-h-[215px] rounded-xl bg-white overflow-hidden flex items-center justify-center">
+            <div className="relative flex-1 w-full min-h-[220px] sm:min-h-[250px] rounded-xl bg-white overflow-hidden flex items-center justify-center">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={FEATURED_SPECIMEN_SLIDES[specimenSlide].src}
@@ -723,18 +852,30 @@ export default function LandingClient() {
 
           {/* Col 3 (4 Cols): Samarth-Style Instant "Tell Us Your Requirement" Box */}
           <div className="lg:col-span-4 bg-card border border-border rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/60">
+            <div className="flex items-center justify-between pb-2 border-b border-border/60">
               <div>
                 <h2 className="text-xs sm:text-sm font-black uppercase tracking-wide text-foreground">
-                  Tell Us Your Requirement
+                  B2B Bulk & Custom Quote Desk
                 </h2>
                 <p className="text-[10px] text-muted-foreground">
-                  Get instant quotation directly from our workshop
+                  Direct factory wholesale quotation • GST Billing Available
                 </p>
               </div>
               <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 text-[10px] font-bold">
-                Fast Response
+                B2B Priority
               </span>
+            </div>
+
+            {/* Metal Labels Full Showcase Image (Big & Complete View) */}
+            <div className="relative flex-1 w-full h-44 sm:h-52 min-h-[175px] sm:min-h-[205px] my-2 rounded-xl overflow-hidden border border-border/60 bg-[#f6f6f7] flex items-center justify-center">
+              <Image
+                src="/Media/metal labels.jpg"
+                alt="Industrial Metal Labels Specimen"
+                fill
+                className="object-contain scale-[1.22] -translate-y-1.5"
+                sizes="(max-width: 1024px) 100vw, 480px"
+                priority
+              />
             </div>
 
             {heroSubmittedId ? (
@@ -939,17 +1080,21 @@ export default function LandingClient() {
               className="group bg-card border border-border hover:border-amber-500/80 rounded-xl overflow-hidden shadow-2xs hover:shadow-md transition-all duration-150 flex flex-col justify-between"
             >
               <div>
-                {/* Compact Die-Cut Black Metal Specimen Stage (74px height) */}
+                {/* Real Product Photo Stage (Uncropped Full View) */}
                 <div
                   onClick={() => {
                     setModalProduct(product);
                     setModalSuccessId("");
                   }}
-                  className="relative h-[74px] bg-[#0b0d12] overflow-hidden border-b border-border/60 cursor-pointer flex items-center justify-center"
+                  className="relative h-28 bg-white overflow-hidden border-b border-border/60 cursor-pointer flex items-center justify-center"
                 >
-                  <div className="w-full h-full scale-[0.82] group-hover:scale-[0.86] transition-transform duration-200 flex items-center justify-center">
-                    <RealBlackPlateSpecimen variant={product.id} />
-                  </div>
+                  <Image
+                    src={product.img}
+                    alt={product.title}
+                    fill
+                    className="object-contain p-1 group-hover:scale-105 transition-transform duration-200"
+                    sizes="(max-width: 768px) 50vw, 18vw"
+                  />
                 </div>
 
                 {/* Micro-Compact Card Info */}
@@ -1122,15 +1267,36 @@ export default function LandingClient() {
                 <ShieldCheck size={15} />
                 <span>Verified Quality • Direct Factory Pricing</span>
               </div>
-              <a
-                href="https://wa.me/919876543210"
+              <motion.a
+                href="https://wa.me/919876543210?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-zinc-950 font-black text-xs flex items-center gap-1.5"
+                whileHover={{ scale: 1.03, y: -1 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 280, damping: 22 }}
+                className="relative p-[2.5px] rounded-full bg-emerald-500/25 border border-emerald-500/40 group shadow-sm hover:shadow-emerald-500/30 hover:shadow-lg transition-all duration-300 inline-flex items-center cursor-pointer select-none"
               >
-                <MessageCircle size={13} />
-                <span>Chat on WhatsApp</span>
-              </a>
+                <div className="relative flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#128C7E] dark:bg-zinc-950 overflow-hidden">
+                  {/* Smooth 600ms WhatsApp Green Filling Sweep */}
+                  <div className="absolute inset-0 bg-[#25D366] rounded-full -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] z-10 pointer-events-none" />
+
+                  {/* Sliding Official WhatsApp Logo */}
+                  <div className="relative z-20 flex items-center overflow-hidden w-4 h-4">
+                    <WhatsAppLogo
+                      size={15}
+                      className="absolute left-0 text-[#25D366] group-hover:text-zinc-950 transition-all duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-6"
+                    />
+                    <WhatsAppLogo
+                      size={15}
+                      className="absolute left-0 text-zinc-950 -translate-x-6 transition-all duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0 group-hover:rotate-12"
+                    />
+                  </div>
+
+                  <span className="relative z-20 text-white group-hover:text-zinc-950 font-black text-xs transition-colors duration-500 whitespace-nowrap">
+                    Chat on WhatsApp
+                  </span>
+                </div>
+              </motion.a>
             </div>
           </div>
         </div>
@@ -1333,10 +1499,14 @@ export default function LandingClient() {
             >
               <div className="p-4 bg-muted/40 border-b border-border flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="relative w-14 h-12 rounded-xl bg-[#07080b] border border-zinc-700 overflow-hidden shrink-0 flex items-center justify-center">
-                    <span className="text-[9px] font-mono font-black text-amber-400 tracking-tighter text-center leading-tight px-1">
-                      {modalProduct.code}
-                    </span>
+                  <div className="relative w-12 h-12 rounded-xl bg-white dark:bg-zinc-900 border border-border overflow-hidden shrink-0">
+                    <Image
+                      src={modalProduct.img}
+                      alt={modalProduct.title}
+                      fill
+                      className="object-cover"
+                      sizes="50px"
+                    />
                   </div>
                   <div className="min-w-0">
                     <span className="text-[10px] font-mono font-bold uppercase text-amber-500 block">

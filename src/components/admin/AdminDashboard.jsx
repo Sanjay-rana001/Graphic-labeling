@@ -33,7 +33,6 @@ import {
   Hash,
   Calendar,
   Save,
-  Sparkles,
   ArrowUpRight,
   ExternalLink,
   Sliders,
@@ -49,10 +48,24 @@ import {
   LEAD_STATUSES,
   INITIAL_MATERIALS,
   DEFAULT_ADMIN_AUTH,
+  PRODUCT_IMAGE_MAP,
 } from "@/lib/adminData";
 import { useTheme } from "../ThemeProvider";
-import PremiumLoader from "../PremiumLoader";
+import PremiumLoader, { isScreenLoaderEnabled } from "../PremiumLoader";
+import SweepButton from "../SweepButton";
 import StudioModeSettingsCard from "./StudioModeSettingsCard";
+
+function getLeadProductImage(lead) {
+  if (lead?.designFile?.previewUrl) return lead.designFile.previewUrl;
+  const key = lead?.category || lead?.material || "";
+  if (PRODUCT_IMAGE_MAP[key]) return PRODUCT_IMAGE_MAP[key];
+  const found = INITIAL_MATERIALS.find(
+    (m) =>
+      key.toLowerCase().includes(m.name.toLowerCase()) ||
+      m.name.toLowerCase().includes(key.toLowerCase())
+  );
+  return found?.img || "/Media/Aluminium Name Plate.webp";
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function statusBadge(statusKey) {
@@ -100,24 +113,25 @@ function getMaterialTextureClass(material = "") {
 function whatsappLink(phone, lead) {
   const cleanPhone = (phone || "").replace(/\D/g, "").slice(-10);
   const msg = encodeURIComponent(
-    `Hello ${lead.client},\n\nGreetings from *Sourav Graphic & Metal Labels*! Regarding your custom signage inquiry *${lead.id}*:\n• Material: ${lead.material || "Custom Alloy"}\n• Size: ${lead.size || "Custom"}\n• Qty: ${lead.quantity || 1} pcs\n• Current Status: *${lead.status}*\n\nPlease let us know a convenient time to share your formal quotation and laser proof.`
+    `Hello ${lead.client},\n\nGreetings from *Sourav Graphic & Metal Label (B2B Factory Direct)*! Regarding your industrial inquiry *${lead.id}*:\n• Product: ${lead.category || lead.material || "Industrial Metal Label"}\n• Specifications: ${lead.size || "Custom Gauge"}\n• Mounting / Side: ${lead.mounting || "Standard"}\n• Colour / Print: ${lead.lighting || "Single Colour"}\n• Batch Qty: ${lead.quantity || 1} pcs\n• Current Status: *${lead.status}*\n\nPlease let us know a convenient time to share your B2B factory quotation & GST proforma invoice.`
   );
   return `https://wa.me/91${cleanPhone}?text=${msg}`;
 }
 
-// ─── Animated Manual Lead Modal ────────────────────────────────────────────────
+// ─── Animated Manual Lead Modal (Aligned with B2B Landing Page Specs) ──────────
 function ManualLeadModal({ onClose, onSave }) {
   const [form, setForm] = useState({
     client: "",
     phone: "",
     email: "",
     city: "",
-    material: "Brushed Aluminium",
-    size: '12" × 6" (3mm)',
-    lighting: "None",
-    mounting: "4× M6 Stainless Standoffs",
-    quantity: 1,
-    source: "Phone / Direct Call",
+    category: "Aluminium Name Plate",
+    thickness: "0.7 mm",
+    holes: "2 mm",
+    side: "Single Side",
+    colour: "Single Colour",
+    quantity: 100,
+    source: "B2B Bulk Quote Desk",
     notes: "",
     status: "New Inquiry",
   });
@@ -126,14 +140,28 @@ function ManualLeadModal({ onClose, onSave }) {
   function handleSubmit(e) {
     e.preventDefault();
     if (!form.client.trim() || !form.phone.trim()) {
-      setErr("Client name and phone number are required.");
+      setErr("Client / Company name and mobile number are required.");
       return;
     }
     const newLead = {
-      ...form,
       id: "INQ-" + Math.floor(1000 + Math.random() * 9000),
+      client: form.client,
+      phone: form.phone,
+      email: form.email || "—",
+      city: form.city || "India",
+      address: form.city || "India",
       date: new Date().toISOString().split("T")[0],
-      textLayers: [{ line: form.client.toUpperCase(), font: "Montserrat" }],
+      source: form.source,
+      category: form.category,
+      material: form.category,
+      size: `Thickness: ${form.thickness} | Holes: ${form.holes}`,
+      lighting: form.colour,
+      mounting: `${form.side} | Holes: ${form.holes}`,
+      quantity: Number(form.quantity) || 1,
+      status: form.status,
+      notes:
+        form.notes ||
+        `Product: ${form.category} | Thickness: ${form.thickness} | Holes: ${form.holes} | Side: ${form.side} | Colour: ${form.colour} | Qty: ${form.quantity}`,
     };
     onSave(newLead);
     onClose();
@@ -163,8 +191,8 @@ function ManualLeadModal({ onClose, onSave }) {
               <Plus size={20} />
             </div>
             <div>
-              <h2 className="text-white font-extrabold text-base">Log New Client Inquiry</h2>
-              <p className="text-zinc-400 text-xs">Add a direct phone, WhatsApp, or walk-in lead</p>
+              <h2 className="text-white font-extrabold text-base">Log New B2B Inquiry</h2>
+              <p className="text-zinc-400 text-xs">Add a direct B2B phone, WhatsApp, or OEM order lead</p>
             </div>
           </div>
           <button
@@ -175,29 +203,29 @@ function ManualLeadModal({ onClose, onSave }) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-6 space-y-3.5 text-xs">
           {err && (
             <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center gap-2">
               <AlertCircle size={14} /> {err}
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-zinc-400 font-semibold mb-1.5 block">Client / Company Name *</label>
+              <label className="text-zinc-400 font-semibold mb-1 block">Client / Company Name *</label>
               <input
                 required
-                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-amber-500 transition-colors"
                 value={form.client}
                 onChange={(e) => setForm({ ...form, client: e.target.value })}
-                placeholder="e.g. Rajesh Khanna / Apex Corp"
+                placeholder="e.g. Apex Switchgear Pvt. Ltd."
               />
             </div>
             <div>
-              <label className="text-zinc-400 font-semibold mb-1.5 block">WhatsApp / Mobile *</label>
+              <label className="text-zinc-400 font-semibold mb-1 block">WhatsApp / Mobile *</label>
               <input
                 required
-                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2 text-white font-mono focus:outline-none focus:border-amber-500 transition-colors"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 placeholder="98XXXXXXXX"
@@ -205,89 +233,130 @@ function ManualLeadModal({ onClose, onSave }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-zinc-400 font-semibold mb-1.5 block">Email Address</label>
-              <input
-                type="email"
-                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500 transition-colors"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="client@company.com"
-              />
+              <label className="text-zinc-400 font-semibold mb-1 block">Product Category</label>
+              <select
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-amber-500"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              >
+                {INITIAL_MATERIALS.map((m) => (
+                  <option key={m.id} value={m.name}>
+                    {m.name} ({m.code})
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
-              <label className="text-zinc-400 font-semibold mb-1.5 block">City / Location</label>
+              <label className="text-zinc-400 font-semibold mb-1 block">City / Industrial Area</label>
               <input
-                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-amber-500 transition-colors"
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
-                placeholder="e.g. New Delhi"
+                placeholder="e.g. MIDC Pune / Gurugram"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <div>
-              <label className="text-zinc-400 font-semibold mb-1.5 block">Preferred Material</label>
-              <input
-                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500 transition-colors"
-                value={form.material}
-                onChange={(e) => setForm({ ...form, material: e.target.value })}
-                placeholder="Brushed Aluminium"
-              />
+              <label className="text-zinc-400 font-semibold mb-1 block">Thickness</label>
+              <select
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-2.5 py-2 text-white font-mono focus:outline-none focus:border-amber-500"
+                value={form.thickness}
+                onChange={(e) => setForm({ ...form, thickness: e.target.value })}
+              >
+                <option>0.3 mm</option>
+                <option>0.5 mm</option>
+                <option>0.7 mm</option>
+                <option>0.91 mm</option>
+                <option>1.5 mm</option>
+                <option>2.0 mm</option>
+                <option>3.0 mm+</option>
+              </select>
             </div>
             <div>
-              <label className="text-zinc-400 font-semibold mb-1.5 block">Dimensions & Gauge</label>
-              <input
-                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-amber-500 transition-colors"
-                value={form.size}
-                onChange={(e) => setForm({ ...form, size: e.target.value })}
-                placeholder='12" × 6" (3mm)'
-              />
+              <label className="text-zinc-400 font-semibold mb-1 block">Holes</label>
+              <select
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-2.5 py-2 text-white font-mono focus:outline-none focus:border-amber-500"
+                value={form.holes}
+                onChange={(e) => setForm({ ...form, holes: e.target.value })}
+              >
+                <option>1 mm</option>
+                <option>2 mm</option>
+                <option>3 mm</option>
+                <option>4 mm</option>
+                <option>5 mm</option>
+                <option>No Holes</option>
+              </select>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="text-zinc-400 font-semibold mb-1.5 block">Quantity Needed</label>
+              <label className="text-zinc-400 font-semibold mb-1 block">Colour</label>
+              <select
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-2.5 py-2 text-white focus:outline-none focus:border-amber-500"
+                value={form.colour}
+                onChange={(e) => setForm({ ...form, colour: e.target.value })}
+              >
+                <option>Single Colour</option>
+                <option>Double Colour</option>
+                <option>Three Colour</option>
+                <option>Four Colour</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-zinc-400 font-semibold mb-1 block">Batch Qty</label>
               <input
                 type="number"
                 min={1}
-                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-2.5 py-2 text-white font-mono focus:outline-none focus:border-amber-500"
                 value={form.quantity}
                 onChange={(e) => setForm({ ...form, quantity: parseInt(e.target.value) || 1 })}
               />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-zinc-400 font-semibold mb-1.5 block">Inquiry Source</label>
+              <label className="text-zinc-400 font-semibold mb-1 block">Printing Side</label>
               <select
-                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+                value={form.side}
+                onChange={(e) => setForm({ ...form, side: e.target.value })}
+              >
+                <option>Single Side</option>
+                <option>Double Side</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-zinc-400 font-semibold mb-1 block">Inquiry Source</label>
+              <select
+                className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
                 value={form.source}
                 onChange={(e) => setForm({ ...form, source: e.target.value })}
               >
-                <option>Phone / Direct Call</option>
+                <option>B2B Bulk Quote Desk</option>
+                <option>Catalog Product Quote</option>
+                <option>Product Enquiry Form</option>
                 <option>WhatsApp Direct</option>
-                <option>Walk-in Workshop</option>
-                <option>Online 3D Studio</option>
-                <option>Commercial RFP</option>
-                <option>Referral</option>
+                <option>Phone / Direct Call</option>
+                <option>OEM Repeat Order</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="text-zinc-400 font-semibold mb-1.5 block">Requirement Notes</label>
+            <label className="text-zinc-400 font-semibold mb-1 block">Requirement & GST Notes</label>
             <textarea
-              rows={3}
-              className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500 transition-colors resize-none"
+              rows={2}
+              className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-amber-500 transition-colors resize-none"
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
-              placeholder="Engraving text, mounting preference, or delivery timeline..."
+              placeholder="Custom drawing specs, GST number, or delivery timeline..."
             />
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 pt-1">
             <button
               type="button"
               onClick={onClose}
@@ -299,7 +368,7 @@ function ManualLeadModal({ onClose, onSave }) {
               type="submit"
               className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 font-extrabold hover:brightness-110 transition-all shadow-lg shadow-amber-500/20"
             >
-              Save Inquiry Lead
+              Save B2B Inquiry
             </button>
           </div>
         </form>
@@ -360,16 +429,18 @@ function LeadDetailModal({ lead, onClose, onStatusChange, onNotesChange }) {
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Uploaded Customer Photo OR Simulated Metal Plate Specimen Preview */}
+          {/* Uploaded Customer Photo OR B2B Catalog Specimen Preview */}
           <div className="rounded-2xl bg-zinc-950/90 border border-white/10 p-5 relative overflow-hidden">
             <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-3 font-mono">
               <span className="flex items-center gap-1.5 text-amber-400 font-semibold">
-                <Sparkles size={13} />{" "}
+                <Layers size={13} />{" "}
                 {lead.designFile?.previewUrl
-                  ? "CUSTOMER UPLOADED DESIGN PHOTO"
-                  : "LIVE FABRICATION SPECIMEN"}
+                  ? "CUSTOMER UPLOADED CAD / DESIGN PHOTO"
+                  : "B2B CATALOG PRODUCT & FABRICATION SPECIMEN"}
               </span>
-              <span>{lead.size || '12" × 6"'} • {lead.material || "Brushed Aluminium"}</span>
+              <span>
+                {lead.thickness || "0.7 mm"} • {lead.product || lead.material || "Aluminium Name Plate"}
+              </span>
             </div>
 
             {lead.designFile?.previewUrl ? (
@@ -382,33 +453,48 @@ function LeadDetailModal({ lead, onClose, onStatusChange, onNotesChange }) {
                 />
               </div>
             ) : (
-              <div
-                className={`w-full py-7 px-6 rounded-xl relative flex flex-col items-center justify-center text-center shadow-2xl ${getMaterialTextureClass(
-                  lead.material
-                )}`}
-              >
-                {/* 4 Corner Standoff Bolts */}
-                <span className="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-600 shadow-inner absolute top-2.5 left-2.5" />
-                <span className="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-600 shadow-inner absolute top-2.5 right-2.5" />
-                <span className="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-600 shadow-inner absolute bottom-2.5 left-2.5" />
-                <span className="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-600 shadow-inner absolute bottom-2.5 right-2.5" />
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-stretch">
+                <div className="sm:col-span-5 rounded-xl bg-zinc-900 border border-white/10 overflow-hidden relative min-h-[125px] flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={getLeadProductImage(lead)}
+                    alt={lead.product || lead.material || "B2B Product"}
+                    className="w-full h-32 object-cover"
+                  />
+                  <span className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded bg-black/80 text-amber-400 font-mono text-[9px] font-bold">
+                    {lead.product || lead.material}
+                  </span>
+                </div>
+                <div
+                  className={`sm:col-span-7 py-6 px-5 rounded-xl relative flex flex-col items-center justify-center text-center shadow-2xl ${getMaterialTextureClass(
+                    lead.material || lead.product
+                  )}`}
+                >
+                  {/* 4 Corner Standoff Bolts */}
+                  <span className="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-600 shadow-inner absolute top-2.5 left-2.5" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-600 shadow-inner absolute top-2.5 right-2.5" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-600 shadow-inner absolute bottom-2.5 left-2.5" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-600 shadow-inner absolute bottom-2.5 right-2.5" />
 
-                {lead.textLayers && lead.textLayers.length > 0 ? (
-                  lead.textLayers.map((t, i) => (
-                    <div
-                      key={i}
-                      className={`${
-                        i === 0 ? "text-base sm:text-xl font-black tracking-wider" : "text-xs sm:text-sm font-semibold opacity-85 mt-1"
-                      }`}
-                    >
-                      {t.line}
+                  {lead.textLayers && lead.textLayers.length > 0 ? (
+                    lead.textLayers.map((t, i) => (
+                      <div
+                        key={i}
+                        className={`${
+                          i === 0
+                            ? "text-sm sm:text-base font-black tracking-wider"
+                            : "text-xs font-semibold opacity-85 mt-1"
+                        }`}
+                      >
+                        {t.line}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm sm:text-base font-black tracking-widest uppercase">
+                      {lead.client}
                     </div>
-                  ))
-                ) : (
-                  <div className="text-base sm:text-lg font-black tracking-widest uppercase">
-                    {lead.client}
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -618,6 +704,7 @@ export default function AdminDashboard() {
   const [leads, setLeads] = useState([]);
   const [materials, setMaterials] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [screenLoaderOn, setScreenLoaderOn] = useState(true);
 
   // UI
   const [search, setSearch] = useState("");
@@ -660,7 +747,18 @@ export default function AdminDashboard() {
       if (session === "true") setIsAuthenticated(true);
 
       const savedLeads = localStorage.getItem("sourav_admin_leads");
-      const localLeads = savedLeads ? JSON.parse(savedLeads) : INITIAL_LEADS;
+      let localLeads = savedLeads ? JSON.parse(savedLeads) : INITIAL_LEADS;
+      // Upgrade legacy residential demo leads to the B2B industrial leads
+      const hasLegacyDemoLead = localLeads.some(
+        (l) => l.client === "Rahul Sharma" || l.client === "Vikram Malhotra"
+      );
+      if (hasLegacyDemoLead) {
+        const customUserLeads = localLeads.filter(
+          (l) => !["LD-9041", "LD-9040", "LD-9039", "LD-9038", "LD-9037"].includes(l.id)
+        );
+        localLeads = [...customUserLeads, ...INITIAL_LEADS];
+        localStorage.setItem("sourav_admin_leads", JSON.stringify(localLeads));
+      }
       setLeads(localLeads);
 
       // Merge any server-stored enquiries from /api/enquiries
@@ -680,16 +778,120 @@ export default function AdminDashboard() {
         .catch(() => {});
 
       const savedMats = localStorage.getItem("sourav_admin_materials");
-      setMaterials(savedMats ? JSON.parse(savedMats) : INITIAL_MATERIALS);
+      const parsedMats = savedMats ? JSON.parse(savedMats) : null;
+      if (!parsedMats || !parsedMats[0]?.img || parsedMats.length < 12) {
+        setMaterials(INITIAL_MATERIALS);
+        localStorage.setItem("sourav_admin_materials", JSON.stringify(INITIAL_MATERIALS));
+      } else {
+        setMaterials(parsedMats);
+      }
 
       const savedSettings = localStorage.getItem("sourav_admin_settings");
       if (savedSettings) setSettings(JSON.parse(savedSettings));
     } catch (e) {
       console.error("AdminDashboard load error:", e);
     }
-    const timer = setTimeout(() => setIsLoaded(true), 600);
-    return () => clearTimeout(timer);
+
+    const loaderEnabled = isScreenLoaderEnabled();
+    setScreenLoaderOn(loaderEnabled);
+
+    // Sync screenLoaderOn from server settings & BroadcastChannel
+    fetch("/api/studio-settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && data.settings) {
+          const serverLoaderOn = data.settings.screenLoaderOn !== false;
+          setScreenLoaderOn(serverLoaderOn);
+        }
+      })
+      .catch(() => {});
+
+    let channel = null;
+    try {
+      if (typeof BroadcastChannel !== "undefined") {
+        channel = new BroadcastChannel("sourav_studio_mode_channel");
+        channel.onmessage = (event) => {
+          if (typeof event?.data?.screenLoaderOn === "boolean") {
+            setScreenLoaderOn(event.data.screenLoaderOn);
+          }
+        };
+      }
+    } catch (e) {}
+
+    if (!loaderEnabled) {
+      setIsLoaded(true);
+      return () => {
+        if (channel) channel.close();
+      };
+    }
+
+    const timer = setTimeout(() => setIsLoaded(true), 550);
+    return () => {
+      clearTimeout(timer);
+      if (channel) channel.close();
+    };
   }, []);
+
+  async function handleToggleScreenLoader() {
+    const nextVal = !screenLoaderOn;
+    setScreenLoaderOn(nextVal);
+    const nowIso = new Date().toISOString();
+
+    let updatedSettings = {
+      displayMode: "enquiry",
+      customizationStudioOn: false,
+      enquiryFormOn: true,
+      screenLoaderOn: nextVal,
+      minQuantity: 1,
+      maxFileSizeMB: 10,
+      updatedAt: nowIso,
+      updatedBy: adminAuth.email,
+    };
+
+    try {
+      const cached = localStorage.getItem("sourav_studio_mode_settings");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        updatedSettings = {
+          ...parsed,
+          screenLoaderOn: nextVal,
+          updatedAt: nowIso,
+          updatedBy: adminAuth.email,
+        };
+      }
+      localStorage.setItem(
+        "sourav_studio_mode_settings",
+        JSON.stringify(updatedSettings)
+      );
+      localStorage.setItem("sourav_screen_loader", String(nextVal));
+    } catch (e) {}
+
+    try {
+      document.cookie = `sourav_screen_loader=${nextVal}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `sourav_mode_updated_at=${encodeURIComponent(
+        nowIso
+      )}; path=/; max-age=31536000; SameSite=Lax`;
+    } catch (e) {}
+
+    try {
+      if (typeof BroadcastChannel !== "undefined") {
+        const ch = new BroadcastChannel("sourav_studio_mode_channel");
+        ch.postMessage(updatedSettings);
+        ch.close();
+      }
+    } catch (e) {}
+
+    try {
+      await fetch("/api/studio-settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-auth": "true",
+        },
+        body: JSON.stringify(updatedSettings),
+      });
+    } catch (e) {}
+  }
 
   // ── Persistence ──
   function saveLeads(updated) {
@@ -899,16 +1101,13 @@ export default function AdminDashboard() {
           className="w-full max-w-md relative z-10"
         >
           <div className="bg-[#0f1118]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-            {/* Top Specular Gold Line */}
-            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
-
             {/* Brand Header */}
             <div className="text-center mb-7">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 via-amber-500/5 to-transparent border border-amber-500/30 mb-4 shadow-lg shadow-amber-500/10">
                 <ShieldCheck size={30} className="text-amber-400" />
               </div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-mono uppercase tracking-widest text-amber-400 mb-2">
-                <Sparkles size={11} /> Restricted Executive Access
+                <Lock size={11} /> Restricted Executive Access
               </div>
               <h1 className="text-white text-2xl font-black tracking-tight">
                 Sourav Graphic CRM
@@ -1013,17 +1212,17 @@ export default function AdminDashboard() {
   // ── MAIN LUXURY CRM LAYOUT ──
   // ────────────────────────────────────────────────────────
   const navItems = [
-    { id: "dashboard", label: "Overview", icon: LayoutDashboard },
-    { id: "leads", label: "Inquiries & Leads", icon: Users, badge: newLeadsCount },
+    { id: "dashboard", label: "B2B Overview", icon: LayoutDashboard },
+    { id: "leads", label: "B2B Inquiries & Leads", icon: Users, badge: newLeadsCount },
     { id: "studio-mode", label: "Studio Display Mode", icon: Sliders },
-    { id: "materials", label: "Alloy Catalog", icon: Layers },
+    { id: "materials", label: "B2B Product Catalog (12)", icon: Layers },
     { id: "security", label: "Super Admin Security", icon: ShieldCheck },
-    { id: "settings", label: "Workshop Settings", icon: SettingsIcon },
+    { id: "settings", label: "Factory Settings", icon: SettingsIcon },
   ];
 
   return (
     <div
-      className={`min-h-screen flex font-sans relative overflow-x-hidden transition-colors duration-200 ${
+      className={`min-h-screen flex font-sans relative transition-colors duration-200 ${
         isDarkMode ? "bg-[#08090d] text-white" : "bg-[#e3f2ee] text-[#0d1e1b]"
       }`}
     >
@@ -1054,46 +1253,50 @@ export default function AdminDashboard() {
         )}
       </AnimatePresence>
 
-      {/* ── Sleek Glassmorphic Sidebar ── */}
+      {/* ── Fixed Left Sidebar (Sticks Permanently, Does Not Scroll With Page) ── */}
       <aside
-        className={`w-64 shrink-0 flex flex-col z-20 border-r min-h-screen sticky top-0 backdrop-blur-2xl ${
+        className={`fixed inset-y-0 left-0 w-56 h-screen shrink-0 flex flex-col z-40 border-r backdrop-blur-2xl overflow-y-auto ${
           isDarkMode
-            ? "bg-[#0c0e14]/90 border-white/[0.08]"
-            : "bg-[#f2faf7]/90 border-[#c3e2da]"
+            ? "bg-[#0c0e14]/95 border-white/[0.08]"
+            : "bg-[#f2faf7]/95 border-[#c3e2da]"
         }`}
       >
-        {/* Brand Header */}
-        <div className="p-5 border-b border-white/[0.08]">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative h-9 w-32">
+        {/* Brand Header — Double-Size Logo + Filling Animation "Back to Site" Button */}
+        <div className="px-3.5 py-3 border-b border-current/10 flex flex-col items-center shrink-0">
+          <Link href="/" className="w-full flex items-center justify-center group">
+            <div className="relative h-28 w-full overflow-hidden">
               <Image
                 src="/Media/Logo.png"
-                alt="Sourav Graphic"
+                alt="Sourav Graphic & Metal Label"
                 fill
-                sizes="140px"
-                className="object-contain object-left"
+                sizes="220px"
+                className="object-contain object-center scale-[1.28] transition-transform duration-200 group-hover:scale-[1.33]"
+                priority
               />
             </div>
           </Link>
-          <div className="mt-3 flex items-center gap-2 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 w-fit">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
-              Lead Management CRM
-            </span>
+          <div className="mt-2 w-full">
+            <SweepButton
+              href="/"
+              label="Back to Site"
+              type="back"
+              size="sm"
+              fullWidth={true}
+            />
           </div>
         </div>
 
-        {/* Navigation Links with Framer Motion Sliding Pill */}
-        <nav className="flex-1 p-3.5 space-y-1.5">
+        {/* Compact Navigation Links */}
+        <nav className="flex-1 p-2.5 space-y-1">
           {navItems.map((item) => {
             const active = activeTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full relative flex items-center justify-between px-3.5 py-3 rounded-2xl text-xs font-bold transition-colors ${
+                className={`w-full relative flex items-center justify-between px-3 py-2 rounded-xl text-[11px] font-bold transition-colors cursor-pointer ${
                   active
-                    ? "text-amber-400"
+                    ? "text-amber-600 dark:text-amber-400"
                     : isDarkMode
                     ? "text-zinc-400 hover:text-white hover:bg-white/[0.03]"
                     : "text-zinc-600 hover:text-zinc-950 hover:bg-black/[0.04]"
@@ -1103,15 +1306,15 @@ export default function AdminDashboard() {
                   <motion.div
                     layoutId="activeAdminSidebarPill"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                    className="absolute inset-0 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-transparent border border-amber-500/30 shadow-lg shadow-amber-500/5"
+                    className="absolute inset-0 rounded-xl bg-amber-500/15 border border-amber-500/30"
                   />
                 )}
-                <div className="relative z-10 flex items-center gap-3">
-                  <item.icon size={17} />
+                <div className="relative z-10 flex items-center gap-2.5">
+                  <item.icon size={14} />
                   <span>{item.label}</span>
                 </div>
                 {item.badge > 0 && (
-                  <span className="relative z-10 px-2 py-0.5 rounded-full text-[10px] font-mono font-extrabold bg-amber-500 text-zinc-950">
+                  <span className="relative z-10 px-1.5 py-0.2 rounded-full text-[9.5px] font-mono font-extrabold bg-amber-500 text-zinc-950">
                     {item.badge}
                   </span>
                 )}
@@ -1120,51 +1323,84 @@ export default function AdminDashboard() {
           })}
         </nav>
 
-        {/* Active Super Admin Card & Actions */}
-        <div className="p-3.5 border-t border-white/[0.08] space-y-2">
+        {/* Compact Super Admin Card, Screen Loader ON/OFF & Actions */}
+        <div className="p-2.5 border-t border-current/10 space-y-1.5 shrink-0">
+          {/* Screen Loader ON / OFF Quick Switch */}
+          <button
+            type="button"
+            onClick={handleToggleScreenLoader}
+            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[10.5px] font-extrabold border transition-all cursor-pointer ${
+              screenLoaderOn
+                ? "bg-emerald-500/15 border-emerald-500/35 text-emerald-600 dark:text-emerald-400"
+                : isDarkMode
+                ? "bg-white/[0.03] border-white/10 text-zinc-400 hover:text-white"
+                : "bg-white border-[#c3e2da] text-zinc-600 hover:text-zinc-900"
+            }`}
+          >
+            <span className="flex items-center gap-1.5">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  screenLoaderOn ? "bg-emerald-500" : "bg-zinc-400"
+                }`}
+              />
+              <span>Screen Loader</span>
+            </span>
+            <span
+              className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-black uppercase ${
+                screenLoaderOn
+                  ? "bg-emerald-500 text-zinc-950"
+                  : isDarkMode
+                  ? "bg-zinc-800 text-zinc-300"
+                  : "bg-zinc-200 text-zinc-700"
+              }`}
+            >
+              {screenLoaderOn ? "ON" : "OFF"}
+            </span>
+          </button>
+
           <div
-            className={`p-3 rounded-2xl border text-xs ${
+            className={`p-2 rounded-xl border text-[11px] ${
               isDarkMode
                 ? "bg-white/[0.02] border-white/[0.06]"
                 : "bg-white/70 border-[#c3e2da]"
             }`}
           >
-            <div className="text-[10px] font-mono uppercase tracking-wider text-amber-500 font-bold">
+            <div className="text-[9px] font-mono uppercase tracking-wider text-amber-600 dark:text-amber-500 font-bold">
               Super Admin
             </div>
-            <div className="font-mono text-[11px] truncate mt-0.5 opacity-80">
+            <div className="font-mono text-[10px] truncate opacity-80">
               {adminAuth.email}
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <button
               onClick={() => setTheme(!isDarkMode)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold border transition-colors ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10.5px] font-semibold border transition-colors cursor-pointer ${
                 isDarkMode
                   ? "bg-white/[0.03] border-white/10 text-zinc-300 hover:bg-white/[0.07]"
                   : "bg-white border-[#c3e2da] text-zinc-700 hover:bg-zinc-50"
               }`}
             >
-              {isDarkMode ? <Sun size={14} className="text-amber-400" /> : <Moon size={14} />}
+              {isDarkMode ? <Sun size={12} className="text-amber-400" /> : <Moon size={12} />}
               <span>{isDarkMode ? "Light" : "Dark"}</span>
             </button>
             <button
               onClick={handleLogout}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10.5px] font-bold bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-colors cursor-pointer"
             >
-              <LogOut size={14} />
+              <LogOut size={12} />
               <span>Logout</span>
             </button>
           </div>
         </div>
       </aside>
 
-      {/* ── Main Content Area ── */}
-      <main className="flex-1 flex flex-col min-w-0 z-10">
-        {/* Top Floating Command Bar */}
+      {/* ── Main Content Area (Offset by Fixed Left Sidebar w-56 -> ml-56) ── */}
+      <main className="flex-1 flex flex-col min-w-0 z-10 ml-56">
+        {/* Compact Top Command Bar */}
         <header
-          className={`sticky top-0 z-30 flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-b backdrop-blur-2xl ${
+          className={`sticky top-0 z-30 flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 border-b backdrop-blur-2xl ${
             isDarkMode
               ? "bg-[#08090d]/85 border-white/[0.08]"
               : "bg-[#e3f2ee]/85 border-[#c3e2da]"
@@ -1172,121 +1408,128 @@ export default function AdminDashboard() {
         >
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-black text-lg sm:text-xl tracking-tight">
+              <h1 className="font-black text-sm sm:text-base tracking-tight">
                 {navItems.find((n) => n.id === activeTab)?.label}
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 Live Sync
               </span>
             </div>
-            <p className="text-xs opacity-60">
-              Sourav Graphic & Metal Labels • Customer Inquiry & Quotation Hub
+            <p className="text-[10.5px] opacity-60 leading-tight">
+              Sourav Graphic & Metal Label • B2B Inquiry & Quotation Hub
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Screen Loader ON / OFF Button in Top Header */}
+            <button
+              type="button"
+              onClick={handleToggleScreenLoader}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10.5px] font-extrabold border transition-all cursor-pointer ${
+                screenLoaderOn
+                  ? "bg-emerald-500 text-zinc-950 border-emerald-400"
+                  : isDarkMode
+                  ? "bg-white/[0.04] border-white/15 text-zinc-300 hover:text-white"
+                  : "bg-white border-[#c3e2da] text-zinc-700 hover:text-zinc-950"
+              }`}
+              title="Turn Screen Loader ON or OFF"
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  screenLoaderOn ? "bg-zinc-950" : "bg-zinc-400"
+                }`}
+              />
+              <span>Screen Loader: {screenLoaderOn ? "ON" : "OFF"}</span>
+            </button>
+
             <Link
               href="/customize"
-              className={`hidden md:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all ${
+              className={`hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
                 isDarkMode
                   ? "bg-white/[0.03] border-white/10 text-zinc-300 hover:text-white hover:border-white/20"
                   : "bg-white border-[#c3e2da] text-zinc-800"
               }`}
             >
-              <span>3D Studio</span>
-              <ExternalLink size={13} />
+              <span>/customize</span>
+              <ExternalLink size={11} />
             </Link>
 
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+            <button
               onClick={() => setShowManualLeadModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 font-black text-xs rounded-xl shadow-lg shadow-amber-500/20 hover:brightness-110 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[11px] rounded-lg transition-all cursor-pointer"
             >
-              <Plus size={15} />
+              <Plus size={13} />
               <span>Add Manual Inquiry</span>
-            </motion.button>
+            </button>
           </div>
         </header>
 
-        {/* Animated Tab Views */}
-        <div className="p-4 sm:p-6 lg:px-8 max-w-[1920px] w-full mx-auto flex-1">
+        {/* Compact Animated Tab Views */}
+        <div className="p-3 sm:p-4 max-w-[1920px] w-full mx-auto flex-1">
           <AnimatePresence mode="wait">
             {/* ── TAB 1: DASHBOARD OVERVIEW ── */}
             {activeTab === "dashboard" && (
               <motion.div
                 key="dashboard"
-                initial={{ opacity: 0, y: 14 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.28 }}
-                className="space-y-6"
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3"
               >
-                {/* 4 Animated Bento KPI Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* 4 Micro-Compact KPI Cards */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
                   {[
                     {
                       label: "Total Inquiries",
                       sub: "All leads captured",
                       value: totalLeads,
                       icon: Users,
-                      accent: "from-amber-500/20 to-amber-500/0",
-                      iconClass: "text-amber-400 bg-amber-500/10 border-amber-500/25",
+                      iconClass: "text-amber-500 bg-amber-500/10 border-amber-500/25",
                     },
                     {
                       label: "New / Unread Queries",
                       sub: "Awaiting first quote",
                       value: newLeadsCount,
                       icon: Inbox,
-                      accent: "from-blue-500/20 to-blue-500/0",
-                      iconClass: "text-blue-400 bg-blue-500/10 border-blue-500/25",
+                      iconClass: "text-blue-500 bg-blue-500/10 border-blue-500/25",
                     },
                     {
                       label: "Active Discussions",
                       sub: "Quote & sample stage",
                       value: activePipelineCount,
                       icon: Clock,
-                      accent: "from-purple-500/20 to-purple-500/0",
-                      iconClass: "text-purple-400 bg-purple-500/10 border-purple-500/25",
+                      iconClass: "text-purple-500 bg-purple-500/10 border-purple-500/25",
                     },
                     {
                       label: "Converted / Won",
                       sub: `${conversionRate}% conversion rate`,
                       value: convertedLeadsCount,
                       icon: Award,
-                      accent: "from-emerald-500/20 to-emerald-500/0",
-                      iconClass: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25",
+                      iconClass: "text-emerald-500 bg-emerald-500/10 border-emerald-500/25",
                     },
-                  ].map((kpi, idx) => (
-                    <motion.div
+                  ].map((kpi) => (
+                    <div
                       key={kpi.label}
-                      initial={{ opacity: 0, y: 18 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.06, duration: 0.35 }}
-                      whileHover={{ y: -4 }}
                       onClick={() => setActiveTab("leads")}
-                      className={`cursor-pointer rounded-3xl border p-5 relative overflow-hidden transition-shadow hover:shadow-xl ${
+                      className={`cursor-pointer rounded-xl border px-3 py-2.5 flex items-center justify-between gap-2 transition-shadow hover:shadow-sm ${
                         isDarkMode
                           ? "bg-[#0f1118] border-white/[0.08]"
                           : "bg-white border-[#c3e2da]"
                       }`}
                     >
-                      <div
-                        className={`absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-bl ${kpi.accent} rounded-full blur-2xl pointer-events-none`}
-                      />
-                      <div className="flex items-center justify-between mb-4">
-                        <div className={`p-2.5 rounded-2xl border ${kpi.iconClass}`}>
-                          <kpi.icon size={20} />
+                      <div>
+                        <div className="text-lg sm:text-xl font-black font-mono tracking-tight leading-none">
+                          {kpi.value}
                         </div>
-                        <ArrowUpRight size={16} className="opacity-40" />
+                        <div className="text-[11px] font-extrabold mt-1 leading-tight">{kpi.label}</div>
+                        <div className="text-[9.5px] opacity-60">{kpi.sub}</div>
                       </div>
-                      <div className="text-3xl font-black font-mono tracking-tight">
-                        {kpi.value}
+                      <div className={`p-2 rounded-lg border shrink-0 ${kpi.iconClass}`}>
+                        <kpi.icon size={15} />
                       </div>
-                      <div className="text-xs font-bold mt-1">{kpi.label}</div>
-                      <div className="text-[11px] opacity-55 mt-0.5">{kpi.sub}</div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
 
@@ -1296,210 +1539,263 @@ export default function AdminDashboard() {
                   adminEmail={adminAuth.email}
                 />
 
-                {/* Middle Bento Grid: Pipeline Funnel + Recent Priority Leads */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  {/* Pipeline Stage Breakdown (5 cols) */}
-                  <div
-                    className={`lg:col-span-5 rounded-3xl border p-6 flex flex-col justify-between ${
-                      isDarkMode
-                        ? "bg-[#0f1118] border-white/[0.08]"
-                        : "bg-white border-[#c3e2da]"
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <h2 className="font-extrabold text-base">Inquiry Pipeline</h2>
-                        <span className="text-[11px] font-mono text-amber-400">
-                          Click stage to filter
-                        </span>
-                      </div>
-                      <p className="text-xs opacity-60 mb-5">
-                        Real-time progression from initial query to confirmed project
-                      </p>
-
-                      <div className="space-y-4">
-                        {LEAD_STATUSES.map((s, i) => {
-                          const count = leads.filter((l) => l.status === s.key).length;
-                          const pct =
-                            totalLeads > 0 ? Math.round((count / totalLeads) * 100) : 0;
-                          return (
-                            <div
-                              key={s.key}
-                              onClick={() => {
-                                setStatusFilter(s.key);
-                                setActiveTab("leads");
-                              }}
-                              className="group cursor-pointer"
-                            >
-                              <div className="flex items-center justify-between text-xs mb-1.5">
-                                <div className="flex items-center gap-2">
-                                  <span
-                                    className={`w-2 h-2 rounded-full ${statusDotColor(
-                                      s.key
-                                    )}`}
-                                  />
-                                  <span className="font-bold group-hover:text-amber-400 transition-colors">
-                                    {s.label}
-                                  </span>
-                                </div>
-                                <span className="font-mono font-bold">
-                                  {count} <span className="opacity-40 text-[10px]">({pct}%)</span>
-                                </span>
-                              </div>
-                              <div className="h-2 rounded-full bg-zinc-800/70 overflow-hidden p-0.5">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${ Math.max(pct, count > 0 ? 8 : 0) }%` }}
-                                  transition={{ duration: 0.6, delay: i * 0.07 }}
-                                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400"
-                                />
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                {/* ── HORIZONTAL 6-STAGE INQUIRY PIPELINE STRIP (COMPACT) ── */}
+                <div
+                  className={`rounded-xl border p-2.5 sm:p-3 ${
+                    isDarkMode
+                      ? "bg-[#0f1118] border-white/[0.08]"
+                      : "bg-white border-[#c3e2da]"
+                  }`}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2">
+                      <h2 className="font-extrabold text-xs">Inquiry Pipeline</h2>
+                      <span className="text-[10px] opacity-60">
+                        Click stage to filter
+                      </span>
                     </div>
-
-                    <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                      <span className="opacity-60"> customizer & web inquiries sync automatically</span>
-                      <button
-                        onClick={() => {
-                          setStatusFilter("All");
-                          setActiveTab("leads");
-                        }}
-                        className="text-amber-400 font-bold hover:underline"
-                      >
-                        All Leads →
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => {
+                        setStatusFilter("All");
+                        setActiveTab("leads");
+                      }}
+                      className="text-amber-600 dark:text-amber-400 text-[11px] font-extrabold hover:underline cursor-pointer"
+                    >
+                      All Leads ({totalLeads}) →
+                    </button>
                   </div>
 
-                  {/* Recent Inquiries Feed (7 cols) */}
-                  <div
-                    className={`lg:col-span-7 rounded-3xl border p-6 flex flex-col ${
-                      isDarkMode
-                        ? "bg-[#0f1118] border-white/[0.08]"
-                        : "bg-white border-[#c3e2da]"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h2 className="font-extrabold text-base">Latest Customer Queries</h2>
-                        <p className="text-xs opacity-60">
-                          Click any lead to inspect 3D plate specs & send WhatsApp quote
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setActiveTab("leads")}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold border transition-colors ${
-                          isDarkMode
-                            ? "bg-amber-500/15 text-amber-300 border-amber-500/30 hover:bg-amber-500/25"
-                            : "bg-[#0d1e1b] text-white border-[#0d1e1b] hover:bg-slate-800 shadow-xs"
-                        }`}
-                      >
-                        View All ({leads.length})
-                      </button>
-                    </div>
-
-                    <div className="space-y-2.5 flex-1">
-                      {leads.slice(0, 5).map((lead, idx) => (
-                        <motion.div
-                          key={lead.id}
-                          initial={{ opacity: 0, x: 12 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.05 }}
-                          whileHover={{ scale: 1.008 }}
-                          onClick={() => setSelectedLead(lead)}
-                          className={`cursor-pointer p-3.5 rounded-2xl border flex items-center justify-between gap-3 transition-all ${
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                    {LEAD_STATUSES.map((s) => {
+                      const count = leads.filter((l) => l.status === s.key).length;
+                      const pct =
+                        totalLeads > 0 ? Math.round((count / totalLeads) * 100) : 0;
+                      return (
+                        <div
+                          key={s.key}
+                          onClick={() => {
+                            setStatusFilter(s.key);
+                            setActiveTab("leads");
+                          }}
+                          className={`group cursor-pointer rounded-lg px-2.5 py-2 border transition-all ${
                             isDarkMode
-                              ? "bg-white/[0.02] border-white/[0.06] hover:border-amber-500/40 hover:bg-white/[0.04]"
-                              : "bg-[#f2faf7] border-[#c3e2da] hover:border-[#0d1e1b]/40"
+                              ? "bg-white/[0.02] border-white/[0.07] hover:border-amber-500/40"
+                              : "bg-[#f4fbf9] border-[#c3e2da] hover:border-amber-500"
                           }`}
                         >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div
-                              className={`w-10 h-10 rounded-xl border flex items-center justify-center font-black text-xs shrink-0 ${
-                                isDarkMode
-                                  ? "bg-gradient-to-br from-amber-500/20 to-amber-500/5 border-amber-500/25 text-amber-300"
-                                  : "bg-[#0d1e1b] border-[#0d1e1b] text-white shadow-xs"
-                              }`}
-                            >
-                              {getInitials(lead.client)}
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-xs sm:text-sm truncate">
-                                  {lead.client}
-                                </span>
-                                <span
-                                  className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-extrabold border ${
-                                    isDarkMode
-                                      ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
-                                      : "bg-amber-900/10 text-amber-950 border-amber-900/25"
-                                  }`}
-                                >
-                                  {lead.id}
-                                </span>
-                              </div>
-                              <div className="text-[11px] opacity-70 truncate mt-0.5">
-                                {lead.material} • {lead.size} • Qty: {lead.quantity}
-                              </div>
-                            </div>
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <span className="flex items-center gap-1 text-[10px] font-bold truncate group-hover:text-amber-500 transition-colors">
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusDotColor(
+                                  s.key
+                                )}`}
+                              />
+                              <span className="truncate">{s.label}</span>
+                            </span>
+                            <span className="text-[9px] font-mono font-bold opacity-55 shrink-0">
+                              {pct}%
+                            </span>
                           </div>
 
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span
-                              className={`hidden sm:inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusBadge(
-                                lead.status
-                              )}`}
-                            >
-                              {lead.status}
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-sm font-black font-mono leading-none">
+                              {count}
                             </span>
-                            <a
-                              href={whatsappLink(lead.phone, lead)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className={`p-2 rounded-xl border transition-colors ${
-                                isDarkMode
-                                  ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500 hover:text-zinc-950"
-                                  : "bg-emerald-600/15 text-emerald-800 border-emerald-600/30 hover:bg-emerald-600 hover:text-white"
+                            <div
+                              className={`flex-1 h-1 rounded-full overflow-hidden ${
+                                isDarkMode ? "bg-white/10" : "bg-emerald-950/10"
                               }`}
-                              title="Follow up on WhatsApp"
                             >
-                              <MessageCircle size={15} />
-                            </a>
+                              <div
+                                style={{
+                                  width: `${Math.max(pct, count > 0 ? 12 : 0)}%`,
+                                }}
+                                className="h-full rounded-full bg-amber-500"
+                              />
+                            </div>
                           </div>
-                        </motion.div>
-                      ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ── FULL-WIDTH COMPACT LATEST CUSTOMER QUERIES ── */}
+                <div
+                  className={`rounded-xl border p-3 flex flex-col ${
+                    isDarkMode
+                      ? "bg-[#0f1118] border-white/[0.08]"
+                      : "bg-white border-[#c3e2da]"
+                  }`}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5 pb-2 border-b border-current/10">
+                    <div>
+                      <h2 className="font-extrabold text-xs sm:text-sm">
+                        Latest B2B Customer Queries
+                      </h2>
+                      <p className="text-[10px] opacity-60">
+                        Click any inquiry to inspect plate specs & send WhatsApp quote
+                      </p>
                     </div>
+                    <button
+                      onClick={() => setActiveTab("leads")}
+                      className={`px-2.5 py-1 rounded-lg text-[10.5px] font-extrabold border transition-colors cursor-pointer ${
+                        isDarkMode
+                          ? "bg-amber-500 text-zinc-950 border-amber-400 hover:bg-amber-400"
+                          : "bg-[#0d1e1b] text-white border-[#0d1e1b] hover:bg-slate-800"
+                      }`}
+                    >
+                      View All ({leads.length})
+                    </button>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    {leads.slice(0, 5).map((lead) => (
+                      <div
+                        key={lead.id}
+                        onClick={() => setSelectedLead(lead)}
+                        className={`cursor-pointer px-2.5 py-2 rounded-lg border grid grid-cols-1 lg:grid-cols-12 items-center gap-2 transition-all ${
+                          isDarkMode
+                            ? "bg-white/[0.02] border-white/[0.07] hover:border-amber-500/40 hover:bg-white/[0.04]"
+                            : "bg-[#f6fbf9] border-[#cce5de] hover:border-[#0d1e1b]/40 hover:bg-[#eef8f5]"
+                        }`}
+                      >
+                        {/* Col 1-5: Real Product Thumbnail + Company Name + Inquiry ID + Contact */}
+                        <div className="lg:col-span-5 flex items-center gap-2.5 min-w-0">
+                          <div className="w-8 h-8 rounded-lg overflow-hidden border border-current/15 bg-zinc-900 shrink-0">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={getLeadProductImage(lead)}
+                              alt={lead.material || "Product"}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-extrabold text-xs truncate">
+                                {lead.client}
+                              </span>
+                              <span
+                                className={`px-1.5 py-0.2 rounded text-[9px] font-mono font-black border shrink-0 whitespace-nowrap ${
+                                  isDarkMode
+                                    ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                                    : "bg-amber-500/15 text-amber-900 border-amber-500/35"
+                                }`}
+                              >
+                                {lead.id}
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-x-2 text-[10px] opacity-65 font-medium leading-tight">
+                              <span className="font-mono">{lead.phone}</span>
+                              <span>•</span>
+                              <span className="truncate">{lead.city || "India"}</span>
+                              <span>•</span>
+                              <span>{lead.date}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Col 6-9: Product Category & Gauge Specs + Batch Quantity */}
+                        <div className="lg:col-span-4 flex items-center justify-between sm:justify-start gap-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 truncate leading-tight">
+                              {lead.material || lead.category}
+                            </div>
+                            <div className="text-[10px] font-mono opacity-75 truncate leading-tight">
+                              {lead.size}
+                            </div>
+                          </div>
+                          <div
+                            className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-black border shrink-0 whitespace-nowrap ${
+                              isDarkMode
+                                ? "bg-white/5 border-white/10 text-white"
+                                : "bg-white border-[#c3e2da] text-[#0d1e1b]"
+                            }`}
+                          >
+                            Qty: {lead.quantity}
+                          </div>
+                        </div>
+
+                        {/* Col 10-12: Pipeline Status Dropdown + Specs & WhatsApp Actions */}
+                        <div
+                          className="lg:col-span-3 flex items-center justify-end gap-1.5 shrink-0"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <select
+                            value={lead.status}
+                            onChange={(e) =>
+                              handleStatusChange(lead.id, e.target.value)
+                            }
+                            className={`px-2 py-1 rounded-md text-[10px] font-bold border cursor-pointer focus:outline-none ${statusBadge(
+                              lead.status
+                            )}`}
+                          >
+                            {LEAD_STATUSES.map((s) => (
+                              <option
+                                key={s.key}
+                                value={s.key}
+                                className="bg-zinc-900 text-white"
+                              >
+                                {s.label}
+                              </option>
+                            ))}
+                          </select>
+
+                          <button
+                            type="button"
+                            onClick={() => setSelectedLead(lead)}
+                            className={`px-2 py-1 rounded-md border text-[10px] font-extrabold transition-colors cursor-pointer ${
+                              isDarkMode
+                                ? "bg-white/5 hover:bg-white/10 border-white/10 text-zinc-200"
+                                : "bg-white hover:bg-zinc-100 border-[#c3e2da] text-[#0d1e1b]"
+                            }`}
+                          >
+                            Specs
+                          </button>
+
+                          <a
+                            href={whatsappLink(lead.phone, lead)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`p-1.5 rounded-md border transition-colors ${
+                              isDarkMode
+                                ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500 hover:text-zinc-950"
+                                : "bg-emerald-600/15 text-emerald-800 border-emerald-600/30 hover:bg-emerald-600 hover:text-white"
+                            }`}
+                            title="Send B2B Quote on WhatsApp"
+                          >
+                            <MessageCircle size={12} />
+                          </a>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* ── TAB 2: ALL LEADS & INQUIRIES CRM ── */}
+            {/* ── TAB 2: ALL LEADS & INQUIRIES CRM (COMPACT) ── */}
             {activeTab === "leads" && (
               <motion.div
                 key="leads"
-                initial={{ opacity: 0, y: 14 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
-                className="space-y-5"
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3"
               >
-                {/* Search Bar & View Mode Switcher */}
-                <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+                {/* Compact Search Bar & View Mode Switcher */}
+                <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center justify-between">
                   <div className="relative flex-1">
                     <Search
-                      size={16}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
+                      size={14}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
                     />
                     <input
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Search by client name, mobile, INQ-ID, material, or city..."
-                      className={`w-full pl-11 pr-4 py-3 rounded-2xl border text-xs font-medium focus:outline-none focus:border-amber-500 transition-colors ${
+                      className={`w-full pl-9 pr-3 py-2 rounded-xl border text-xs font-medium focus:outline-none focus:border-amber-500 transition-colors ${
                         isDarkMode
                           ? "bg-[#0f1118] border-white/10 text-white placeholder:text-zinc-500"
                           : "bg-white border-[#c3e2da] text-zinc-900"
@@ -1507,10 +1803,10 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => setViewMode("cards")}
-                      className={`px-3.5 py-2.5 rounded-xl text-xs font-bold border flex items-center gap-1.5 transition-all ${
+                      className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border flex items-center gap-1 transition-all cursor-pointer ${
                         viewMode === "cards"
                           ? "bg-amber-500 text-zinc-950 border-amber-500"
                           : isDarkMode
@@ -1518,11 +1814,11 @@ export default function AdminDashboard() {
                           : "bg-white border-[#c3e2da] text-zinc-700"
                       }`}
                     >
-                      <LayoutGrid size={14} /> Cards
+                      <LayoutGrid size={12} /> Cards
                     </button>
                     <button
                       onClick={() => setViewMode("table")}
-                      className={`px-3.5 py-2.5 rounded-xl text-xs font-bold border flex items-center gap-1.5 transition-all ${
+                      className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border flex items-center gap-1 transition-all cursor-pointer ${
                         viewMode === "table"
                           ? "bg-amber-500 text-zinc-950 border-amber-500"
                           : isDarkMode
@@ -1530,13 +1826,13 @@ export default function AdminDashboard() {
                           : "bg-white border-[#c3e2da] text-zinc-700"
                       }`}
                     >
-                      <ListFilter size={14} /> Table
+                      <ListFilter size={12} /> Table
                     </button>
                   </div>
                 </div>
 
-                {/* Interactive Status Filter Pills */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                {/* Compact Interactive Status Filter Pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
                   {["All", ...LEAD_STATUSES.map((s) => s.key)].map((st) => {
                     const count =
                       st === "All"
@@ -1547,9 +1843,9 @@ export default function AdminDashboard() {
                       <button
                         key={st}
                         onClick={() => setStatusFilter(st)}
-                        className={`px-3.5 py-2 rounded-xl text-xs font-bold border whitespace-nowrap transition-all flex items-center gap-2 ${
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
                           active
-                            ? "bg-amber-500 text-zinc-950 border-amber-500 shadow-md shadow-amber-500/15"
+                            ? "bg-amber-500 text-zinc-950 border-amber-500"
                             : isDarkMode
                             ? "bg-[#0f1118] border-white/10 text-zinc-400 hover:text-white"
                             : "bg-white border-[#c3e2da] text-zinc-700"
@@ -1557,8 +1853,8 @@ export default function AdminDashboard() {
                       >
                         <span>{st}</span>
                         <span
-                          className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                            active ? "bg-black/20 text-zinc-950" : "bg-white/10"
+                          className={`px-1.5 py-0.1 rounded-full text-[9.5px] font-mono ${
+                            active ? "bg-black/20 text-zinc-950" : "bg-current/10"
                           }`}
                         >
                           {count}
@@ -1571,49 +1867,50 @@ export default function AdminDashboard() {
                 {/* Empty State */}
                 {filteredLeads.length === 0 ? (
                   <div
-                    className={`rounded-3xl border p-14 text-center ${
+                    className={`rounded-2xl border p-8 text-center ${
                       isDarkMode
                         ? "bg-[#0f1118] border-white/10"
                         : "bg-white border-[#c3e2da]"
                     }`}
                   >
-                    <Inbox size={38} className="mx-auto mb-3 text-amber-400 opacity-50" />
-                    <h3 className="font-bold text-base">No matching inquiries found</h3>
-                    <p className="text-xs opacity-60 mt-1">
+                    <Inbox size={28} className="mx-auto mb-2 text-amber-400 opacity-50" />
+                    <h3 className="font-bold text-sm">No matching inquiries found</h3>
+                    <p className="text-[11px] opacity-60 mt-0.5">
                       Try clearing your search filter or add a manual inquiry above.
                     </p>
                   </div>
                 ) : viewMode === "cards" ? (
-                  /* LUXURY BENTO CARD GRID VIEW */
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {filteredLeads.map((lead, idx) => (
-                      <motion.div
+                  /* COMPACT 3-COLUMN CARD GRID VIEW */
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5">
+                    {filteredLeads.map((lead) => (
+                      <div
                         key={lead.id}
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.04 }}
-                        whileHover={{ y: -3 }}
                         onClick={() => setSelectedLead(lead)}
-                        className={`cursor-pointer rounded-3xl border p-5 flex flex-col justify-between transition-all hover:shadow-xl ${
+                        className={`cursor-pointer rounded-xl border p-3 flex flex-col justify-between transition-all hover:shadow-md ${
                           isDarkMode
                             ? "bg-[#0f1118] border-white/[0.08] hover:border-amber-500/40"
                             : "bg-white border-[#c3e2da] hover:border-amber-500"
                         }`}
                       >
                         <div>
-                          <div className="flex items-start justify-between gap-3 mb-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/30 flex items-center justify-center text-amber-400 font-black text-sm shrink-0">
-                                {getInitials(lead.client)}
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="w-8 h-8 rounded-lg overflow-hidden border border-current/15 bg-zinc-900 shrink-0">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={getLeadProductImage(lead)}
+                                  alt={lead.material || "Product"}
+                                  className="w-full h-full object-cover"
+                                />
                               </div>
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-mono text-xs font-bold text-amber-400">
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-mono text-[10px] font-bold text-amber-500 whitespace-nowrap">
                                     {lead.id}
                                   </span>
-                                  <span className="text-[11px] opacity-50">• {lead.date}</span>
+                                  <span className="text-[10px] opacity-50">• {lead.date}</span>
                                 </div>
-                                <h3 className="font-extrabold text-base leading-snug">
+                                <h3 className="font-extrabold text-xs leading-tight truncate">
                                   {lead.client}
                                 </h3>
                               </div>
@@ -1623,7 +1920,7 @@ export default function AdminDashboard() {
                               value={lead.status}
                               onClick={(e) => e.stopPropagation()}
                               onChange={(e) => handleStatusChange(lead.id, e.target.value)}
-                              className={`px-2.5 py-1 rounded-xl text-[11px] font-bold border focus:outline-none cursor-pointer ${
+                              className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border focus:outline-none cursor-pointer shrink-0 ${
                                 isDarkMode
                                   ? "bg-zinc-900 border-white/15 text-white"
                                   : "bg-zinc-100 border-zinc-300 text-zinc-900"
@@ -1637,115 +1934,115 @@ export default function AdminDashboard() {
                             </select>
                           </div>
 
-                          {/* Spec Chips */}
-                          <div className="flex flex-wrap gap-1.5 my-3">
-                            <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[11px] font-bold">
+                          {/* Compact Spec Chips */}
+                          <div className="flex flex-wrap gap-1 my-2">
+                            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] font-bold">
                               {lead.material || "Custom Metal"}
                             </span>
-                            <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono">
+                            <span className="px-2 py-0.5 rounded bg-current/5 border border-current/10 text-[10px] font-mono">
                               {lead.size || "Standard"}
                             </span>
-                            <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-bold">
+                            <span className="px-2 py-0.5 rounded bg-current/5 border border-current/10 text-[10px] font-bold">
                               Qty: {lead.quantity}
                             </span>
-                            <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] opacity-75">
+                            <span className="px-2 py-0.5 rounded bg-current/5 border border-current/10 text-[10px] opacity-75">
                               {lead.city || "India"}
                             </span>
                           </div>
 
                           {lead.notes && (
-                            <p className="text-xs opacity-65 line-clamp-2 italic mb-4">
-                              "{lead.notes}"
+                            <p className="text-[10.5px] opacity-65 line-clamp-1 italic mb-2">
+                              &ldquo;{lead.notes}&rdquo;
                             </p>
                           )}
                         </div>
 
-                        <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
-                          <div className="text-xs font-mono opacity-75 flex items-center gap-1.5">
-                            <Phone size={12} className="text-amber-400" />
+                        <div className="pt-2 border-t border-current/10 flex items-center justify-between gap-2">
+                          <div className="text-[10.5px] font-mono opacity-75 flex items-center gap-1">
+                            <Phone size={11} className="text-amber-500" />
                             {lead.phone}
                           </div>
 
                           <div
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-1"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <a
                               href={whatsappLink(lead.phone, lead)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500 text-emerald-400 hover:text-zinc-950 border border-emerald-500/25 text-xs font-bold flex items-center gap-1.5 transition-all"
+                              className="px-2 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500 text-emerald-600 dark:text-emerald-400 hover:text-zinc-950 border border-emerald-500/25 text-[10px] font-bold flex items-center gap-1 transition-all"
                             >
-                              <MessageCircle size={13} /> WhatsApp
+                              <MessageCircle size={11} /> WhatsApp
                             </a>
                             <button
                               onClick={() => setSelectedLead(lead)}
-                              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold"
+                              className="px-2 py-1 rounded-lg bg-current/5 hover:bg-current/10 border border-current/10 text-[10px] font-semibold cursor-pointer"
                             >
                               Specs
                             </button>
                             <button
                               onClick={() => handleDeleteLead(lead.id)}
-                              className="p-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-colors"
+                              className="p-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-colors cursor-pointer"
                               title="Delete Lead"
                             >
-                              <Trash2 size={14} />
+                              <Trash2 size={12} />
                             </button>
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 ) : (
-                  /* EXECUTIVE TABLE VIEW */
+                  /* COMPACT EXECUTIVE TABLE VIEW */
                   <div
-                    className={`rounded-3xl border overflow-hidden ${
+                    className={`rounded-xl border overflow-hidden ${
                       isDarkMode
                         ? "bg-[#0f1118] border-white/10"
                         : "bg-white border-[#c3e2da]"
                     }`}
                   >
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left border-collapse text-xs">
+                      <table className="w-full text-left border-collapse text-[11px]">
                         <thead>
-                          <tr className="border-b border-white/10 text-[11px] uppercase tracking-wider opacity-60">
-                            <th className="py-3.5 px-4">Inquiry ID & Client</th>
-                            <th className="py-3.5 px-4">Contact</th>
-                            <th className="py-3.5 px-4">Plate Specifications</th>
-                            <th className="py-3.5 px-4">Qty</th>
-                            <th className="py-3.5 px-4">Pipeline Status</th>
-                            <th className="py-3.5 px-4 text-right">Actions</th>
+                          <tr className="border-b border-current/10 text-[10px] uppercase tracking-wider opacity-60">
+                            <th className="py-2.5 px-3">Inquiry ID & Client</th>
+                            <th className="py-2.5 px-3">Contact</th>
+                            <th className="py-2.5 px-3">Plate Specifications</th>
+                            <th className="py-2.5 px-3">Qty</th>
+                            <th className="py-2.5 px-3">Pipeline Status</th>
+                            <th className="py-2.5 px-3 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/10">
+                        <tbody className="divide-y divide-current/10">
                           {filteredLeads.map((lead) => (
                             <tr
                               key={lead.id}
                               onClick={() => setSelectedLead(lead)}
-                              className="hover:bg-white/[0.03] cursor-pointer transition-colors"
+                              className="hover:bg-current/[0.03] cursor-pointer transition-colors"
                             >
-                              <td className="py-3.5 px-4">
-                                <div className="font-mono text-amber-400 font-bold text-[11px]">
+                              <td className="py-2 px-3">
+                                <div className="font-mono text-amber-500 font-bold text-[10px]">
                                   {lead.id}
                                 </div>
-                                <div className="font-bold text-sm">{lead.client}</div>
-                                <div className="text-[11px] opacity-50">
+                                <div className="font-bold text-xs">{lead.client}</div>
+                                <div className="text-[10px] opacity-50">
                                   {lead.source} • {lead.date}
                                 </div>
                               </td>
-                              <td className="py-3.5 px-4">
+                              <td className="py-2 px-3">
                                 <div className="font-mono">{lead.phone}</div>
-                                <div className="text-[11px] opacity-60">{lead.city}</div>
+                                <div className="text-[10px] opacity-60">{lead.city}</div>
                               </td>
-                              <td className="py-3.5 px-4">
-                                <div className="font-bold text-amber-400">{lead.material}</div>
-                                <div className="font-mono text-[11px] opacity-70">{lead.size}</div>
+                              <td className="py-2 px-3">
+                                <div className="font-bold text-amber-500">{lead.material}</div>
+                                <div className="font-mono text-[10px] opacity-70">{lead.size}</div>
                               </td>
-                              <td className="py-3.5 px-4 font-mono font-bold">
+                              <td className="py-2 px-3 font-mono font-bold">
                                 {lead.quantity}
                               </td>
                               <td
-                                className="py-3.5 px-4"
+                                className="py-2 px-3"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <select
@@ -1753,7 +2050,7 @@ export default function AdminDashboard() {
                                   onChange={(e) =>
                                     handleStatusChange(lead.id, e.target.value)
                                   }
-                                  className="bg-zinc-900 border border-white/15 rounded-xl px-2.5 py-1.5 text-white text-xs font-bold focus:outline-none focus:border-amber-500"
+                                  className="bg-zinc-900 border border-white/15 rounded-lg px-2 py-1 text-white text-[10.5px] font-bold focus:outline-none focus:border-amber-500"
                                 >
                                   {LEAD_STATUSES.map((s) => (
                                     <option key={s.key} value={s.key}>
@@ -1763,23 +2060,23 @@ export default function AdminDashboard() {
                                 </select>
                               </td>
                               <td
-                                className="py-3.5 px-4 text-right"
+                                className="py-2 px-3 text-right"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <div className="inline-flex items-center gap-1.5">
+                                <div className="inline-flex items-center gap-1">
                                   <a
                                     href={whatsappLink(lead.phone, lead)}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-2 rounded-xl bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500 hover:text-zinc-950 transition-colors"
+                                    className="p-1.5 rounded-lg bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500 hover:text-zinc-950 transition-colors"
                                   >
-                                    <MessageCircle size={14} />
+                                    <MessageCircle size={12} />
                                   </a>
                                   <button
                                     onClick={() => handleDeleteLead(lead.id)}
-                                    className="p-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                                    className="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
                                   >
-                                    <Trash2 size={14} />
+                                    <Trash2 size={12} />
                                   </button>
                                 </div>
                               </td>
@@ -1797,11 +2094,11 @@ export default function AdminDashboard() {
             {activeTab === "studio-mode" && (
               <motion.div
                 key="studio-mode"
-                initial={{ opacity: 0, y: 14 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
-                className="space-y-6"
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3"
               >
                 <StudioModeSettingsCard
                   isDarkMode={isDarkMode}
@@ -1810,99 +2107,116 @@ export default function AdminDashboard() {
               </motion.div>
             )}
 
-            {/* ── TAB 4: MATERIALS & ALLOY CATALOG ── */}
+            {/* ── TAB 4: B2B PRODUCT CATALOG (COMPACT 6-COLUMN GRID) ── */}
             {activeTab === "materials" && (
               <motion.div
                 key="materials"
-                initial={{ opacity: 0, y: 14 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
-                className="space-y-6"
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3"
               >
-                {/* Add New Material Bar */}
+                {/* Compact Add New Material Bar */}
                 <form
                   onSubmit={handleAddMaterial}
-                  className={`rounded-3xl border p-5 flex flex-col sm:flex-row items-stretch sm:items-end gap-3 ${
+                  className={`rounded-xl border p-3 flex flex-col sm:flex-row items-stretch sm:items-end gap-2 ${
                     isDarkMode
                       ? "bg-[#0f1118] border-white/10"
                       : "bg-white border-[#c3e2da]"
                   }`}
                 >
                   <div className="flex-1">
-                    <label className="text-[11px] font-bold uppercase tracking-wider opacity-60 block mb-1.5">
-                      Add New Alloy / Material Specimen
+                    <label className="text-[10px] font-bold uppercase tracking-wider opacity-60 block mb-1">
+                      Add New B2B Product / Material Specimen
                     </label>
                     <input
                       value={newMatName}
                       onChange={(e) => setNewMatName(e.target.value)}
                       placeholder="e.g. Copper Antique Brushed Plate"
-                      className="w-full bg-zinc-900/80 border border-white/10 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-amber-500"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-amber-500 ${
+                        isDarkMode
+                          ? "bg-zinc-900/80 border-white/10 text-white"
+                          : "bg-zinc-50 border-zinc-300 text-zinc-900"
+                      }`}
                     />
                   </div>
-                  <div className="sm:w-44">
-                    <label className="text-[11px] font-bold uppercase tracking-wider opacity-60 block mb-1.5">
+                  <div className="sm:w-36">
+                    <label className="text-[10px] font-bold uppercase tracking-wider opacity-60 block mb-1">
                       Standard Gauge
                     </label>
                     <input
                       value={newMatThickness}
                       onChange={(e) => setNewMatThickness(e.target.value)}
-                      placeholder="3.0 mm"
-                      className="w-full bg-zinc-900/80 border border-white/10 rounded-xl px-3.5 py-2.5 text-white text-xs font-mono focus:outline-none focus:border-amber-500"
+                      placeholder="0.5 - 2.0 mm"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-amber-500 ${
+                        isDarkMode
+                          ? "bg-zinc-900/80 border-white/10 text-white"
+                          : "bg-zinc-50 border-zinc-300 text-zinc-900"
+                      }`}
                     />
                   </div>
                   <button
                     type="submit"
-                    className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-xs flex items-center justify-center gap-1.5 shrink-0"
+                    className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[11px] flex items-center justify-center gap-1 shrink-0 cursor-pointer"
                   >
-                    <Plus size={15} /> Add Material
+                    <Plus size={13} /> Add Product
                   </button>
                 </form>
 
-                {/* Materials Bento Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Micro-Compact 6-Column B2B Product Catalog Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
                   {materials.map((mat, idx) => (
-                    <motion.div
+                    <div
                       key={mat.id}
-                      initial={{ opacity: 0, y: 14 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      whileHover={{ y: -3 }}
-                      className={`rounded-3xl border p-5 flex flex-col justify-between ${
+                      className={`rounded-xl border p-2.5 flex flex-col justify-between ${
                         isDarkMode
                           ? "bg-[#0f1118] border-white/10"
                           : "bg-white border-[#c3e2da]"
                       }`}
                     >
                       <div>
-                        {/* Metallic Swatch Preview */}
-                        <div
-                          className={`h-20 rounded-2xl mb-4 flex items-center justify-between px-4 ${getMaterialTextureClass(
-                            mat.name
-                          )}`}
-                        >
-                          <span className="font-mono text-[10px] font-black uppercase tracking-widest opacity-80">
+                        {/* Real Landing Page Product Photo */}
+                        <div className="h-24 rounded-lg mb-2 relative overflow-hidden bg-white border border-current/10">
+                          {mat.img ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={mat.img}
+                              alt={mat.name}
+                              className="w-full h-full object-contain p-1"
+                            />
+                          ) : (
+                            <div
+                              className={`w-full h-full flex items-center justify-center ${getMaterialTextureClass(
+                                mat.name
+                              )}`}
+                            />
+                          )}
+                          <span className="absolute top-1 left-1 px-1.5 py-0.2 rounded bg-black/75 text-white font-mono text-[8px] font-bold">
+                            {mat.code || `SG-${idx + 1}`}
+                          </span>
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.2 rounded bg-black/80 text-amber-400 font-mono text-[8.5px] font-bold">
                             {mat.thickness}
                           </span>
-                          {mat.popular && (
-                            <span className="px-2.5 py-0.5 rounded-full bg-black/70 text-amber-400 text-[10px] font-bold">
-                              ★ Popular
-                            </span>
-                          )}
                         </div>
 
-                        <h3 className="font-extrabold text-sm">{mat.name}</h3>
-                        <p className="text-xs opacity-60 mt-0.5">
-                          Gauge Thickness: {mat.thickness}
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-500 truncate">
+                          {mat.category || "Industrial Label"}
+                        </div>
+                        <h3 className="font-extrabold text-[11px] mt-0.5 line-clamp-1 leading-tight">
+                          {mat.name}
+                        </h3>
+                        <p className="text-[9.5px] opacity-60 mt-0.5 truncate">
+                          {mat.mounting || "Holes / 3M"}
                         </p>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                      <div className="mt-2 pt-1.5 border-t border-current/10 flex items-center justify-between gap-1">
                         <span
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+                          className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${
                             mat.status === "Available"
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : "bg-red-500/10 text-red-400 border-red-500/20"
+                              ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                              : "bg-red-500/10 text-red-500 border-red-500/20"
                           }`}
                         >
                           {mat.status}
@@ -1923,97 +2237,97 @@ export default function AdminDashboard() {
                             );
                             saveMaterials(updated);
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold transition-colors"
+                          className="px-2 py-0.5 rounded bg-current/5 hover:bg-current/10 border border-current/10 text-[9.5px] font-bold transition-colors cursor-pointer"
                         >
-                          Toggle Stock
+                          Toggle
                         </button>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </motion.div>
             )}
 
-            {/* ── TAB 4: SUPER ADMIN SECURITY ── */}
+            {/* ── TAB 5: SUPER ADMIN SECURITY (COMPACT) ── */}
             {activeTab === "security" && (
               <motion.div
                 key="security"
-                initial={{ opacity: 0, y: 14 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
-                className="max-w-xl"
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="max-w-lg"
               >
                 <div
-                  className={`rounded-3xl border p-7 relative overflow-hidden ${
+                  className={`rounded-2xl border p-4 sm:p-5 relative overflow-hidden ${
                     isDarkMode
                       ? "bg-[#0f1118] border-white/10"
                       : "bg-white border-[#c3e2da]"
                   }`}
                 >
-                  <div className="flex items-center gap-3.5 mb-6">
-                    <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-400">
-                      <KeyRound size={22} />
+                  <div className="flex items-center gap-2.5 mb-3.5">
+                    <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-500">
+                      <KeyRound size={16} />
                     </div>
                     <div>
-                      <h2 className="font-extrabold text-base">
+                      <h2 className="font-extrabold text-sm">
                         Super Admin Security & Credentials
                       </h2>
-                      <p className="text-xs opacity-60">
-                        Update your login email ID, password, or both after verifying with your current password
+                      <p className="text-[11px] opacity-60">
+                        Update login email or password after verifying current password
                       </p>
                     </div>
                   </div>
 
-                  <div className="mb-5 p-4 rounded-2xl bg-amber-500/[0.06] border border-amber-500/20 flex items-center justify-between">
+                  <div className="mb-3.5 p-2.5 rounded-xl bg-amber-500/[0.06] border border-amber-500/20 flex items-center justify-between">
                     <div>
-                      <p className="text-[11px] uppercase tracking-wider opacity-60 font-bold">
-                        Active Super Admin Login Email
+                      <p className="text-[9.5px] uppercase tracking-wider opacity-60 font-bold">
+                        Active Super Admin Email
                       </p>
-                      <p className="text-amber-400 font-mono font-extrabold text-sm mt-0.5">
+                      <p className="text-amber-600 dark:text-amber-400 font-mono font-extrabold text-xs">
                         {adminAuth.email}
                       </p>
                     </div>
-                    <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
                       Verified
                     </span>
                   </div>
 
                   {credError && (
-                    <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-xs font-semibold mb-4">
-                      <AlertCircle size={15} className="shrink-0" /> {credError}
+                    <div className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 text-red-500 text-[11px] font-semibold mb-3">
+                      <AlertCircle size={13} className="shrink-0" /> {credError}
                     </div>
                   )}
 
                   {credSuccess && (
-                    <div className="space-y-2.5 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-4 text-emerald-400 text-xs mb-4">
-                      <div className="flex items-center gap-2 font-bold">
-                        <CheckCircle2 size={16} className="shrink-0" /> {credSuccess}
+                    <div className="space-y-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-xl p-3 text-emerald-500 text-[11px] mb-3">
+                      <div className="flex items-center gap-1.5 font-bold">
+                        <CheckCircle2 size={14} className="shrink-0" /> {credSuccess}
                       </div>
                       <div className="flex items-center justify-between pt-1">
                         <span className="opacity-80">
-                          Your new credentials are active immediately.
+                          New credentials active immediately.
                         </span>
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-zinc-950 font-black text-xs hover:bg-emerald-400 transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-emerald-500 text-zinc-950 font-black text-[10px]"
                         >
-                          Test Login Now
+                          Test Login
                         </button>
                       </div>
                     </div>
                   )}
 
-                  <form onSubmit={handleCredChange} className="space-y-4 text-xs">
+                  <form onSubmit={handleCredChange} className="space-y-2.5 text-[11px]">
                     <div>
-                      <label className="opacity-70 font-bold uppercase tracking-wider mb-1.5 block">
+                      <label className="opacity-70 font-bold uppercase tracking-wider mb-1 block text-[10px]">
                         Admin Email ID *
                       </label>
                       <div className="relative">
                         <Mail
-                          size={15}
-                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500"
+                          size={13}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
                         />
                         <input
                           type="email"
@@ -2023,19 +2337,19 @@ export default function AdminDashboard() {
                             setCredForm({ ...credForm, email: e.target.value })
                           }
                           placeholder="Enter new admin email ID"
-                          className="w-full bg-zinc-900/90 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-amber-500"
+                          className="w-full bg-zinc-900/90 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-white focus:outline-none focus:border-amber-500"
                         />
                       </div>
                     </div>
 
-                    <div className="pt-2 border-t border-white/10">
-                      <label className="opacity-70 font-bold uppercase tracking-wider mb-1.5 block">
-                        Current Password (Required to Authenticate) *
+                    <div className="pt-2 border-t border-current/10">
+                      <label className="opacity-70 font-bold uppercase tracking-wider mb-1 block text-[10px]">
+                        Current Password *
                       </label>
                       <div className="relative">
                         <Lock
-                          size={15}
-                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500"
+                          size={13}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
                         />
                         <input
                           type={showCredPw.current ? "text" : "password"}
@@ -2048,27 +2362,27 @@ export default function AdminDashboard() {
                             })
                           }
                           placeholder="Enter your current password"
-                          className="w-full bg-zinc-900/90 border border-white/10 rounded-xl pl-10 pr-10 py-3 text-white focus:outline-none focus:border-amber-500"
+                          className="w-full bg-zinc-900/90 border border-white/10 rounded-lg pl-8 pr-8 py-2 text-white focus:outline-none focus:border-amber-500"
                         />
                         <button
                           type="button"
                           onClick={() =>
                             setShowCredPw((p) => ({ ...p, current: !p.current }))
                           }
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
                         >
                           {showCredPw.current ? (
-                            <EyeOff size={16} />
+                            <EyeOff size={14} />
                           ) : (
-                            <Eye size={16} />
+                            <Eye size={14} />
                           )}
                         </button>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-white/10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t border-current/10">
                       <div>
-                        <label className="opacity-70 font-bold uppercase tracking-wider mb-1.5 block">
+                        <label className="opacity-70 font-bold uppercase tracking-wider mb-1 block text-[10px]">
                           New Password (Optional)
                         </label>
                         <div className="relative">
@@ -2081,27 +2395,27 @@ export default function AdminDashboard() {
                                 newPassword: e.target.value,
                               })
                             }
-                            placeholder="Leave blank to keep current"
-                            className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-3 pr-10 text-white focus:outline-none focus:border-amber-500"
+                            placeholder="Leave blank to keep"
+                            className="w-full bg-zinc-900/90 border border-white/10 rounded-lg px-2.5 py-2 pr-8 text-white focus:outline-none focus:border-amber-500"
                           />
                           <button
                             type="button"
                             onClick={() =>
                               setShowCredPw((p) => ({ ...p, new: !p.new }))
                             }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
                           >
                             {showCredPw.new ? (
-                              <EyeOff size={15} />
+                              <EyeOff size={13} />
                             ) : (
-                              <Eye size={15} />
+                              <Eye size={13} />
                             )}
                           </button>
                         </div>
                       </div>
 
                       <div>
-                        <label className="opacity-70 font-bold uppercase tracking-wider mb-1.5 block">
+                        <label className="opacity-70 font-bold uppercase tracking-wider mb-1 block text-[10px]">
                           Confirm New Password
                         </label>
                         <div className="relative">
@@ -2115,7 +2429,7 @@ export default function AdminDashboard() {
                               })
                             }
                             placeholder="Repeat new password"
-                            className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-3.5 py-3 pr-10 text-white focus:outline-none focus:border-amber-500"
+                            className="w-full bg-zinc-900/90 border border-white/10 rounded-lg px-2.5 py-2 pr-8 text-white focus:outline-none focus:border-amber-500"
                           />
                           <button
                             type="button"
@@ -2125,40 +2439,38 @@ export default function AdminDashboard() {
                                 confirm: !p.confirm,
                               }))
                             }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
                           >
                             {showCredPw.confirm ? (
-                              <EyeOff size={15} />
+                              <EyeOff size={13} />
                             ) : (
-                              <Eye size={15} />
+                              <Eye size={13} />
                             )}
                           </button>
                         </div>
                       </div>
                     </div>
 
-                    <motion.button
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.98 }}
+                    <button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 hover:brightness-110 transition-all"
+                      className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-2 rounded-lg text-[11px] uppercase tracking-wider transition-all cursor-pointer"
                     >
                       Authenticate & Save Credentials
-                    </motion.button>
+                    </button>
                   </form>
                 </div>
               </motion.div>
             )}
 
-            {/* ── TAB 5: WORKSHOP SETTINGS ── */}
+            {/* ── TAB 6: FACTORY SETTINGS (COMPACT) ── */}
             {activeTab === "settings" && (
               <motion.div
                 key="settings"
-                initial={{ opacity: 0, y: 14 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
-                className="space-y-6 max-w-4xl"
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3 max-w-4xl"
               >
                 <StudioModeSettingsCard
                   isDarkMode={isDarkMode}
@@ -2166,31 +2478,31 @@ export default function AdminDashboard() {
                 />
 
                 <div
-                  className={`rounded-3xl border p-7 max-w-xl ${
+                  className={`rounded-2xl border p-4 sm:p-5 max-w-lg ${
                     isDarkMode
                       ? "bg-[#0f1118] border-white/10"
                       : "bg-white border-[#c3e2da]"
                   }`}
                 >
-                  <h2 className="font-extrabold text-base mb-1">
-                    Workshop & Contact Settings
+                  <h2 className="font-extrabold text-sm mb-0.5">
+                    Factory & Contact Settings
                   </h2>
-                  <p className="text-xs opacity-60 mb-6">
-                    Configure business details used for WhatsApp follow-ups and digital proofs
+                  <p className="text-[11px] opacity-60 mb-3.5">
+                    Configure business details used for WhatsApp follow-ups & quotations
                   </p>
 
                   {settingsSaved && (
-                    <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 rounded-xl px-4 py-3 text-emerald-400 text-xs font-bold mb-4">
-                      <CheckCircle2 size={15} /> Workshop settings saved!
+                    <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-lg px-3 py-2 text-emerald-500 text-[11px] font-bold mb-3">
+                      <CheckCircle2 size={13} /> Factory settings saved!
                     </div>
                   )}
 
-                  <div className="space-y-4 text-xs">
+                  <div className="space-y-2.5 text-[11px]">
                     {[
                       {
-                        label: "Business / Workshop Name",
+                        label: "Business / Factory Name",
                         key: "businessName",
-                        placeholder: "Sourav Graphic & Metal Labels",
+                        placeholder: "Sourav Graphic & Metal Label",
                       },
                       {
                         label: "Official WhatsApp Number",
@@ -2198,18 +2510,18 @@ export default function AdminDashboard() {
                         placeholder: "9876543210",
                       },
                       {
-                        label: "Workshop Address",
+                        label: "Factory Address",
                         key: "address",
                         placeholder: "Industrial Area, New Delhi",
                       },
                       {
                         label: "Brand Tagline",
                         key: "tagline",
-                        placeholder: "Aerospace 6061-T6 Alloy Workshop",
+                        placeholder: "B2B Industrial Nameplate & Metal Label Manufacturer",
                       },
                     ].map((field) => (
                       <div key={field.key}>
-                        <label className="opacity-70 font-bold uppercase tracking-wider mb-1.5 block">
+                        <label className="opacity-70 font-bold uppercase tracking-wider mb-1 block text-[10px]">
                           {field.label}
                         </label>
                         <input
@@ -2218,14 +2530,12 @@ export default function AdminDashboard() {
                             setSettings({ ...settings, [field.key]: e.target.value })
                           }
                           placeholder={field.placeholder}
-                          className="w-full bg-zinc-900/90 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500"
+                          className="w-full bg-zinc-900/90 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500"
                         />
                       </div>
                     ))}
 
-                    <motion.button
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.98 }}
+                    <button
                       onClick={() => {
                         localStorage.setItem(
                           "sourav_admin_settings",
@@ -2234,10 +2544,10 @@ export default function AdminDashboard() {
                         setSettingsSaved(true);
                         setTimeout(() => setSettingsSaved(false), 3000);
                       }}
-                      className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 hover:brightness-110 transition-all mt-2"
+                      className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-2 rounded-lg text-[11px] uppercase tracking-wider transition-all mt-1 cursor-pointer"
                     >
-                      Save Workshop Settings
-                    </motion.button>
+                      Save Factory Settings
+                    </button>
                   </div>
                 </div>
               </motion.div>

@@ -11,6 +11,7 @@ export async function GET() {
   try {
     const cookieStore = await cookies();
     const cookieMode = cookieStore.get("sourav_display_mode")?.value;
+    const cookieLoader = cookieStore.get("sourav_screen_loader")?.value;
     const cookieUpdatedAt = cookieStore.get("sourav_mode_updated_at")?.value;
 
     if (cookieMode === "studio" || cookieMode === "enquiry") {
@@ -23,9 +24,20 @@ export async function GET() {
           displayMode: cookieMode,
           customizationStudioOn: cookieMode === "studio",
           enquiryFormOn: cookieMode === "enquiry",
+          screenLoaderOn:
+            cookieLoader === "false"
+              ? false
+              : cookieLoader === "true"
+              ? true
+              : settings.screenLoaderOn !== false,
           updatedAt: cookieUpdatedAt || settings.updatedAt,
         };
       }
+    } else if (cookieLoader === "false" || cookieLoader === "true") {
+      settings = {
+        ...settings,
+        screenLoaderOn: cookieLoader === "true",
+      };
     }
   } catch (e) {}
 
@@ -55,7 +67,15 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const displayMode = body.displayMode === "enquiry" ? "enquiry" : "studio";
+    const store = readStore();
+    const displayMode =
+      body.displayMode === "studio" || body.displayMode === "enquiry"
+        ? body.displayMode
+        : store.studioSettings?.displayMode || "enquiry";
+    const screenLoaderOn =
+      typeof body.screenLoaderOn === "boolean"
+        ? body.screenLoaderOn
+        : store.studioSettings?.screenLoaderOn !== false;
     const minQuantity = Math.max(1, parseInt(body.minQuantity, 10) || 1);
     const maxFileSizeMB = Math.min(
       50,
@@ -63,12 +83,12 @@ export async function POST(request) {
     );
     const updatedAt = body.updatedAt || new Date().toISOString();
 
-    const store = readStore();
     const updatedSettings = {
       ...store.studioSettings,
       displayMode,
       customizationStudioOn: displayMode === "studio",
       enquiryFormOn: displayMode === "enquiry",
+      screenLoaderOn,
       minQuantity,
       maxFileSizeMB,
       updatedAt,
@@ -80,15 +100,18 @@ export async function POST(request) {
 
     const response = NextResponse.json({
       success: true,
-      message: `Studio Builder Display Mode saved: ${
-        displayMode === "studio"
-          ? "Customization Studio (ON)"
-          : "Enquiry Form (ON)"
-      }`,
+      message: `Settings saved — Mode: ${
+        displayMode === "studio" ? "3D Studio (ON)" : "Enquiry Form (ON)"
+      } • Screen Loader: ${screenLoaderOn ? "ON" : "OFF"}`,
       settings: updatedSettings,
     });
 
     response.cookies.set("sourav_display_mode", displayMode, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+    response.cookies.set("sourav_screen_loader", String(screenLoaderOn), {
       path: "/",
       maxAge: 60 * 60 * 24 * 365,
       sameSite: "lax",
