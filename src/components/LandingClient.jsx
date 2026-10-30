@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Layers,
   Clock,
+  ChevronLeft,
   ChevronRight,
   Send,
   CheckCircle2,
@@ -34,7 +35,23 @@ import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
 import SweepButton from "./SweepButton";
 import ThemeToggle from "./ThemeToggle";
+import RealBlackPlateSpecimen from "./RealBlackPlateSpecimen";
 import { INITIAL_LEADS } from "@/lib/adminData";
+
+const FEATURED_SPECIMEN_SLIDES = [
+  {
+    src: "/Media/1.png",
+    alt: "Real Anodized & Black Motor Rating Plates Specimen 1",
+    caption: "Black Anodized Motor & Inspection Plates",
+    badge: "Specimen 01 / 02",
+  },
+  {
+    src: "/Media/2.png",
+    alt: "Real Industrial Etched Switchgear & Warning Plates Specimen 2",
+    caption: "Etched Switchgear, Chamber & Safety Plates",
+    badge: "Specimen 02 / 02",
+  },
+];
 
 // ─── Samarth Metal Labels Inspired Categories & Product Directory ───
 const PRODUCT_CATEGORIES = [
@@ -277,6 +294,7 @@ const COMPANY_FACTS = [
 
 export default function LandingClient() {
   const [scrolled, setScrolled] = useState(false);
+  const [specimenSlide, setSpecimenSlide] = useState(0);
 
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -336,6 +354,14 @@ export default function LandingClient() {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Automatic shifting / sliding between 1.png and 2.png in Featured Specimen
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSpecimenSlide((prev) => (prev + 1) % FEATURED_SPECIMEN_SLIDES.length);
+    }, 3200);
+    return () => clearInterval(timer);
   }, []);
 
   const filteredProducts = CATALOG_PRODUCTS.filter((p) => {
@@ -525,7 +551,7 @@ export default function LandingClient() {
             </Link>
             <div className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">
               <BadgeCheck size={13} />
-              <span>Manufacturer & Exporter of Metal Labels</span>
+              <span>Manufacturer & Exporter of Metal Label</span>
             </div>
           </div>
 
@@ -601,7 +627,7 @@ export default function LandingClient() {
               <h1 className="text-xl sm:text-2xl xl:text-3xl font-black tracking-tight text-foreground leading-tight uppercase">
                 Sourav Graphic &{" "}
                 <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 dark:from-amber-400 dark:to-yellow-500 bg-clip-text text-transparent">
-                  Metal Labels
+                  Metal Label
                 </span>
               </h1>
 
@@ -661,39 +687,39 @@ export default function LandingClient() {
             </div>
           </div>
 
-          {/* Col 2 (3 Cols): Featured Specimen + Key Spec Highlights */}
-          <div className="lg:col-span-3 bg-card border border-border rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
-            <div className="flex items-center justify-between text-[11px]">
+          {/* Col 2 (3 Cols): Featured Specimen Card with Full-Size Seamless Stage (1.png & 2.png) */}
+          <div className="lg:col-span-3 bg-card border border-border rounded-2xl p-3.5 flex flex-col justify-between shadow-2xs overflow-hidden">
+            <div className="flex items-center justify-between text-[11px] mb-2">
               <span className="font-bold text-foreground">Featured Specimen</span>
               <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 font-mono text-[10px] font-bold">
                 OEM Export Grade
               </span>
             </div>
 
-            <div className="relative w-full h-32 sm:h-36 my-1 flex items-center justify-center">
-              <Image
-                src="/Media/anodized-aluminium-labels-1000x1000-removebg-preview.png"
-                alt="Anodized Aluminium Nameplates"
-                fill
-                className="object-contain scale-110 drop-shadow-xl"
-                sizes="240px"
-                priority
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-border/60 text-[10px]">
-              <div className="p-1.5 rounded-lg bg-muted/40 border border-border/50">
-                <span className="text-muted-foreground block">Thickness:</span>
-                <strong className="font-mono text-foreground">
-                  0.3, 0.5, 0.7, 1.5, 2.0mm
-                </strong>
-              </div>
-              <div className="p-1.5 rounded-lg bg-muted/40 border border-border/50">
-                <span className="text-muted-foreground block">Holes & Side:</span>
-                <strong className="font-mono text-foreground">
-                  1–5mm • Single/Double
-                </strong>
-              </div>
+            <div className="relative flex-1 w-full min-h-[195px] sm:min-h-[215px] rounded-xl bg-white overflow-hidden flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={FEATURED_SPECIMEN_SLIDES[specimenSlide].src}
+                  initial={{ opacity: 0, x: 36 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -36 }}
+                  transition={{ duration: 0.42, ease: "easeInOut" }}
+                  className="relative w-full h-full"
+                >
+                  <Image
+                    src={FEATURED_SPECIMEN_SLIDES[specimenSlide].src}
+                    alt={FEATURED_SPECIMEN_SLIDES[specimenSlide].alt}
+                    fill
+                    className={`object-contain ${
+                      specimenSlide === 0
+                        ? "scale-110 p-1 drop-shadow-md"
+                        : "scale-[1.14]"
+                    }`}
+                    sizes="(max-width: 1024px) 100vw, 420px"
+                    priority
+                  />
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
 
@@ -936,23 +962,15 @@ export default function LandingClient() {
                   className="group bg-card border border-border hover:border-amber-500/80 rounded-2xl overflow-hidden shadow-2xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between"
                 >
                   <div>
-                    {/* Product Image Header */}
-                    <div className="relative h-36 bg-muted/40 dark:bg-[#0c0e14] overflow-hidden">
-                      <Image
-                        src={product.img}
-                        alt={product.title}
-                        fill
-                        className={`${
-                          product.isContain
-                            ? "object-contain p-2.5"
-                            : "object-cover"
-                        } group-hover:scale-105 transition-transform duration-300`}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1536px) 30vw, 22vw"
-                      />
-                      <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-zinc-950/85 text-amber-400 border border-white/15 text-[10px] font-bold">
+                    {/* Real Black Industrial Plate Specimen Header (No AI Background) */}
+                    <div className="relative h-40 bg-[#07080b] overflow-hidden border-b border-border/60">
+                      <div className="w-full h-full group-hover:scale-[1.02] transition-transform duration-300">
+                        <RealBlackPlateSpecimen variant={product.id} />
+                      </div>
+                      <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-amber-500 text-zinc-950 text-[9px] font-black uppercase tracking-wider shadow-sm z-30">
                         {product.tag}
                       </div>
-                      <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-card/90 text-foreground border border-border text-[9px] font-mono font-bold">
+                      <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-zinc-950/90 text-zinc-200 border border-white/15 text-[8.5px] font-mono font-bold z-30">
                         {product.code}
                       </div>
                     </div>
@@ -1128,7 +1146,7 @@ export default function LandingClient() {
                 Company Profile
               </span>
               <h2 className="text-base sm:text-lg font-black text-foreground mt-0.5">
-                Sourav Graphic & Metal Labels — Fact Sheet
+                Sourav Graphic & Metal Label — Fact Sheet
               </h2>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-3.5">
@@ -1364,14 +1382,10 @@ export default function LandingClient() {
             >
               <div className="p-4 bg-muted/40 border-b border-border flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="relative w-12 h-12 rounded-xl bg-background border border-border overflow-hidden shrink-0">
-                    <Image
-                      src={modalProduct.img}
-                      alt={modalProduct.title}
-                      fill
-                      className="object-contain p-1"
-                      sizes="50px"
-                    />
+                  <div className="relative w-14 h-12 rounded-xl bg-[#07080b] border border-zinc-700 overflow-hidden shrink-0 flex items-center justify-center">
+                    <span className="text-[9px] font-mono font-black text-amber-400 tracking-tighter text-center leading-tight px-1">
+                      {modalProduct.code}
+                    </span>
                   </div>
                   <div className="min-w-0">
                     <span className="text-[10px] font-mono font-bold uppercase text-amber-500 block">
@@ -1564,7 +1578,7 @@ export default function LandingClient() {
               />
             </div>
             <span>•</span>
-            <span>Industrial Metal Labels, Nameplates & Signage Manufacturer</span>
+            <span>Industrial Metal Label, Nameplates & Signage Manufacturer</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
