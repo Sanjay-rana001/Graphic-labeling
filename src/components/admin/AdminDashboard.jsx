@@ -42,6 +42,9 @@ import {
   Send,
   FileText,
   Briefcase,
+  Printer,
+  Download,
+  Menu,
 } from "lucide-react";
 import {
   INITIAL_LEADS,
@@ -378,14 +381,131 @@ function ManualLeadModal({ onClose, onSave }) {
 }
 
 // ─── Animated Lead Detail & Spec Inspector Modal ───────────────────────────────
-function LeadDetailModal({ lead, onClose, onStatusChange, onNotesChange }) {
+function LeadDetailModal({
+  lead,
+  onClose,
+  onStatusChange,
+  onNotesChange,
+  factorySettings,
+}) {
   const [notes, setNotes] = useState(lead.notes || "");
   const [saved, setSaved] = useState(false);
+  const [unitPrice, setUnitPrice] = useState("18");
 
   function saveNotes() {
     onNotesChange(lead.id, notes);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  function handlePrintQuote() {
+    const qty = Math.max(1, Number(lead.quantity) || 1);
+    const rate = Math.max(0, Number(unitPrice) || 0);
+    const subTotal = qty * rate;
+    const gstAmt = Math.round(subTotal * 0.18);
+    const grandTotal = subTotal + gstAmt;
+    const bizName =
+      factorySettings?.businessName || "Sourav Graphic & Metal Label";
+    const bizPhone = factorySettings?.whatsapp || "9876543210";
+    const bizAddr =
+      factorySettings?.address || "Industrial Area, New Delhi, India";
+    const bizGst = factorySettings?.gstin || "07AABCS1429B1Z1";
+
+    const win = window.open("", "_blank", "width=860,height=720");
+    if (!win) return;
+    win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <title>Quotation - ${lead.id} - ${bizName}</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #111827; padding: 28px; margin: 0; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #d97706; padding-bottom: 16px; margin-bottom: 20px; }
+    .brand { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+    .sub { font-size: 12px; color: #4b5563; margin-top: 4px; }
+    .badge { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 12px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .box { border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; font-size: 13px; }
+    .box h4 { margin: 0 0 8px 0; font-size: 11px; text-transform: uppercase; color: #b45309; letter-spacing: 0.8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+    th, td { border: 1px solid #d1d5db; padding: 10px; text-align: left; }
+    th { background: #f3f4f6; font-weight: 800; text-transform: uppercase; font-size: 11px; }
+    .totals { margin-top: 16px; width: 280px; margin-left: auto; font-size: 13px; }
+    .totals div { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #e5e7eb; }
+    .totals .grand { font-weight: 900; font-size: 15px; border-top: 2px solid #111827; border-bottom: none; padding-top: 8px; }
+    .footer { margin-top: 32px; font-size: 11px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 12px; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="brand">${bizName}</div>
+      <div class="sub">${bizAddr}</div>
+      <div class="sub">WhatsApp / Contact: +91 ${bizPhone} &bull; GSTIN: ${bizGst}</div>
+    </div>
+    <div style="text-align:right">
+      <div class="badge">OFFICIAL B2B QUOTATION</div>
+      <div class="sub" style="margin-top:8px"><strong>Ref ID:</strong> ${lead.id}</div>
+      <div class="sub"><strong>Date:</strong> ${lead.date || new Date().toISOString().split("T")[0]}</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <h4>Buyer / Client Details</h4>
+      <div><strong>${lead.client}</strong></div>
+      <div>Phone: ${lead.phone}</div>
+      <div>Email: ${lead.email || "—"}</div>
+      <div>Location: ${lead.address || lead.city || "India"}</div>
+    </div>
+    <div class="box">
+      <h4>Technical Job Card</h4>
+      <div><strong>Category:</strong> ${lead.category || lead.material || "Industrial Nameplate"}</div>
+      <div><strong>Specs:</strong> ${lead.size || "Standard Gauge"}</div>
+      <div><strong>Mounting / Side:</strong> ${lead.mounting || "Standard"}</div>
+      <div><strong>Colour / Finish:</strong> ${lead.lighting || "Standard"}</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Product Description & Specifications</th>
+        <th>Quantity</th>
+        <th>Unit Rate (INR)</th>
+        <th>Amount (INR)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>01</td>
+        <td>
+          <strong>${lead.category || lead.material || "Industrial Metal Label"}</strong><br/>
+          <span style="font-size:12px;color:#4b5563">${lead.size || ""} | ${lead.mounting || ""} | ${lead.lighting || ""}</span>
+        </td>
+        <td>${qty} Pcs</td>
+        <td>&#8377;${rate.toFixed(2)}</td>
+        <td><strong>&#8377;${subTotal.toLocaleString("en-IN")}</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div><span>Subtotal:</span><span>&#8377;${subTotal.toLocaleString("en-IN")}</span></div>
+    <div><span>GST (18%):</span><span>&#8377;${gstAmt.toLocaleString("en-IN")}</span></div>
+    <div class="grand"><span>Grand Total:</span><span>&#8377;${grandTotal.toLocaleString("en-IN")}</span></div>
+  </div>
+
+  ${notes ? `<div class="box" style="margin-top:18px"><h4>Terms & Quotation Notes</h4><div>${notes}</div></div>` : ""}
+
+  <div class="footer">
+    <span>Terms: 50% Advance with PO, Balance Before Dispatch. Standard Lead Time: 3-5 Working Days.</span>
+    <span>Authorized Signatory — ${bizName}</span>
+  </div>
+  <script>window.onload = () => { window.print(); };</script>
+</body>
+</html>`);
+    win.document.close();
   }
 
   return (
@@ -649,7 +769,41 @@ function LeadDetailModal({ lead, onClose, onStatusChange, onNotesChange }) {
             />
           </div>
 
-          {/* Quick Follow-Up CTA Buttons */}
+          {/* Quick Printable Quote Builder + Follow-Up CTA Buttons */}
+          <div className="bg-amber-500/[0.06] border border-amber-500/25 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                Unit Rate (₹):
+              </span>
+              <input
+                type="number"
+                min={1}
+                value={unitPrice}
+                onChange={(e) => setUnitPrice(e.target.value)}
+                className="w-20 bg-zinc-900 border border-white/15 rounded-lg px-2.5 py-1 text-white font-mono text-xs font-bold focus:outline-none focus:border-amber-500"
+              />
+              <span className="text-[11px] font-mono text-zinc-400">
+                × {lead.quantity} Pcs ={" "}
+                <strong className="text-white">
+                  ₹
+                  {(
+                    (Number(unitPrice) || 0) *
+                    (Number(lead.quantity) || 1)
+                  ).toLocaleString("en-IN")}
+                </strong>{" "}
+                (+18% GST)
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handlePrintQuote}
+              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+            >
+              <Printer size={13} />
+              <span>Print / PDF Quote</span>
+            </button>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-3 pt-1">
             <a
               href={whatsappLink(lead.phone, lead)}
@@ -712,17 +866,74 @@ export default function AdminDashboard() {
   const [viewMode, setViewMode] = useState("cards"); // 'cards' | 'table'
   const [selectedLead, setSelectedLead] = useState(null);
   const [showManualLeadModal, setShowManualLeadModal] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [newMatName, setNewMatName] = useState("");
   const [newMatThickness, setNewMatThickness] = useState("3.0 mm");
 
   // Settings
   const [settings, setSettings] = useState({
-    businessName: "Sourav Graphic & Metal Labels",
+    businessName: "Sourav Graphic & Metal Label",
     whatsapp: "9876543210",
+    email: "sales@souravgraphic.in",
     address: "Industrial Area, New Delhi, India",
-    tagline: "Aerospace 6061-T6 Alloy & Fiber Laser Engraving Workshop",
+    gstin: "07AABCS1429B1Z1",
+    tagline: "B2B Industrial Nameplate & Metal Label Manufacturer",
   });
   const [settingsSaved, setSettingsSaved] = useState(false);
+
+  function handleExportCSV() {
+    if (!leads || leads.length === 0) return;
+    const headers = [
+      "Inquiry ID",
+      "Date",
+      "Company / Client",
+      "Phone",
+      "Email",
+      "City / Address",
+      "Product / Material",
+      "Specifications",
+      "Mounting / Side",
+      "Colour / Finish",
+      "Quantity",
+      "Status",
+      "Source",
+      "Notes",
+    ];
+    const escapeCsv = (val) => {
+      const str = String(val ?? "").replace(/"/g, '""');
+      return `"${str}"`;
+    };
+    const rows = leads.map((l) =>
+      [
+        l.id,
+        l.date,
+        l.client,
+        l.phone,
+        l.email || "",
+        l.address || l.city || "",
+        l.category || l.material || "",
+        l.size || "",
+        l.mounting || "",
+        l.lighting || "",
+        l.quantity || 1,
+        l.status,
+        l.source || "",
+        l.notes || "",
+      ]
+        .map(escapeCsv)
+        .join(",")
+    );
+    const csvContent = "\uFEFF" + [headers.map(escapeCsv).join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Sourav-Graphic-B2B-Leads-${new Date().toISOString().split("T")[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
   // ── Load from localStorage ──
   useEffect(() => {
@@ -1249,13 +1460,25 @@ export default function AdminDashboard() {
               setSelectedLead((prev) => ({ ...prev, status }));
             }}
             onNotesChange={handleNotesChange}
+            factorySettings={settings}
+          />
+        )}
+        {mobileSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileSidebarOpen(false)}
+            className="fixed inset-0 z-30 bg-black/65 backdrop-blur-xs md:hidden"
           />
         )}
       </AnimatePresence>
 
-      {/* ── Fixed Left Sidebar (Sticks Permanently, Does Not Scroll With Page) ── */}
+      {/* ── Fixed Left Sidebar (Sticks Permanently on Desktop, Drawer on Mobile) ── */}
       <aside
-        className={`fixed inset-y-0 left-0 w-56 h-screen shrink-0 flex flex-col z-40 border-r backdrop-blur-2xl overflow-y-auto ${
+        className={`fixed inset-y-0 left-0 w-56 h-screen shrink-0 flex flex-col z-40 border-r backdrop-blur-2xl overflow-y-auto transition-transform duration-200 ${
+          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        } ${
           isDarkMode
             ? "bg-[#0c0e14]/95 border-white/[0.08]"
             : "bg-[#f2faf7]/95 border-[#c3e2da]"
@@ -1293,7 +1516,10 @@ export default function AdminDashboard() {
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setMobileSidebarOpen(false);
+                }}
                 className={`w-full relative flex items-center justify-between px-3 py-2 rounded-xl text-[11px] font-bold transition-colors cursor-pointer ${
                   active
                     ? "text-amber-600 dark:text-amber-400"
@@ -1396,8 +1622,8 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* ── Main Content Area (Offset by Fixed Left Sidebar w-56 -> ml-56) ── */}
-      <main className="flex-1 flex flex-col min-w-0 z-10 ml-56">
+      {/* ── Main Content Area (Offset by Fixed Left Sidebar w-56 -> md:ml-56) ── */}
+      <main className="flex-1 flex flex-col min-w-0 z-10 md:ml-56">
         {/* Compact Top Command Bar */}
         <header
           className={`sticky top-0 z-30 flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 border-b backdrop-blur-2xl ${
@@ -1406,22 +1632,47 @@ export default function AdminDashboard() {
               : "bg-[#e3f2ee]/85 border-[#c3e2da]"
           }`}
         >
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-black text-sm sm:text-base tracking-tight">
-                {navItems.find((n) => n.id === activeTab)?.label}
-              </h1>
-              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Live Sync
-              </span>
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen((v) => !v)}
+              className="md:hidden p-1.5 rounded-lg border border-current/15 hover:bg-white/10 cursor-pointer"
+              aria-label="Toggle Menu"
+            >
+              <Menu size={16} />
+            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="font-black text-sm sm:text-base tracking-tight">
+                  {navItems.find((n) => n.id === activeTab)?.label}
+                </h1>
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Live Sync
+                </span>
+              </div>
+              <p className="text-[10.5px] opacity-60 leading-tight">
+                Sourav Graphic & Metal Label • B2B Inquiry & Quotation Hub
+              </p>
             </div>
-            <p className="text-[10.5px] opacity-60 leading-tight">
-              Sourav Graphic & Metal Label • B2B Inquiry & Quotation Hub
-            </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {/* Export Leads to CSV Button */}
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10.5px] font-bold border transition-all cursor-pointer ${
+                isDarkMode
+                  ? "bg-white/[0.03] border-white/10 text-zinc-300 hover:text-white hover:border-amber-500/40"
+                  : "bg-white border-[#c3e2da] text-zinc-800 hover:border-amber-500"
+              }`}
+              title="Export All B2B Leads to Excel / CSV"
+            >
+              <Download size={11} className="text-amber-500" />
+              <span className="hidden sm:inline">Export CSV</span>
+            </button>
+
             {/* Screen Loader ON / OFF Button in Top Header */}
             <button
               type="button"
@@ -2505,9 +2756,19 @@ export default function AdminDashboard() {
                         placeholder: "Sourav Graphic & Metal Label",
                       },
                       {
-                        label: "Official WhatsApp Number",
+                        label: "Official WhatsApp Number (Used on Live Website)",
                         key: "whatsapp",
                         placeholder: "9876543210",
+                      },
+                      {
+                        label: "Official Sales Email",
+                        key: "email",
+                        placeholder: "sales@souravgraphic.in",
+                      },
+                      {
+                        label: "GSTIN Number (Printed on Quotations)",
+                        key: "gstin",
+                        placeholder: "07AABCS1429B1Z1",
                       },
                       {
                         label: "Factory Address",
@@ -2536,17 +2797,38 @@ export default function AdminDashboard() {
                     ))}
 
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         localStorage.setItem(
                           "sourav_admin_settings",
                           JSON.stringify(settings)
                         );
+                        try {
+                          if (typeof BroadcastChannel !== "undefined") {
+                            const ch = new BroadcastChannel("sourav_studio_mode_channel");
+                            ch.postMessage({ factoryInfo: settings });
+                            ch.close();
+                          }
+                        } catch (e) {}
+                        try {
+                          await fetch("/api/studio-settings", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                              "x-admin-auth": "true",
+                            },
+                            body: JSON.stringify({
+                              factoryInfo: settings,
+                              updatedAt: new Date().toISOString(),
+                              updatedBy: adminAuth.email,
+                            }),
+                          });
+                        } catch (e) {}
                         setSettingsSaved(true);
                         setTimeout(() => setSettingsSaved(false), 3000);
                       }}
                       className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-2 rounded-lg text-[11px] uppercase tracking-wider transition-all mt-1 cursor-pointer"
                     >
-                      Save Factory Settings
+                      Save & Sync Factory Settings Across Website
                     </button>
                   </div>
                 </div>

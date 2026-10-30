@@ -17,6 +17,14 @@ export const DEFAULT_STUDIO_SETTINGS = {
   holeOptions: ["1 mm", "2 mm", "3 mm", "4 mm", "5 mm", "No Holes"],
   sideOptions: ["Single Side", "Double Side"],
   colourOptions: ["Single Colour", "Double Colour", "Three Colour", "Four Colour"],
+  factoryInfo: {
+    businessName: "Sourav Graphic & Metal Label",
+    whatsapp: "9876543210",
+    email: "sales@souravgraphic.in",
+    address: "Industrial Area, New Delhi, India",
+    gstin: "07AABCS1429B1Z1",
+    tagline: "B2B Industrial Nameplate & Metal Label Manufacturer",
+  },
   updatedAt: "2026-10-29T12:00:00.000Z",
   updatedBy: "admin",
 };

@@ -27,7 +27,7 @@ export default function ProductBuilder({ isPreview = false, onExitPreview = null
     layers: [
       {
         id: 1,
-        text: "SAOURAV GRAPHIC",
+        text: "SOURAV GRAPHIC",
         font: availableFonts[0],
         sizeMultiplier: 1.0,
         color: "#18181b",
@@ -97,8 +97,10 @@ export default function ProductBuilder({ isPreview = false, onExitPreview = null
         {/* Sleek Top Navigation Bar for Builder */}
         <header className="w-full lg:hidden flex items-center justify-between p-4 border-b border-border/60 bg-background/80 backdrop-blur-md sticky top-0 z-50">
           <SweepButton href="/" label="Home" type="back" size="sm" />
-          <Link href="/" prefetch={true} className="relative h-7 w-24 block cursor-pointer active:scale-95 transition-transform duration-75">
-            <Image src="/Media/Logo.png" alt="Logo" fill sizes="100px" className="object-contain" priority />
+          <Link href="/" prefetch={true} className="relative flex items-center h-8 w-24 cursor-pointer active:scale-95 transition-transform duration-75">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[68px] w-24 pointer-events-none">
+              <Image src="/Media/Logo.png" alt="Logo" fill sizes="160px" className="object-contain object-center scale-[1.08]" priority />
+            </div>
           </Link>
           <ThemeToggle size="sm" />
         </header>
@@ -111,8 +113,10 @@ export default function ProductBuilder({ isPreview = false, onExitPreview = null
             <div className="flex items-center gap-4">
               <SweepButton href="/" label="Back to Home" type="back" size="sm" />
               <div className="h-4 w-px bg-border/60" />
-              <Link href="/" prefetch={true} className="relative h-8 w-28 block cursor-pointer active:scale-95 transition-transform duration-75">
-                <Image src="/Media/Logo.png" alt="Logo" fill sizes="120px" className="object-contain object-left" priority />
+              <Link href="/" prefetch={true} className="relative flex items-center h-9 w-28 cursor-pointer group active:scale-95 transition-transform duration-75">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[76px] w-28 transition-transform duration-150 group-hover:scale-105 pointer-events-none">
+                  <Image src="/Media/Logo.png" alt="Logo" fill sizes="180px" className="object-contain object-center scale-[1.08]" priority />
+                </div>
               </Link>
             </div>
 

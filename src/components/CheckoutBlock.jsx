@@ -110,7 +110,16 @@ export default function CheckoutBlock({ config, setConfig, previewRef, isPreview
   };
 
   const handleDirectWhatsApp = () => {
-    const number = "919876543210";
+    let rawPhone = "9876543210";
+    try {
+      const saved = localStorage.getItem("sourav_admin_settings");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.whatsapp) rawPhone = parsed.whatsapp;
+      }
+    } catch (e) {}
+    const cleanDigits = rawPhone.replace(/\D/g, "");
+    const number = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits || "919876543210";
     
     const layerDetails = config.layers.map((l, i) => 
       `Line ${i+1}: "${l.text.replace(/\n/g, " ")}" (Font: ${l.font})`

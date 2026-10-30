@@ -30,6 +30,7 @@ import {
   Sun,
   Ship,
   Car,
+  ZoomIn,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
@@ -358,8 +359,47 @@ export default function LandingClient() {
   const [modalSuccessId, setModalSuccessId] = useState("");
   const [showInitialLoader, setShowInitialLoader] = useState(false);
 
+  // High-Res Product Photo Zoom / Specimen Inspection Lightbox State
+  const [lightboxProduct, setLightboxProduct] = useState(null);
+  const [lightboxZoom, setLightboxZoom] = useState(1);
+
+  // Dynamic Factory & Contact Info (Synced with Admin Factory Settings)
+  const [factoryInfo, setFactoryInfo] = useState({
+    businessName: "Sourav Graphic & Metal Label",
+    whatsapp: "9876543210",
+    address: "Industrial Area, New Delhi, India",
+    gstin: "07AABCS1429B1Z1",
+    tagline: "B2B Industrial Nameplate & Metal Label Manufacturer",
+  });
+
+  const waNumber = (() => {
+    const digits = String(factoryInfo.whatsapp || "9876543210").replace(/\D/g, "");
+    return digits.length === 10 ? `91${digits}` : digits || "919876543210";
+  })();
+
   useEffect(() => {
     let active = true;
+
+    try {
+      const localAdmin = localStorage.getItem("sourav_admin_settings");
+      if (localAdmin) {
+        const parsed = JSON.parse(localAdmin);
+        if (parsed) setFactoryInfo((prev) => ({ ...prev, ...parsed }));
+      }
+    } catch (e) {}
+
+    let channel = null;
+    try {
+      if (typeof BroadcastChannel !== "undefined") {
+        channel = new BroadcastChannel("sourav_studio_mode_channel");
+        channel.onmessage = (event) => {
+          if (event?.data?.factoryInfo) {
+            setFactoryInfo((prev) => ({ ...prev, ...event.data.factoryInfo }));
+          }
+        };
+      }
+    } catch (e) {}
+
     const enabled = isScreenLoaderEnabled();
     if (enabled) {
       setShowInitialLoader(true);
@@ -371,6 +411,9 @@ export default function LandingClient() {
         .then((data) => {
           if (data?.success && data.settings) {
             const loaderOn = data.settings.screenLoaderOn !== false;
+            if (data.settings.factoryInfo && active) {
+              setFactoryInfo((prev) => ({ ...prev, ...data.settings.factoryInfo }));
+            }
             try {
               localStorage.setItem("sourav_screen_loader", String(loaderOn));
             } catch (e) {}
@@ -381,9 +424,22 @@ export default function LandingClient() {
       return () => {
         active = false;
         clearTimeout(t);
+        if (channel) channel.close();
       };
     } else {
       setShowInitialLoader(false);
+      fetch("/api/studio-settings", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((data) => {
+          if (active && data?.success && data.settings?.factoryInfo) {
+            setFactoryInfo((prev) => ({ ...prev, ...data.settings.factoryInfo }));
+          }
+        })
+        .catch(() => {});
+      return () => {
+        active = false;
+        if (channel) channel.close();
+      };
     }
   }, []);
 
@@ -649,7 +705,7 @@ export default function LandingClient() {
           {/* Right: Direct Conversion Actions */}
           <div className="flex items-center gap-2 shrink-0">
             <motion.a
-              href="https://wa.me/919876543210?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates."
+              href={`https://wa.me/${waNumber}?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates.`}
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.03 }}
@@ -1085,13 +1141,13 @@ export default function LandingClient() {
               className="group bg-card border border-border hover:border-amber-500/80 rounded-xl overflow-hidden shadow-2xs hover:shadow-md transition-all duration-150 flex flex-col justify-between"
             >
               <div>
-                {/* Real Product Photo Stage (Uncropped Full View) */}
+                {/* Real Product Photo Stage (Uncropped Full View + Zoom Lightbox Trigger) */}
                 <div
                   onClick={() => {
-                    setModalProduct(product);
-                    setModalSuccessId("");
+                    setLightboxProduct(product);
+                    setLightboxZoom(1);
                   }}
-                  className="relative h-28 bg-white overflow-hidden border-b border-border/60 cursor-pointer flex items-center justify-center"
+                  className="relative h-28 bg-white overflow-hidden border-b border-border/60 cursor-zoom-in flex items-center justify-center"
                 >
                   <Image
                     src={product.img}
@@ -1100,6 +1156,18 @@ export default function LandingClient() {
                     className="object-contain p-1 group-hover:scale-105 transition-transform duration-200"
                     sizes="(max-width: 768px) 50vw, 18vw"
                   />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setLightboxProduct(product);
+                      setLightboxZoom(1);
+                    }}
+                    className="absolute top-1.5 right-1.5 p-1 rounded-md bg-zinc-950/75 hover:bg-amber-500 text-white hover:text-zinc-950 border border-white/15 opacity-0 group-hover:opacity-100 transition-all cursor-pointer z-10"
+                    title="Zoom & Inspect Product Specimen"
+                  >
+                    <ZoomIn size={11} />
+                  </button>
                 </div>
 
                 {/* Micro-Compact Card Info */}
@@ -1273,7 +1341,7 @@ export default function LandingClient() {
                 <span>Verified Quality • Direct Factory Pricing</span>
               </div>
               <motion.a
-                href="https://wa.me/919876543210?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates."
+                href={`https://wa.me/${waNumber}?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.03, y: -1 }}
@@ -1542,7 +1610,7 @@ export default function LandingClient() {
                   </p>
                   <div className="flex gap-2 justify-center pt-1">
                     <a
-                      href={`https://wa.me/919876543210?text=${encodeURIComponent(
+                      href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
                         `Hi Sourav Graphic! I requested a quote (${modalSuccessId}) for ${modalProduct.title} (Thickness: ${modalForm.thickness}, Holes: ${modalForm.holes}, Qty: ${modalForm.quantity}).`
                       )}`}
                       target="_blank"
@@ -1690,21 +1758,166 @@ export default function LandingClient() {
         )}
       </AnimatePresence>
 
+      {/* ══════════════════════════════════════════════════════════════════
+          HIGH-RES PRODUCT PHOTO ZOOM / SPECIMEN INSPECTION LIGHTBOX
+         ══════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {lightboxProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxProduct(null)}
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 12 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-2xl rounded-2xl bg-card border border-border shadow-2xl overflow-hidden flex flex-col"
+            >
+              {/* Top Lightbox Header */}
+              <div className="px-4 py-3 bg-muted/40 border-b border-border flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 font-mono font-bold text-[10px]">
+                      {lightboxProduct.code}
+                    </span>
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground">
+                      {lightboxProduct.category}
+                    </span>
+                  </div>
+                  <h3 className="text-sm sm:text-base font-black text-foreground mt-0.5">
+                    {lightboxProduct.title}
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  {[1, 1.5, 2].map((z) => (
+                    <button
+                      key={z}
+                      type="button"
+                      onClick={() => setLightboxZoom(z)}
+                      className={`px-2 py-1 rounded-lg text-[10px] font-mono font-extrabold border transition-all cursor-pointer ${
+                        lightboxZoom === z
+                          ? "bg-amber-500 text-zinc-950 border-amber-400"
+                          : "bg-background border-border text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {z}x Zoom
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setLightboxProduct(null)}
+                    className="w-7 h-7 rounded-lg bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer ml-1"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+              </div>
+
+              {/* High-Resolution Zoomable Specimen Stage */}
+              <div className="relative h-64 sm:h-80 bg-white overflow-auto flex items-center justify-center p-4">
+                <div
+                  className="relative w-full h-full transition-transform duration-200 flex items-center justify-center"
+                  style={{ transform: `scale(${lightboxZoom})` }}
+                >
+                  <Image
+                    src={lightboxProduct.img}
+                    alt={lightboxProduct.title}
+                    fill
+                    className="object-contain p-2"
+                    sizes="(max-width: 768px) 95vw, 650px"
+                  />
+                </div>
+              </div>
+
+              {/* Technical Spec Strip + Direct Enquiry Actions */}
+              <div className="p-4 border-t border-border bg-card space-y-3">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {lightboxProduct.desc}
+                </p>
+
+                <div className="grid grid-cols-3 gap-2 text-[11px]">
+                  <div className="p-2 rounded-lg bg-muted/50 border border-border/60">
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                      Material Grade
+                    </span>
+                    <span className="font-extrabold text-foreground">
+                      {lightboxProduct.material}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-muted/50 border border-border/60">
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                      Thickness Range
+                    </span>
+                    <span className="font-mono font-extrabold text-amber-600 dark:text-amber-400">
+                      {lightboxProduct.thickness}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-muted/50 border border-border/60">
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                      Mounting / Finish
+                    </span>
+                    <span className="font-extrabold text-foreground">
+                      {lightboxProduct.mounting}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const prod = lightboxProduct;
+                      setLightboxProduct(null);
+                      setModalProduct(prod);
+                      setModalSuccessId("");
+                    }}
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <span>Get Bulk Quote for This Plate</span>
+                    <ArrowRight size={13} />
+                  </button>
+                  <a
+                    href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
+                      `Hi Sourav Graphic, I want a bulk quotation for *${lightboxProduct.title}* (${lightboxProduct.code}, ${lightboxProduct.material}, Thickness: ${lightboxProduct.thickness}).`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5"
+                  >
+                    <WhatsAppLogo size={14} />
+                    <span>WhatsApp Quote</span>
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Compact Footer */}
       <footer className="mt-auto border-t border-border py-4 px-4 sm:px-6 lg:px-10 2xl:px-14 bg-card/60 dark:bg-background">
         <div className="w-full max-w-[1920px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground font-medium">
           <div className="flex items-center gap-3">
-            <div className="relative h-6 w-20">
-              <Image
-                src="/Media/Logo.png"
-                alt="Logo"
-                fill
-                sizes="90px"
-                className="object-contain object-left opacity-90"
-              />
-            </div>
+            <Link href="/" className="relative flex items-center h-7 w-24 shrink-0">
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-24 pointer-events-none">
+                <Image
+                  src="/Media/Logo.png"
+                  alt="Logo"
+                  fill
+                  sizes="120px"
+                  className="object-contain object-center scale-[1.08] opacity-95"
+                />
+              </div>
+            </Link>
             <span>•</span>
-            <span>Industrial Metal Label, Nameplates & Signage Manufacturer</span>
+            <span>
+              {factoryInfo.businessName || "Sourav Graphic & Metal Label"} • {factoryInfo.address || "Industrial Metal Label Manufacturer"}
+            </span>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">

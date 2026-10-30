@@ -330,16 +330,18 @@ export default function StudioEnquiryForm({
         <Link
           href="/"
           prefetch={true}
-          className="relative h-7 w-24 block cursor-pointer active:scale-95 transition-transform duration-75"
+          className="relative flex items-center h-8 w-24 cursor-pointer active:scale-95 transition-transform duration-75"
         >
-          <Image
-            src="/Media/Logo.png"
-            alt="Logo"
-            fill
-            sizes="100px"
-            className="object-contain"
-            priority
-          />
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[68px] w-24 pointer-events-none">
+            <Image
+              src="/Media/Logo.png"
+              alt="Logo"
+              fill
+              sizes="160px"
+              className="object-contain object-center scale-[1.08]"
+              priority
+            />
+          </div>
         </Link>
         <ThemeToggle size="sm" />
       </header>
@@ -361,16 +363,18 @@ export default function StudioEnquiryForm({
               <Link
                 href="/"
                 prefetch={true}
-                className="relative h-8 w-28 block cursor-pointer active:scale-95 transition-transform duration-75"
+                className="relative flex items-center h-9 w-28 cursor-pointer group active:scale-95 transition-transform duration-75"
               >
-                <Image
-                  src="/Media/Logo.png"
-                  alt="Logo"
-                  fill
-                  sizes="120px"
-                  className="object-contain object-left"
-                  priority
-                />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[76px] w-28 transition-transform duration-150 group-hover:scale-105 pointer-events-none">
+                  <Image
+                    src="/Media/Logo.png"
+                    alt="Logo"
+                    fill
+                    sizes="180px"
+                    className="object-contain object-center scale-[1.08]"
+                    priority
+                  />
+                </div>
               </Link>
             </div>
 
@@ -722,7 +726,12 @@ export default function StudioEnquiryForm({
 
               <div className="flex flex-wrap items-center justify-center gap-3 mt-6 w-full max-w-md">
                 <a
-                  href={`https://wa.me/919876543210?text=${encodeURIComponent(
+                  href={`https://wa.me/${(() => {
+                    const raw =
+                      studioSettings?.factoryInfo?.whatsapp || "9876543210";
+                    const digits = String(raw).replace(/\D/g, "");
+                    return digits.length === 10 ? `91${digits}` : digits || "919876543210";
+                  })()}?text=${encodeURIComponent(
                     `Hi Sourav Graphic! I just submitted Enquiry *${submittedEnquiry.id}* for *${submittedEnquiry.category}* (${submittedEnquiry.specifications?.thickness}, Holes: ${submittedEnquiry.specifications?.holes}, ${submittedEnquiry.specifications?.side}, ${submittedEnquiry.specifications?.colour}, Qty: ${submittedEnquiry.quantity}).`
                   )}`}
                   target="_blank"

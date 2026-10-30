@@ -91,6 +91,12 @@ export async function POST(request) {
       screenLoaderOn,
       minQuantity,
       maxFileSizeMB,
+      factoryInfo: body.factoryInfo
+        ? {
+            ...(store.studioSettings?.factoryInfo || DEFAULT_STUDIO_SETTINGS.factoryInfo),
+            ...body.factoryInfo,
+          }
+        : store.studioSettings?.factoryInfo || DEFAULT_STUDIO_SETTINGS.factoryInfo,
       updatedAt,
       updatedBy: String(body.updatedBy || "admin").slice(0, 100),
     };

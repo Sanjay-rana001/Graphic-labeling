@@ -1,8 +1,9 @@
 import LandingClient from "../components/LandingClient";
 
 export const metadata = {
-  title: "Premium Metal & LED Name Plates | Saourav Graphic",
-  description: "Customize and preview your premium metal and LED name plates in real-time.",
+  title: "Sourav Graphic & Metal Label | B2B Industrial Nameplates, SS 304 Tags & Stickers",
+  description:
+    "Factory-direct B2B manufacturer of Anodized Aluminium Nameplates, SS 304/316 Etched Plates, QR/Barcode Metal Tags, Brass Signage & Polycarbonate Stickers.",
 };
 
 export default function Home() {
