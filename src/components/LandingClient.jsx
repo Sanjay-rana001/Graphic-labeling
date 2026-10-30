@@ -2,174 +2,333 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { 
-  ArrowRight, 
-  Check, 
-  Sliders, 
-  ShieldCheck, 
-  Layers, 
-  Cpu, 
-  Award, 
-  Clock, 
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRight,
+  Check,
+  ShieldCheck,
+  Layers,
+  Clock,
   ChevronRight,
-  ExternalLink,
-  MessageSquare,
   Send,
-  Building2,
   CheckCircle2,
-  MoveRight,
+  MessageCircle,
+  Upload,
+  BadgeCheck,
+  X,
+  Tag,
+  Printer,
+  Search,
   Factory,
-  Briefcase,
-  ChevronsRight,
-  Lightbulb
+  Cpu,
+  Award,
+  Building2,
+  Wrench,
+  Zap,
+  Cog,
+  Sun,
+  Ship,
+  Car,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
 import SweepButton from "./SweepButton";
 import ThemeToggle from "./ThemeToggle";
 import { INITIAL_LEADS } from "@/lib/adminData";
 
-const sampleProducts = [
-  { 
-    id: 1, 
-    category: "Office & Desk",
-    title: "Brushed Aluminum Door Sign", 
-    desc: "Satin-brushed 6061 alloy with high-precision fiber laser relief engraving.",
-    price: "₹999", 
-    tag: "Bestseller",
-    img: "/Media/brushed_aluminum_sign.png" 
+// ─── Samarth Metal Labels Inspired Categories & Product Directory ───
+const PRODUCT_CATEGORIES = [
+  { id: "All", label: "All Product Categories", short: "All Range" },
+  {
+    id: "Aluminium Nameplates",
+    label: "Aluminium Nameplates & Rating Plates",
+    short: "Aluminium Plates",
   },
-  { 
-    id: 2, 
-    category: "Office & Desk",
-    title: "Executive Minimalist Desk Plate", 
-    desc: "Heavyweight solid metal block with angled display face and felt base.",
-    price: "₹1,299", 
-    tag: "Executive",
-    img: "/Media/desk_name_plate.png" 
+  {
+    id: "Industrial Tags & Labels",
+    label: "Aluminium Tags, QR & Cable ID Labels",
+    short: "Tags & Barcode",
   },
-  { 
-    id: 3, 
-    category: "Architectural Plaques",
-    title: "Heritage Gold Brass Plaque", 
-    desc: "Mirror-chamfered edges, warm metallic luster, coated with protective lacquer.",
-    price: "₹2,499", 
-    tag: "Luxury",
-    img: "/Media/premium_gold_plate.png" 
+  {
+    id: "SS & Brass Plates",
+    label: "Stainless Steel (SS 304/316) & Brass Boards",
+    short: "SS 304 & Brass",
   },
-  { 
-    id: 4, 
-    category: "Industrial Tags",
-    title: "Industrial Grade Equipment Tag", 
-    desc: "Chemical and heat-resistant anodized aluminium tag with barcode & serial matrix.",
-    price: "₹349", 
-    tag: "Heavy-Duty",
-    img: "/Media/equipment_tag.png" 
+  {
+    id: "Polycarbonate & Stickers",
+    label: "Polycarbonate, Foil & 3M Adhesive Stickers",
+    short: "Polycarbonate & Stickers",
   },
-  { 
-    id: 5, 
-    category: "Industrial Tags",
-    title: "Office Specification Metal Labels", 
-    desc: "Ultra-slim adhesive metal labels for corporate asset tracking and server racks.",
-    price: "₹499", 
-    tag: "Precision",
-    img: "/Media/office_metal_labels.png" 
-  },
-  { 
-    id: 6, 
-    category: "Architectural Plaques",
-    title: "Anodized Architectural Room Plate", 
-    desc: "Architectural room signage complete with stainless standoff mounting pins.",
-    price: "₹899", 
-    tag: "Popular",
-    img: "/Media/aluminum_door_plate.png" 
-  },
-  { 
-    id: 7, 
-    category: "Industrial Tags",
-    title: "High-Visibility Safety Warning Sign", 
-    desc: "Compliance-rated industrial safety tag with vibrant UV screen print.",
-    price: "₹799", 
-    tag: "OSHA Grade",
-    img: "/Media/warning_signage.png" 
-  },
-  { 
-    id: 8, 
-    category: "Architectural Plaques",
-    title: "Anodized Matte Aluminum Tag", 
-    desc: "Electrochemically oxidized matte finish with scratch-proof laser etched text.",
-    price: "₹599", 
-    tag: "Matte Finish",
-    img: "/Media/anodized_aluminum_tag.png" 
+  {
+    id: "Acrylic & Screen Print",
+    label: "Acrylic Sign Boards & Screen Printing",
+    short: "Acrylic & Screen Print",
   },
 ];
 
-const showcaseSpecimens = [
+const CATALOG_PRODUCTS = [
   {
-    name: "Brushed Aluminium",
-    subtitle: "Aerospace Grade 6061-T6",
-    thickness: "3.0 mm",
-    finish: "Satin Brushed Horizontal Grain",
-    mount: "4× M6 Stainless Standoffs",
+    id: 1,
+    category: "Aluminium Nameplates",
+    title: "Anodized & UV Printed Aluminium Nameplate",
+    code: "SG-ALU-101",
+    desc: "High-contrast anodized & chemical-etched aluminium rating plates for motors, compressors, weighing scales & control panels.",
+    thickness: "0.3mm, 0.5mm, 0.7mm, 1.5mm, 2.0mm",
+    material: "Aerospace 6061 / 1100 Aluminium",
+    process: "Anodizing + UV / Laser Etch",
+    mounting: "1mm–5mm Corner Holes / 3M",
+    application: "Machinery, Motors & OEM Panels",
+    tag: "Bestseller",
+    img: "/Media/anodized-aluminium-labels-1000x1000-removebg-preview.png",
+    isContain: true,
+  },
+  {
+    id: 2,
+    category: "Aluminium Nameplates",
+    title: "Premium Aluminium Etching Name Plate",
+    code: "SG-ALU-102",
+    desc: "Deep chemical-etched and satin-brushed aluminium name plates with solvent-proof baked enamel colour filling.",
+    thickness: "0.7mm – 3.0mm",
+    material: "Brushed / Matte Aluminium",
+    process: "Deep Chemical Etching",
+    mounting: "Punched Holes / Studs",
+    application: "Industrial Equipment & Valves",
+    tag: "Export Quality",
     img: "/Media/brushed_aluminum_sign.png",
   },
   {
-    name: "Executive Desk Plate",
-    subtitle: "Solid Heavy Billet",
-    thickness: "12.0 mm",
-    finish: "Diamond Cut Bevel Edge",
-    mount: "Weighted Non-Slip Base",
-    img: "/Media/desk_name_plate.png",
+    id: 3,
+    category: "Industrial Tags & Labels",
+    title: "Custom QR Code, Barcode & Serial Asset ID Tag",
+    code: "SG-TAG-201",
+    desc: "Oil, heat, and UV-resistant anodized aluminium tags with sequential numbering, barcode & QR code laser matrix.",
+    thickness: "0.3mm – 1.5mm",
+    material: "Sealed Anodized Aluminium",
+    process: "Fiber Laser Matrix Marking",
+    mounting: "1mm–5mm Rivet / Cable Holes",
+    application: "Asset Tracking & Cable ID",
+    tag: "QR / Barcode",
+    img: "/Media/equipment_tag.png",
   },
   {
-    name: "Heritage Brass Gold",
-    subtitle: "Forged Architectural Brass",
-    thickness: "4.0 mm",
-    finish: "Hand-Buffed Gold PVD Finish",
-    mount: "Concealed Stud Mount",
+    id: 4,
+    category: "SS & Brass Plates",
+    title: "SS 304 / 316 Chemical Etched Equipment Nameplate",
+    code: "SG-SS-301",
+    desc: "Corrosion-proof 0.5mm to 2.0mm stainless steel machinery rating plates, schematic diagrams, and compliance boards.",
+    thickness: "0.5mm, 0.7mm, 1.0mm, 1.5mm, 2.0mm",
+    material: "Grade 304 / 316 Stainless Steel",
+    process: "Acid Etching + Colour Fill",
+    mounting: "2mm–5mm Corner Holes",
+    application: "Chemical, Marine & Heavy Plants",
+    tag: "SS 304 / 316",
+    img: "/Media/aluminum_door_plate.png",
+  },
+  {
+    id: 5,
+    category: "SS & Brass Plates",
+    title: "PVDF Golden Coated & Heritage Brass Name Board",
+    code: "SG-BRS-302",
+    desc: "Mirror-polished and chemical-etched solid brass & PVDF gold coated plates for prestige corporate & industrial branding.",
+    thickness: "1.0mm – 4.0mm",
+    material: "Solid Brass / PVDF Gold SS",
+    process: "Etched + Lacquer Coated",
+    mounting: "Studs / Mirror Screws",
+    application: "Corporate & Architectural",
+    tag: "Golden Finish",
     img: "/Media/premium_gold_plate.png",
   },
   {
-    name: "Industrial Control Label",
-    subtitle: "Anodized Sealed Aluminium",
-    thickness: "1.5 mm",
-    finish: "UV Cured High-Contrast Etch",
-    mount: "3M High-Bond Adhesive",
+    id: 6,
+    category: "Polycarbonate & Stickers",
+    title: "Polycarbonate Graphic Overlay & Membrane Sticker",
+    code: "SG-PC-401",
+    desc: "Sub-surface printed velvet/matte polycarbonate stickers and fascia panels with strong 3M self-adhesive backing.",
+    thickness: "0.18mm – 0.5mm",
+    material: "Lexan Polycarbonate / PVC Foil",
+    process: "Reverse Screen & UV Print",
+    mounting: "3M 467MP Self-Adhesive",
+    application: "Control Panels & Electronics",
+    tag: "3M Adhesive",
     img: "/Media/office_metal_labels.png",
   },
+  {
+    id: 7,
+    category: "Acrylic & Screen Print",
+    title: "Export Quality Safety Sign & Screen Printed Board",
+    code: "SG-PRT-501",
+    desc: "High-visibility single to four-colour industrial screen printed warning plates, instruction boards, and dial scales.",
+    thickness: "0.5mm – 2.0mm",
+    material: "Aluminium / Acrylic / PVC",
+    process: "1 to 4 Colour Screen Print",
+    mounting: "Corner Holes / Adhesive",
+    application: "Safety & Electrical Compliance",
+    tag: "1–4 Colour Print",
+    img: "/Media/warning_signage.png",
+  },
+  {
+    id: 8,
+    category: "Industrial Tags & Labels",
+    title: "Matte Black Anodized Aluminium Rating Tag",
+    code: "SG-TAG-202",
+    desc: "Scratch-proof electrochemically oxidized matte black aluminium tag with high-contrast silver laser engraving.",
+    thickness: "0.5mm – 2.0mm",
+    material: "Black Anodized Aluminium",
+    process: "High-Precision Fiber Laser",
+    mounting: "1mm–5mm Holes / 3M Backing",
+    application: "Valves, Pumps & Compressors",
+    tag: "Ano-Etching",
+    img: "/Media/anodized_aluminum_tag.png",
+  },
+  {
+    id: 9,
+    category: "SS & Brass Plates",
+    title: "Executive Solid Metal Desk & Door Name Plate",
+    code: "SG-DSK-303",
+    desc: "Heavy-duty CNC-chamfered metallic block and architectural door plates for offices, cabins, and residences.",
+    thickness: "2.0mm – 12.0mm",
+    material: "Solid Billet Aluminium / Brass",
+    process: "Diamond Bevel + Laser",
+    mounting: "Free-Standing / Standoffs",
+    application: "Office Cabins & Houses",
+    tag: "Custom Size",
+    img: "/Media/desk_name_plate.png",
+  },
+  {
+    id: 10,
+    category: "Acrylic & Screen Print",
+    title: "Custom Acrylic Sign Board & House Name Plate",
+    code: "SG-ACR-502",
+    desc: "Weatherproof laser-cut cast acrylic sign boards with single/double side UV printing and stainless steel studs.",
+    thickness: "2.0mm – 6.0mm",
+    material: "Cast Acrylic + Metal Layer",
+    process: "Laser Cut + UV Screen Print",
+    mounting: "SS Standoff Studs",
+    application: "Commercial & Residential",
+    tag: "Weatherproof",
+    img: "/Media/brushed_aluminum_sign.png",
+  },
+  {
+    id: 11,
+    category: "Polycarbonate & Stickers",
+    title: "PVC Silver Foil & Metallic Promotional Stickers",
+    code: "SG-PC-402",
+    desc: "Waterproof die-cut metallic foil stickers, brand logo badges, and structured self-adhesive industrial labels.",
+    thickness: "0.1mm – 0.5mm",
+    material: "Metallic Foil / Polyester",
+    process: "Die-Cut + Multi-Colour Print",
+    mounting: "High-Tack Self-Adhesive",
+    application: "Appliances, Cartons & Branding",
+    tag: "Custom Die-Cut",
+    img: "/Media/office_metal_labels.png",
+  },
+  {
+    id: 12,
+    category: "Aluminium Nameplates",
+    title: "CNG Cylinder & Pressure Vessel Compliance Plate",
+    code: "SG-ALU-104",
+    desc: "Stamped and deep-etched compliance plates for CNG cylinders, boilers, transformers, and heavy automotive kits.",
+    thickness: "0.7mm – 2.0mm",
+    material: "Hard Anodized Aluminium / SS",
+    process: "Deep Etch + Serial Punching",
+    mounting: "Rivet Holes / Weldable",
+    application: "Automotive & Gas Cylinders",
+    tag: "Compliance Grade",
+    img: "/Media/equipment_tag.png",
+  },
+];
+
+const INDUSTRIES_SERVED = [
+  { name: "Automotive & EV", desc: "VIN plates, CNG compliance & engine tags", icon: Car },
+  { name: "Electrical & Panels", desc: "Switchgear rating plates & mimic labels", icon: Zap },
+  { name: "Heavy Machinery", desc: "Compressor, pump & motor spec plates", icon: Cog },
+  { name: "Solar & Energy", desc: "UV-proof inverter & module asset tags", icon: Sun },
+  { name: "Marine & Oil/Gas", desc: "SS 316 acid-etched corrosion-proof tags", icon: Ship },
+  { name: "Corporate & Homes", desc: "Acrylic, brass & brushed door signage", icon: Building2 },
+];
+
+const INFRASTRUCTURE_FEATURES = [
+  {
+    title: "Chemical Etching & Anodizing Line",
+    desc: "Deep acid etching and sealed anodizing ensuring markings never fade under harsh solvents or outdoor salt spray.",
+  },
+  {
+    title: "High-Precision Fiber Laser Marking",
+    desc: "Micron-level QR codes, sequential barcodes, and fine schematic text on Aluminium, SS 304/316, and Brass.",
+  },
+  {
+    title: "Multi-Colour Industrial Screen Printing",
+    desc: "Single, Double, Three & Four-Colour UV-cured screen printing on metal plates, polycarbonate, and acrylic.",
+  },
+  {
+    title: "Custom Gauges (0.3mm–2.0mm+) & Hole Punching",
+    desc: "Precision die-cutting with 1mm to 5mm mounting holes, single/double side print, and 3M 467MP adhesive backing.",
+  },
+];
+
+const COMPANY_FACTS = [
+  { label: "Nature of Business", value: "Manufacturer, Exporter & B2B Supplier" },
+  { label: "Materials Offered", value: "Aluminium, SS 304/316, Brass, Acrylic, Polycarbonate" },
+  { label: "Thickness Gauges", value: "0.3 mm, 0.5 mm, 0.7 mm, 0.91 mm, 1.5 mm, 2.0 mm+" },
+  { label: "Mounting & Holes", value: "1mm–5mm Holes, SS Studs, 3M Self-Adhesive" },
+  { label: "Printing Options", value: "Single / Double Side • 1 to 4 Colour & Etched" },
+  { label: "Quality & Dispatch", value: "ISO-Grade Inspection • Pan-India Express Delivery" },
 ];
 
 export default function LandingClient() {
   const [scrolled, setScrolled] = useState(false);
-  const { isDarkMode, setTheme } = useTheme();
 
-  // Parallax Shutter Reveal Ref
-  const shutterRef = useRef(null);
-  const { scrollYProgress: shutterScrollProgress } = useScroll({
-    target: shutterRef,
-    offset: ["start end", "end start"]
-  });
-  
-  const shutterScale = useTransform(shutterScrollProgress, [0, 0.4], [0.92, 1]);
-  const shutterOpacity = useTransform(shutterScrollProgress, [0, 0.25], [0.5, 1]);
-  const shutterInnerY = useTransform(shutterScrollProgress, [0, 1], [-25, 25]);
-
-  // Specimen & filter states
-  const [selectedSpecimen, setSelectedSpecimen] = useState(0);
   const [activeCategory, setActiveCategory] = useState("All");
-  const [quoteQuantity, setQuoteQuantity] = useState(25);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Hero Quick Requirement Card State
+  const [heroForm, setHeroForm] = useState({
+    product: "Aluminium Name Plate",
+    thickness: "0.7 mm",
+    holes: "2 mm",
+    colour: "Single Colour",
+    quantity: "50",
+    name: "",
+    phone: "",
+  });
+  const [heroSubmitting, setHeroSubmitting] = useState(false);
+  const [heroSubmittedId, setHeroSubmittedId] = useState("");
+
+  // Bottom Bulk Estimator Console State
+  const [quoteQuantity, setQuoteQuantity] = useState(100);
   const [quoteSubmitted, setQuoteSubmitted] = useState(false);
-  const [quickEmail, setQuickEmail] = useState("");
-  const [quickSubmitted, setQuickSubmitted] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", notes: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    product: "Aluminium Name Plate",
+    thickness: "0.7 mm",
+    holes: "2 mm",
+    side: "Single Side",
+    colour: "Single Colour",
+    notes: "",
+  });
+
+  // Product "Yes! I am Interested / Get Best Quote" Modal State
+  const [modalProduct, setModalProduct] = useState(null);
+  const [modalForm, setModalForm] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    thickness: "0.7 mm",
+    holes: "2 mm",
+    side: "Single Side",
+    colour: "Single Colour",
+    quantity: 50,
+  });
+  const [modalSubmitting, setModalSubmitting] = useState(false);
+  const [modalSuccessId, setModalSuccessId] = useState("");
 
   useEffect(() => {
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 30);
+          setScrolled(window.scrollY > 20);
           ticking = false;
         });
         ticking = true;
@@ -179,783 +338,1265 @@ export default function LandingClient() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const categories = ["All", "Office & Desk", "Architectural Plaques", "Industrial Tags"];
-  const filteredProducts = activeCategory === "All" 
-    ? sampleProducts 
-    : sampleProducts.filter(p => p.category === activeCategory);
+  const filteredProducts = CATALOG_PRODUCTS.filter((p) => {
+    const matchesCat = activeCategory === "All" || p.category === activeCategory;
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      p.title.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q) ||
+      p.material.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q);
+    return matchesCat && matchesSearch;
+  });
 
-  const calculateEstimate = () => {
-    let rate = 750;
-    if (quoteQuantity >= 50) rate = 550;
-    else if (quoteQuantity >= 20) rate = 650;
-    return (rate * quoteQuantity).toLocaleString("en-IN");
-  };
+  const submitLeadToBackendAndAdmin = async ({
+    category,
+    thickness = "0.7 mm",
+    holes = "2 mm",
+    side = "Single Side",
+    colour = "Single Colour",
+    quantity = 50,
+    name,
+    phone,
+    address = "Website Quick Quote",
+    source = "Website Quick Quote",
+    notes = "",
+  }) => {
+    let createdLead = null;
+    try {
+      const res = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category,
+          specifications: {
+            thickness,
+            holes,
+            side,
+            quantity: Number(quantity) || 1,
+            colour,
+          },
+          customer: {
+            name: name || "Website Buyer",
+            phone: phone || "9876543210",
+            address: address || "Commercial Inquiry",
+          },
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data?.success && data.enquiry) {
+        createdLead = data.enquiry;
+      }
+    } catch (e) {}
 
-  const handleQuickQuote = (e) => {
-    e.preventDefault();
-    if (!quickEmail) return;
+    if (!createdLead) {
+      createdLead = {
+        id: `INQ-${Math.floor(1000 + Math.random() * 9000)}`,
+        client: name || "Commercial Buyer",
+        phone: phone || "Not provided",
+        email: "—",
+        address: address || "Website Inquiry",
+        city: address || "India",
+        date: new Date().toISOString().split("T")[0],
+        source,
+        category,
+        material: category,
+        size: `Thickness: ${thickness} | Holes: ${holes}`,
+        lighting: colour,
+        mounting: `${side} | Holes: ${holes}`,
+        quantity: Number(quantity) || 1,
+        status: "New Inquiry",
+        notes:
+          notes ||
+          `Product: ${category} | Thickness: ${thickness} | Holes: ${holes} | Side: ${side} | Colour: ${colour} | Qty: ${quantity}`,
+      };
+    }
+
     try {
       const saved = localStorage.getItem("sourav_admin_leads");
       const existing = saved ? JSON.parse(saved) : INITIAL_LEADS;
-      const newLead = {
-        id: `INQ-${Math.floor(1000 + Math.random() * 9000)}`,
-        client: quickEmail.split("@")[0] || "Web Inquiry",
-        phone: "Not provided",
-        email: quickEmail,
-        city: "Website Hero",
-        date: new Date().toISOString().split("T")[0],
-        source: "Hero Spec Request",
-        material: "Brushed / Anodized Aluminium",
-        size: "Custom / Catalog Request",
-        lighting: "None",
-        mounting: "To be discussed",
-        textLayers: [],
-        quantity: 25,
-        status: "New Inquiry",
-        notes: "Requested instant spec sheet & bulk quote from homepage hero."
-      };
-      localStorage.setItem("sourav_admin_leads", JSON.stringify([newLead, ...existing]));
+      const merged = [
+        createdLead,
+        ...existing.filter((item) => item.id !== createdLead.id),
+      ];
+      localStorage.setItem("sourav_admin_leads", JSON.stringify(merged));
     } catch (err) {}
-    setQuickSubmitted(true);
-    setQuickEmail("");
-    setTimeout(() => setQuickSubmitted(false), 5000);
+
+    return createdLead;
   };
 
-  const handleQuoteSubmit = (e) => {
+  const handleHeroQuoteSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const saved = localStorage.getItem("sourav_admin_leads");
-      const existing = saved ? JSON.parse(saved) : INITIAL_LEADS;
-      const newLead = {
-        id: `INQ-${Math.floor(1000 + Math.random() * 9000)}`,
-        client: formData.name || "Commercial Client",
-        phone: formData.phone || "Not provided",
-        email: formData.email || "",
-        city: "Commercial Inquiry",
-        date: new Date().toISOString().split("T")[0],
-        source: "Website Inquiry Console",
-        material: showcaseSpecimens[selectedSpecimen]?.name || "Brushed Aluminium",
-        size: showcaseSpecimens[selectedSpecimen]?.thickness || "3.0 mm",
-        lighting: "To be discussed",
-        mounting: showcaseSpecimens[selectedSpecimen]?.mount || "Standoffs",
-        textLayers: [],
-        quantity: Number(quoteQuantity) || 25,
-        status: "New Inquiry",
-        notes: formData.notes || "Submitted bulk / custom inquiry from homepage proposal console."
-      };
-      localStorage.setItem("sourav_admin_leads", JSON.stringify([newLead, ...existing]));
-    } catch (err) {}
+    if (!heroForm.phone || heroSubmitting) return;
+    setHeroSubmitting(true);
+    const lead = await submitLeadToBackendAndAdmin({
+      category: heroForm.product,
+      thickness: heroForm.thickness,
+      holes: heroForm.holes,
+      colour: heroForm.colour,
+      quantity: Number(heroForm.quantity) || 50,
+      name: heroForm.name || "Direct Buyer",
+      phone: heroForm.phone,
+      address: "Hero Quick Quote",
+      source: "Hero Instant Quote",
+    });
+    setHeroSubmitting(false);
+    setHeroSubmittedId(lead.id);
+    setHeroForm((prev) => ({ ...prev, name: "", phone: "" }));
+    setTimeout(() => setHeroSubmittedId(""), 6000);
+  };
+
+  const handleModalQuoteSubmit = async (e) => {
+    e.preventDefault();
+    if (!modalProduct || modalSubmitting) return;
+    setModalSubmitting(true);
+    const lead = await submitLeadToBackendAndAdmin({
+      category: modalProduct.title,
+      thickness: modalForm.thickness,
+      holes: modalForm.holes,
+      side: modalForm.side,
+      colour: modalForm.colour,
+      quantity: Number(modalForm.quantity) || 1,
+      name: modalForm.name,
+      phone: modalForm.phone,
+      address: modalForm.address,
+      source: "Catalog Product Quote",
+    });
+    setModalSubmitting(false);
+    setModalSuccessId(lead.id);
+  };
+
+  const handleQuoteSubmit = async (e) => {
+    e.preventDefault();
+    await submitLeadToBackendAndAdmin({
+      category: formData.product,
+      thickness: formData.thickness,
+      holes: formData.holes,
+      side: formData.side,
+      colour: formData.colour,
+      quantity: Number(quoteQuantity) || 100,
+      name: formData.name,
+      phone: formData.phone,
+      address: formData.notes || "Bulk Enquiry Console",
+      source: "Homepage Bulk Enquiry",
+      notes: formData.notes,
+    });
     setQuoteSubmitted(true);
-    setFormData({ name: "", email: "", phone: "", notes: "" });
-    setTimeout(() => setQuoteSubmitted(false), 5000);
-  };
-
-  const handleThemeToggle = () => {
-    setTheme(!isDarkMode);
+    setFormData({
+      name: "",
+      phone: "",
+      product: "Aluminium Name Plate",
+      thickness: "0.7 mm",
+      holes: "2 mm",
+      side: "Single Side",
+      colour: "Single Colour",
+      notes: "",
+    });
+    setTimeout(() => setQuoteSubmitted(false), 6000);
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-amber-500/20 selection:text-amber-500 overflow-x-hidden transition-colors duration-200">
-      
-      {/* Ambient background glows - rich & radiant in both modes */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-amber-400/[0.12] via-amber-300/[0.05] to-transparent dark:from-amber-500/[0.08] dark:via-amber-400/[0.03] rounded-full blur-3xl opacity-80 dark:opacity-90" />
-        <div className="absolute top-[35%] -right-40 w-[600px] h-[500px] bg-sky-400/[0.06] dark:bg-sky-500/[0.04] rounded-full blur-3xl" />
-        <div className="absolute top-[70%] -left-40 w-[550px] h-[500px] bg-amber-400/[0.06] dark:bg-amber-500/[0.04] rounded-full blur-3xl" />
-      </div>
-
-      {/* 1. Independent Prominent Brand Logo (Left Side, Outside Navbar) */}
-      <div className="fixed top-3.5 sm:top-4 left-4 sm:left-8 lg:left-12 z-50 pointer-events-auto">
-        <Link href="/" prefetch={true} className="flex items-center group">
-          <div className="relative h-11 sm:h-13 w-36 sm:w-44 transition-all duration-200 group-hover:scale-105 active:scale-95">
-            <Image 
-              src="/Media/Logo.png" 
-              alt="Saourav Graphic" 
-              fill 
-              sizes="180px"
-              className="object-contain object-left drop-shadow-sm dark:brightness-110" 
-              priority
-            />
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-amber-500/20 selection:text-amber-500 overflow-x-hidden">
+      {/* ══════════════════════════════════════════════════════════════════
+          FLUID FULL-WIDTH STICKY HEADER WITH SEARCH & DIRECT ENQUIRY CTAS
+         ══════════════════════════════════════════════════════════════════ */}
+      <header
+        className={`fixed top-0 inset-x-0 z-40 transition-all duration-200 border-b ${
+          scrolled
+            ? "bg-card/95 dark:bg-[#0c0e14]/95 backdrop-blur-xl border-border shadow-md py-2"
+            : "bg-background/90 backdrop-blur-md border-border/60 py-2.5"
+        }`}
+      >
+        <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-10 2xl:px-14 flex items-center justify-between gap-3">
+          {/* Left: Brand Logo + Verified Badge */}
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/" prefetch={true} className="flex items-center group">
+              <div className="relative h-8 sm:h-9 w-28 sm:w-32 transition-transform duration-150 group-hover:scale-103">
+                <Image
+                  src="/Media/Logo.png"
+                  alt="Sourav Graphic"
+                  fill
+                  sizes="140px"
+                  className="object-contain object-left dark:brightness-110"
+                  priority
+                />
+              </div>
+            </Link>
+            <div className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">
+              <BadgeCheck size={13} />
+              <span>Manufacturer & Exporter of Metal Labels</span>
+            </div>
           </div>
-        </Link>
-      </div>
 
-      {/* 2. Sleek Floating Header / Navigation Capsule */}
-      <header className={`fixed top-4 right-4 sm:right-8 md:left-1/2 md:-translate-x-1/2 md:right-auto z-40 transition-all duration-300 rounded-full ${scrolled ? 'bg-card/90 dark:bg-[#0c0e14]/90 backdrop-blur-2xl border border-border shadow-xl shadow-black/[0.03] dark:shadow-black/30 py-2 sm:py-2.5 px-4 sm:px-6' : 'bg-card/75 dark:bg-background/60 backdrop-blur-md border border-border/70 py-2 sm:py-2.5 px-4 sm:px-6'}`}>
-        <div className="flex items-center gap-4 sm:gap-6">
-          
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-7 text-xs lg:text-sm font-semibold text-muted-foreground">
-            <a href="#services" className="hover:text-foreground transition-colors">Services</a>
-            <a href="#engineering" className="hover:text-foreground transition-colors">Engineering</a>
-            <a href="#specimens" className="hover:text-foreground transition-colors">Specimens</a>
-            <a href="#products" className="hover:text-foreground transition-colors">Collections</a>
-            <a href="#quote" className="hover:text-foreground transition-colors">Estimator</a>
-          </nav>
+          {/* Center: Product Search Bar + Navigation Links */}
+          <div className="hidden lg:flex items-center gap-5 flex-1 max-w-2xl mx-4">
+            <div className="relative flex-1">
+              <Search
+                size={13}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  if (e.target.value.trim()) {
+                    document
+                      .getElementById("products")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                placeholder="Search Aluminum Nameplates, SS 304 Tags, QR Labels, Polycarbonate Stickers..."
+                className="w-full pl-8 pr-3 py-1.5 rounded-full bg-muted/60 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber-500"
+              />
+            </div>
 
-          <div className="hidden md:block h-4 w-px bg-border/60" />
+            <nav className="flex items-center gap-4 text-xs font-bold text-muted-foreground shrink-0">
+              <a href="#products" className="hover:text-foreground transition-colors">
+                Our Products
+              </a>
+              <a href="#industries" className="hover:text-foreground transition-colors">
+                Industries
+              </a>
+              <a href="#profile" className="hover:text-foreground transition-colors">
+                Company Profile
+              </a>
+              <a href="#quote" className="hover:text-foreground transition-colors">
+                Get Quote
+              </a>
+            </nav>
+          </div>
 
-          {/* Action Group */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            
-            {/* Animated Theme Toggle Capsule */}
-            <ThemeToggle />
-
-            {/* Launch Studio Button - Signature Filling Sweep Button (Fuller & Thicker) */}
-            <SweepButton href="/customize" label="Studio Builder" size="nav" />
-
+          {/* Right: Direct Conversion Actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            <a
+              href="https://wa.me/919876543210?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500 text-emerald-600 dark:text-emerald-400 hover:text-zinc-950 border border-emerald-500/30 text-[11px] font-extrabold transition-all"
+            >
+              <MessageCircle size={13} />
+              <span>WhatsApp</span>
+            </a>
+            <ThemeToggle size="sm" />
+            <SweepButton href="/customize" label="Upload Design / Enquire" size="nav" />
           </div>
         </div>
       </header>
 
-      {/* 2. GRAND BENTO HERO SECTION (Solid, High-Contrast & Vibrant in Light & Dark) */}
-      <section className="relative pt-32 sm:pt-36 pb-16 px-6 max-w-6xl mx-auto w-full z-10">
-        
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 auto-rows-[minmax(180px,auto)] items-stretch">
-          
-          {/* Main Hero Card (8 Cols) - High-Vibrancy Metallic Presence */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="lg:col-span-8 bg-card border border-border rounded-3xl p-7 sm:p-10 flex flex-col justify-between relative overflow-hidden shadow-xl shadow-black/[0.03] dark:shadow-black/40 group"
-          >
-            {/* Fine Brushed Metal Texture & Specular Light Reflection */}
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-card via-card/80 to-muted/20 dark:from-background dark:via-muted/30 dark:to-card" />
-              <div className="absolute inset-0 opacity-[0.035] dark:opacity-[0.05] bg-[repeating-linear-gradient(to_right,transparent,transparent_1px,currentColor_1px,currentColor_2px)]" />
-              <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_20%,rgba(255,255,255,0.4)_30%,transparent_40%)] dark:bg-[linear-gradient(115deg,transparent_20%,rgba(255,255,255,0.06)_30%,transparent_40%)]" />
-              <div className="absolute -top-24 -left-24 w-72 h-72 bg-amber-400/15 dark:bg-amber-500/10 rounded-full blur-3xl" />
-            </div>
-
-            {/* Top Badge - Rich and Crisp in Light Mode */}
-            <div className="relative z-10 flex items-center gap-2 mb-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300/80 dark:bg-amber-500/10 dark:text-amber-500 dark:border-amber-500/20 text-xs font-bold tracking-wide shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                <span>AEROSPACE 6061-T6 ALLOY • FIBER LASER WORKSHOP</span>
+      {/* ══════════════════════════════════════════════════════════════════
+          COMPACT 3-COLUMN FLUID B2B HERO (Adapts to 13" up to 50"+ Screens)
+         ══════════════════════════════════════════════════════════════════ */}
+      <section className="relative pt-16 sm:pt-18 pb-4 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
+          {/* Col 1 (5 Cols): Manufacturer Value Proposition */}
+          <div className="lg:col-span-5 bg-card border border-border rounded-2xl p-4 sm:p-5 flex flex-col justify-between relative overflow-hidden shadow-2xs">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                <span>Industrial Identification & Custom Signage Manufacturer</span>
               </div>
-            </div>
 
-            {/* Headline - Deep, Lustrous Liquid Gold in Light Mode */}
-            <div className="relative z-10 mb-6">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.05] uppercase">
-                Sourav Graphic & <br />
-                <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 dark:from-amber-400 dark:via-amber-300 dark:to-yellow-500 bg-clip-text text-transparent drop-shadow-xs">
+              <h1 className="text-xl sm:text-2xl xl:text-3xl font-black tracking-tight text-foreground leading-tight uppercase">
+                Sourav Graphic &{" "}
+                <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 dark:from-amber-400 dark:to-yellow-500 bg-clip-text text-transparent">
                   Metal Labels
                 </span>
               </h1>
-              <p className="mt-4 text-sm sm:text-base text-muted-foreground font-medium max-w-lg leading-relaxed">
-                Heavy-duty custom labels, architectural name plates, and precision laser engravings. Built robust. Hand-finished. Engineered to last a lifetime.
+
+              <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                Manufacturer & supplier of{" "}
+                <strong className="text-foreground">
+                  Anodized Aluminium Nameplates, SS 304/316 Etched Tags, Brass Boards, QR/Barcode Cable Tags, Polycarbonate Stickers
+                </strong>{" "}
+                & <strong className="text-foreground">Multi-Colour Screen Printing</strong>.
               </p>
-            </div>
 
-            {/* Embedded Quick Quote Console & Builder CTA */}
-            <div className="relative z-10 mt-auto pt-4 border-t border-border/50">
-              <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground mb-2">
-                <span>Get an Instant Spec Sheet / Bulk Quote</span>
-                <span className="text-amber-700 dark:text-amber-400 flex items-center gap-1 font-bold">
-                  <CheckCircle2 size={13} /> 24h Turnaround
-                </span>
-              </div>
-
-              {quickSubmitted ? (
-                <div className="p-3.5 rounded-xl bg-emerald-100 text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300/60 dark:border-emerald-500/20 text-xs font-semibold flex items-center gap-2">
-                  <Check size={16} />
-                  <span>Request received! We will send you our official product catalog within 2 hours.</span>
-                </div>
-              ) : (
-                <form onSubmit={handleQuickQuote} className="flex flex-col sm:flex-row gap-2.5">
-                  <input
-                    type="email"
-                    required
-                    placeholder="sanjay.rana@company.com"
-                    value={quickEmail}
-                    onChange={(e) => setQuickEmail(e.target.value)}
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-background border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber-600 dark:focus:border-amber-500 transition-colors shadow-xs font-medium"
-                  />
+              {/* Quick Category Pills */}
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {[
+                  "Aluminium Name Plate",
+                  "SS 304 Etched Plate",
+                  "Anodize Aluminium Tag",
+                  "Acrylic Sign Board",
+                  "Industrial Screen Printing",
+                  "Polycarbonate Stickers",
+                ].map((item) => (
                   <button
-                    type="submit"
-                    className="px-5 py-2.5 rounded-xl text-xs font-bold bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-foreground dark:text-background transition-all flex items-center justify-center gap-1.5 whitespace-nowrap active:scale-98 shadow-sm"
+                    key={item}
+                    type="button"
+                    onClick={() => {
+                      setHeroForm((prev) => ({ ...prev, product: item }));
+                      document
+                        .getElementById("products")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="px-2 py-1 rounded-lg bg-muted/70 hover:bg-amber-500 hover:text-zinc-950 border border-border text-[10px] font-bold transition-colors cursor-pointer"
                   >
-                    <span>Get Quote</span>
-                    <ArrowRight size={13} />
+                    {item}
                   </button>
-                </form>
-              )}
-
-              <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-border/50">
-                <SweepButton href="/customize" label="Try Online Builder" size="md" />
-                <span className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
-                  <CheckCircle2 size={13} className="text-emerald-500" />
-                  <span>Real-time digital proof before production</span>
-                </span>
+                ))}
               </div>
             </div>
 
-          </motion.div>
-
-          {/* Right Top Card (4 Cols) - Material Sample Full Image */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15, duration: 0.6 }}
-            className="lg:col-span-4 min-h-[320px] lg:min-h-[380px] bg-card border border-border rounded-3xl p-5 relative overflow-hidden shadow-xl shadow-black/[0.03] dark:shadow-black/40 flex flex-col justify-between items-center group"
-          >
-            {/* Ambient Specular Highlight */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(245,158,11,0.08)_0%,transparent_70%)] pointer-events-none" />
-
-            <div className="w-full flex items-center justify-between text-xs text-muted-foreground z-20">
-              <span className="font-mono text-[11px] font-bold text-foreground">Material Samples</span>
-              <span className="text-[10px] text-muted-foreground font-semibold">Aerospace Grade</span>
-            </div>
-
-            {/* Full Material Sample Image - Zoomed */}
-            <div className="relative w-full flex-1 min-h-[240px] sm:min-h-[270px] flex items-center justify-center my-2 z-10">
-              <div className="relative w-full h-full flex items-center justify-center">
-                <Image
-                  src="/Media/anodized-aluminium-labels-1000x1000-removebg-preview.png"
-                  alt="Anodized Aluminium Label"
-                  fill
-                  className="object-contain scale-125 group-hover:scale-130 transition-transform duration-500 drop-shadow-2xl"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  priority
+            <div className="mt-4 pt-3 border-t border-border/60 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <SweepButton
+                  href="/customize"
+                  label="Upload Design Photo & Enquire"
+                  size="sm"
                 />
+                <a
+                  href="#products"
+                  className="px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 border border-border text-[11px] font-extrabold flex items-center gap-1"
+                >
+                  <span>View All 12 Products</span>
+                  <ArrowRight size={11} />
+                </a>
               </div>
-            </div>
-
-            {/* Material Label */}
-            <div className="w-full py-2 px-3.5 rounded-xl glass-panel text-center text-xs font-bold text-foreground z-20 border border-border shadow-xs flex items-center justify-between">
-              <span className="truncate">Anodized Aluminium Labels</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-mono font-medium border border-amber-500/20">
-                Sample Specimen
+              <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                ● 0.3mm to 12mm Gauges
               </span>
             </div>
-          </motion.div>
-
-          {/* Right Bottom Stats Pill */}
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.6 }}
-            className="lg:col-span-12 glass-panel rounded-2xl p-5 border border-border grid grid-cols-2 md:grid-cols-4 gap-4 items-center text-center"
-          >
-            <div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">2,500+</div>
-              <div className="text-xs text-muted-foreground font-medium">Plates Fabricated</div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">±0.02 mm</div>
-              <div className="text-xs text-muted-foreground font-medium flex items-center justify-center gap-1">
-                <ShieldCheck size={13} className="text-emerald-500" />
-                <span>CNC Machine Tolerance</span>
-              </div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">24-48h</div>
-              <div className="text-xs text-muted-foreground font-medium">Standard Proof Dispatch</div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-mono">100% Solid</div>
-              <div className="text-xs text-muted-foreground font-medium">Aerospace Billet Guarantee</div>
-            </div>
-          </motion.div>
-
-        </div>
-
-      </section>
-
-      {/* 3. CAPABILITIES & SERVICES (Vibrant Bento Cards) */}
-      <section id="services" className="py-16 px-6 max-w-6xl mx-auto w-full border-t border-zinc-200/70 dark:border-border/50">
-        <div className="text-center max-w-xl mx-auto mb-12">
-          <div className="inline-block text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2">
-            Signature Formats
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-950 dark:text-foreground">
-            Our Core Capabilities
-          </h2>
-          <p className="mt-2 text-xs sm:text-sm text-zinc-600 dark:text-muted-foreground font-medium">
-            Precision fabricated signage engineered for corporate prestige and industrial longevity.
-          </p>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          
-          {/* Card 1 */}
-          <motion.div 
-            whileHover={{ y: -4 }}
-            className="p-7 rounded-2xl bg-card border border-border shadow-sm hover:border-amber-500 hover:shadow-xl hover:shadow-amber-500/10 transition-all group flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-500 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform shadow-xs">
-                <Briefcase size={22} />
-              </div>
-              <h3 className="text-base font-bold text-foreground mb-2">Corporate Name Plates</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                Architectural brushed aluminium and heavy metal blocks for boardroom tables, office doors, and executive suites.
-              </p>
+          {/* Col 2 (3 Cols): Featured Specimen + Key Spec Highlights */}
+          <div className="lg:col-span-3 bg-card border border-border rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="font-bold text-foreground">Featured Specimen</span>
+              <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 font-mono text-[10px] font-bold">
+                OEM Export Grade
+              </span>
             </div>
-            <Link href="/customize" prefetch={true} className="mt-6 text-xs font-bold text-foreground hover:text-amber-600 dark:hover:text-amber-400 inline-flex items-center gap-1 active:scale-95 transition-transform duration-75">
-              <span>Configure in 3D</span>
-              <ChevronRight size={13} />
-            </Link>
-          </motion.div>
 
-          {/* Card 2 */}
-          <motion.div 
-            whileHover={{ y: -4 }}
-            className="p-7 rounded-2xl bg-card border border-border shadow-sm hover:border-amber-500 hover:shadow-xl hover:shadow-amber-500/10 transition-all group flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-500 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform shadow-xs">
-                <Factory size={22} />
-              </div>
-              <h3 className="text-base font-bold text-foreground mb-2">Industrial Metal Tags</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                Anodized aluminium tags impervious to motor oil, extreme friction, UV radiation, and outdoor exposure.
-              </p>
-            </div>
-            <Link href="/customize" prefetch={true} className="mt-6 text-xs font-bold text-foreground hover:text-amber-600 dark:hover:text-amber-400 inline-flex items-center gap-1 active:scale-95 transition-transform duration-75">
-              <span>View Specifications</span>
-              <ChevronRight size={13} />
-            </Link>
-          </motion.div>
-
-          {/* Card 3 */}
-          <motion.div 
-            whileHover={{ y: -4 }}
-            className="p-7 rounded-2xl bg-card border border-border shadow-sm hover:border-amber-500 hover:shadow-xl hover:shadow-amber-500/10 transition-all group flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-500 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform shadow-xs">
-                <Lightbulb size={22} />
-              </div>
-              <h3 className="text-base font-bold text-foreground mb-2">LED & Illuminated Plaques</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                Halo-illuminated warm backlighting integrated into precision CNC metal housing for luxury interior spaces.
-              </p>
-            </div>
-            <Link href="/customize" prefetch={true} className="mt-6 text-xs font-bold text-foreground hover:text-amber-600 dark:hover:text-amber-400 inline-flex items-center gap-1 active:scale-95 transition-transform duration-75">
-              <span>Explore Lighting</span>
-              <ChevronRight size={13} />
-            </Link>
-          </motion.div>
-
-        </div>
-      </section>
-
-      {/* 4. THE PARALLAX SHUTTER REVEAL SECTION */}
-      <section id="engineering" ref={shutterRef} className="py-20 px-6 max-w-6xl mx-auto w-full border-t border-border/50">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          
-          {/* Shutter Reveal Image Stage */}
-          <motion.div 
-            style={{ scale: shutterScale, opacity: shutterOpacity }}
-            className="lg:col-span-6 relative w-full aspect-[4/3] rounded-3xl border border-border shadow-2xl overflow-hidden group bg-card dark:bg-[#0f1118]"
-          >
-            <motion.div style={{ y: shutterInnerY }} className="w-full h-full relative">
-              <Image 
-                src="/Media/premium_gold_plate.png" 
-                alt="Heritage Gold Plaque Detail" 
+            <div className="relative w-full h-32 sm:h-36 my-1 flex items-center justify-center">
+              <Image
+                src="/Media/anodized-aluminium-labels-1000x1000-removebg-preview.png"
+                alt="Anodized Aluminium Nameplates"
                 fill
-                className="object-cover group-hover:scale-103 transition-transform duration-700"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-contain scale-110 drop-shadow-xl"
+                sizes="240px"
+                priority
               />
-            </motion.div>
-
-            {/* Left Shutter Overlay */}
-            <motion.div 
-              initial={{ y: "0%" }}
-              whileInView={{ y: "102%" }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 1.1, ease: [0.76, 0, 0.24, 1] }}
-              className="absolute top-0 left-0 w-[50.2%] h-full bg-card dark:bg-[#0f1118] z-20 border-r border-border"
-            />
-
-            {/* Right Shutter Overlay */}
-            <motion.div 
-              initial={{ y: "0%" }}
-              whileInView={{ y: "-102%" }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 1.1, ease: [0.76, 0, 0.24, 1] }}
-              className="absolute top-0 right-0 w-[50.2%] h-full bg-card dark:bg-[#0f1118] z-20 border-l border-border"
-            />
-
-            {/* Floating Tag */}
-            <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-pill text-[11px] font-bold text-foreground z-30 shadow-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-              <span>Micro-Machined Brass Specimen</span>
-            </div>
-          </motion.div>
-
-          {/* Copy and Specifications */}
-          <div className="lg:col-span-6">
-            <div className="inline-block text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2">
-              Uncompromising Craftsmanship
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground mb-4">
-              Machined to perfection, <br />
-              delivered without delay.
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6 font-medium">
-              Whether you need an individual executive door plate or two thousand serialized asset tags for high-voltage transformers, every piece is laser cut and inspected before dispatch.
-            </p>
-
-            <div className="space-y-3.5 mb-8">
-              <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-500 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                  <Check size={13} />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-foreground">Solid 6061 Alloys & Forged Brass</h4>
-                  <p className="text-[11px] text-muted-foreground">Never hollow stamped sheet metal. Genuine aerospace grade billet.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-500 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                  <Check size={13} />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-foreground">Fiber Laser Micro-Relief</h4>
-                  <p className="text-[11px] text-muted-foreground">Deep etched typography that will not peel, fade, or dissolve under solvents.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-500 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                  <Check size={13} />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-foreground">Grade 304 Stainless Standoff Hardware</h4>
-                  <p className="text-[11px] text-muted-foreground">Includes concentric machined wall mounting studs and neoprene dampeners.</p>
-                </div>
-              </div>
             </div>
 
-            <SweepButton href="/customize" label="Design Your Plate Now" size="md" />
+            <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-border/60 text-[10px]">
+              <div className="p-1.5 rounded-lg bg-muted/40 border border-border/50">
+                <span className="text-muted-foreground block">Thickness:</span>
+                <strong className="font-mono text-foreground">
+                  0.3, 0.5, 0.7, 1.5, 2.0mm
+                </strong>
+              </div>
+              <div className="p-1.5 rounded-lg bg-muted/40 border border-border/50">
+                <span className="text-muted-foreground block">Holes & Side:</span>
+                <strong className="font-mono text-foreground">
+                  1–5mm • Single/Double
+                </strong>
+              </div>
+            </div>
           </div>
 
-        </div>
-      </section>
+          {/* Col 3 (4 Cols): Samarth-Style Instant "Tell Us Your Requirement" Box */}
+          <div className="lg:col-span-4 bg-card border border-border rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/60">
+              <div>
+                <h2 className="text-xs sm:text-sm font-black uppercase tracking-wide text-foreground">
+                  Tell Us Your Requirement
+                </h2>
+                <p className="text-[10px] text-muted-foreground">
+                  Get instant quotation directly from our workshop
+                </p>
+              </div>
+              <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 text-[10px] font-bold">
+                Fast Response
+              </span>
+            </div>
 
-      {/* 5. INTERACTIVE MATERIAL SPECIMENS */}
-      <section id="specimens" className="py-16 px-6 max-w-6xl mx-auto w-full border-t border-border/50">
-        <div className="relative glass-panel rounded-3xl p-6 sm:p-10 shadow-xl border border-border overflow-hidden">
-          
-          <div className="text-center max-w-md mx-auto mb-8">
-            <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider block mb-1">
-              Tangible Samples
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Explore Physical Finishes
-            </h3>
-          </div>
-
-          {/* Material Switcher Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
-            {showcaseSpecimens.map((specimen, idx) => (
-              <button
-                key={specimen.name}
-                onClick={() => setSelectedSpecimen(idx)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition-all duration-150 cursor-pointer active:scale-95 touch-manipulation select-none ${
-                  selectedSpecimen === idx
-                    ? 'bg-zinc-950 text-white dark:bg-foreground dark:text-background shadow-sm scale-102'
-                    : 'text-muted-foreground hover:text-foreground bg-muted/60 dark:bg-muted/30 border border-border'
-                }`}
-              >
-                {specimen.name}
-              </button>
-            ))}
-          </div>
-
-          {/* Specimen Details Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Visual Frame */}
-            <div className="lg:col-span-7 relative flex items-center justify-center min-h-[260px] sm:min-h-[340px] rounded-2xl bg-card border border-border p-6 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={showcaseSpecimens[selectedSpecimen].name}
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.02 }}
-                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative w-full h-[220px] sm:h-[300px] max-w-md flex items-center justify-center"
-                >
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border-2 border-border">
-                    <Image
-                      src={showcaseSpecimens[selectedSpecimen].img}
-                      alt={showcaseSpecimens[selectedSpecimen].name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
+            {heroSubmittedId ? (
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-1 my-auto">
+                <CheckCircle2 size={22} className="text-emerald-500 mx-auto" />
+                <h3 className="text-xs font-black text-foreground">
+                  Enquiry Sent! ({heroSubmittedId})
+                </h3>
+                <p className="text-[11px] text-muted-foreground">
+                  Logged in Admin Dashboard. We will call you shortly.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleHeroQuoteSubmit} className="space-y-2 text-xs">
+                <div className="grid grid-cols-12 gap-1.5">
+                  <div className="col-span-6">
+                    <label className="text-[9px] font-bold uppercase text-muted-foreground block mb-0.5">
+                      Product
+                    </label>
+                    <select
+                      value={heroForm.product}
+                      onChange={(e) =>
+                        setHeroForm({ ...heroForm, product: e.target.value })
+                      }
+                      className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-bold text-[11px]"
+                    >
+                      <option>Aluminium Name Plate</option>
+                      <option>Acrylic Sign Board</option>
+                      <option>Industrial Screen Printing</option>
+                      <option>Anodize Aluminium Tag</option>
+                      <option>SS 304 Etched Plate</option>
+                      <option>Polycarbonate Stickers</option>
+                      <option>House Name Plate</option>
+                    </select>
+                  </div>
+                  <div className="col-span-3">
+                    <label className="text-[9px] font-bold uppercase text-muted-foreground block mb-0.5">
+                      Thickness
+                    </label>
+                    <select
+                      value={heroForm.thickness}
+                      onChange={(e) =>
+                        setHeroForm({ ...heroForm, thickness: e.target.value })
+                      }
+                      className="w-full px-1.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px]"
+                    >
+                      <option>0.3 mm</option>
+                      <option>0.5 mm</option>
+                      <option>0.7 mm</option>
+                      <option>0.91 mm</option>
+                      <option>1.5 mm</option>
+                      <option>2.0 mm</option>
+                    </select>
+                  </div>
+                  <div className="col-span-3">
+                    <label className="text-[9px] font-bold uppercase text-muted-foreground block mb-0.5">
+                      Qty
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={heroForm.quantity}
+                      onChange={(e) =>
+                        setHeroForm({ ...heroForm, quantity: e.target.value })
+                      }
+                      className="w-full px-1.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px] text-center"
                     />
                   </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Spec Sheet Column */}
-            <div className="lg:col-span-5 flex flex-col justify-center">
-              <h4 className="text-xl sm:text-2xl font-black text-foreground mb-1">
-                {showcaseSpecimens[selectedSpecimen].name}
-              </h4>
-              <p className="text-xs text-muted-foreground font-medium mb-6">
-                {showcaseSpecimens[selectedSpecimen].subtitle}
-              </p>
-
-              <div className="space-y-3 mb-6 text-xs sm:text-sm">
-                <div className="flex items-center justify-between py-2 border-b border-border/50">
-                  <span className="text-muted-foreground font-medium">Thickness Gauge</span>
-                  <span className="font-bold text-foreground font-mono">{showcaseSpecimens[selectedSpecimen].thickness}</span>
                 </div>
-                <div className="flex items-center justify-between py-2 border-b border-border/50">
-                  <span className="text-muted-foreground font-medium">Surface Texture</span>
-                  <span className="font-bold text-foreground">{showcaseSpecimens[selectedSpecimen].finish}</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-border/50">
-                  <span className="text-muted-foreground font-medium">Mounting Hardware</span>
-                  <span className="font-bold text-foreground">{showcaseSpecimens[selectedSpecimen].mount}</span>
-                </div>
-              </div>
 
-              <div className="pt-2">
-                <SweepButton href="/customize" label="Customize in Studio" size="md" fullWidth />
-              </div>
-            </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Your Name / Company *"
+                    value={heroForm.name}
+                    onChange={(e) =>
+                      setHeroForm({ ...heroForm, name: e.target.value })
+                    }
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
+                  />
+                  <input
+                    type="tel"
+                    required
+                    placeholder="Mobile / WhatsApp No. *"
+                    value={heroForm.phone}
+                    onChange={(e) =>
+                      setHeroForm({ ...heroForm, phone: e.target.value })
+                    }
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-semibold text-[11px]"
+                  />
+                </div>
 
+                <button
+                  type="submit"
+                  disabled={heroSubmitting}
+                  className="w-full py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-zinc-950 font-black text-xs uppercase tracking-wider shadow-sm hover:brightness-110 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Send size={12} />
+                  <span>{heroSubmitting ? "Submitting..." : "Submit Requirement"}</span>
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>
 
-      {/* 6. CURATED CATALOG GRID */}
-      <section id="products" className="py-16 px-6 max-w-6xl mx-auto w-full border-t border-border/50">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-          <div>
-            <div className="inline-block text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2">
-              Catalog & Collections
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-              Signature Metal Formats
-            </h2>
-          </div>
+      {/* ══════════════════════════════════════════════════════════════════
+          MAIN B2B CATALOG SECTION: LEFT SIDEBAR CATEGORIES + RIGHT PRODUCT GRID
+          (Exact Samarth Metal Labels B2B Directory Structure, Sleek & Modern)
+         ══════════════════════════════════════════════════════════════════ */}
+      <section
+        id="products"
+        className="py-6 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* LEFT SIDEBAR (3 Cols on Desktop / 2.5 Cols on Ultrawide): Product Range Directory + Direct Upload Card */}
+          <aside className="lg:col-span-3 2xl:col-span-2 lg:sticky lg:top-16 space-y-3.5">
+            <div className="bg-card border border-border rounded-2xl p-3.5 shadow-2xs">
+              <div className="pb-2.5 mb-2.5 border-b border-border flex items-center justify-between">
+                <h2 className="text-xs font-black uppercase tracking-wider text-foreground">
+                  Our Product Range
+                </h2>
+                <span className="text-[10px] font-mono text-amber-500 font-bold">
+                  {CATALOG_PRODUCTS.length} Items
+                </span>
+              </div>
 
-          <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-150 cursor-pointer active:scale-95 touch-manipulation select-none ${
-                  activeCategory === cat
-                    ? 'bg-zinc-950 text-white dark:bg-foreground dark:text-background shadow-sm'
-                    : 'bg-card text-muted-foreground hover:text-foreground border border-border shadow-xs'
-                }`}
+              <div className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0">
+                {PRODUCT_CATEGORIES.map((cat) => {
+                  const isActive = activeCategory === cat.id;
+                  const count =
+                    cat.id === "All"
+                      ? CATALOG_PRODUCTS.length
+                      : CATALOG_PRODUCTS.filter((p) => p.category === cat.id)
+                          .length;
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setActiveCategory(cat.id)}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between gap-2 shrink-0 lg:shrink cursor-pointer ${
+                        isActive
+                          ? "bg-amber-500 text-zinc-950 font-black shadow-xs"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                      }`}
+                    >
+                      <span className="truncate">{cat.short}</span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                          isActive
+                            ? "bg-zinc-950/15 text-zinc-950"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Direct Custom Artwork Upload CTA Card in Sidebar */}
+            <div className="hidden lg:block bg-card border border-amber-500/30 rounded-2xl p-4 shadow-2xs space-y-2.5">
+              <span className="px-2 py-0.5 rounded bg-amber-500/15 text-amber-500 text-[10px] font-mono font-bold uppercase">
+                Custom Fabrication
+              </span>
+              <h3 className="text-xs font-black text-foreground">
+                Have a Drawing or Sample Photo?
+              </h3>
+              <p className="text-[11px] text-muted-foreground leading-snug">
+                Upload your photo directly, choose Thickness (0.3–2.0mm), Holes (1–5mm), Single/Double Side & Colour.
+              </p>
+              <Link
+                href="/customize"
+                className="w-full py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[11px] uppercase tracking-wide flex items-center justify-center gap-1.5 transition-all"
               >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
+                <Upload size={12} />
+                <span>Upload Design Photo</span>
+              </Link>
+            </div>
+          </aside>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {filteredProducts.map((product) => (
-            <div 
-              key={product.id}
-              className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:border-amber-500 hover:shadow-xl hover:shadow-black/[0.04] transition-all duration-300 shadow-xs"
-            >
-              <div className="relative h-44 bg-muted/40 dark:bg-[#0c0e14] overflow-hidden">
-                <Image
-                  src={product.img}
-                  alt={product.title}
-                  fill
-                  className="object-cover group-hover:scale-104 transition-transform duration-300"
-                  sizes="(max-width: 768px) 100vw, 25vw"
-                />
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-card/90 dark:bg-card/90 text-foreground border border-border text-[10px] font-bold shadow-xs">
-                  {product.tag}
-                </div>
+          {/* RIGHT CATALOG GRID (9 Cols on Desktop / 10 Cols on Ultrawide) */}
+          <div className="lg:col-span-9 2xl:col-span-10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3.5">
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-foreground">
+                  {activeCategory === "All"
+                    ? "All Industrial Nameplates, Metal Labels & Tags"
+                    : activeCategory}
+                </h2>
+                <p className="text-[11px] text-muted-foreground">
+                  Showing {filteredProducts.length} industrial products • Click{" "}
+                  <strong>Get Best Quote</strong> to send requirement
+                </p>
               </div>
 
-              <div className="p-4 flex flex-col flex-grow">
-                <h3 className="text-sm font-bold text-foreground mb-1 line-clamp-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                  {product.title}
-                </h3>
-                <p className="text-xs text-muted-foreground mb-4 line-clamp-2 leading-relaxed font-medium">
-                  {product.desc}
-                </p>
-
-                <div className="mt-auto pt-3 border-t border-border/40 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] text-muted-foreground font-medium block">Fabrication</span>
-                    <span className="text-xs font-bold text-foreground">Custom Size & Finish</span>
-                  </div>
-                  <Link
-                    href="/customize"
-                    prefetch={true}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-zinc-950 text-white dark:bg-foreground dark:text-background hover:opacity-90 active:scale-95 transition-all duration-75 cursor-pointer touch-manipulation select-none"
-                  >
-                    <span>Inquire</span>
-                    <ArrowRight size={11} />
-                  </Link>
-                </div>
+              {/* Mobile / Tablet Search Input */}
+              <div className="relative lg:hidden w-full sm:w-64">
+                <Search
+                  size={13}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-card border border-border text-xs"
+                />
               </div>
             </div>
-          ))}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3.5">
+              {filteredProducts.map((product) => (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="group bg-card border border-border hover:border-amber-500/80 rounded-2xl overflow-hidden shadow-2xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Product Image Header */}
+                    <div className="relative h-36 bg-muted/40 dark:bg-[#0c0e14] overflow-hidden">
+                      <Image
+                        src={product.img}
+                        alt={product.title}
+                        fill
+                        className={`${
+                          product.isContain
+                            ? "object-contain p-2.5"
+                            : "object-cover"
+                        } group-hover:scale-105 transition-transform duration-300`}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1536px) 30vw, 22vw"
+                      />
+                      <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-zinc-950/85 text-amber-400 border border-white/15 text-[10px] font-bold">
+                        {product.tag}
+                      </div>
+                      <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-card/90 text-foreground border border-border text-[9px] font-mono font-bold">
+                        {product.code}
+                      </div>
+                    </div>
+
+                    {/* Product Details & Spec Table */}
+                    <div className="p-3.5">
+                      <h3 className="text-xs sm:text-sm font-extrabold text-foreground line-clamp-1 group-hover:text-amber-500 transition-colors">
+                        {product.title}
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2 leading-snug">
+                        {product.desc}
+                      </p>
+
+                      {/* Structured B2B Spec Rows (Like Samarth Metal Labels) */}
+                      <div className="mt-2.5 pt-2 border-t border-border/60 space-y-1 text-[10px]">
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground shrink-0">
+                            Material:
+                          </span>
+                          <strong className="text-foreground truncate text-right">
+                            {product.material}
+                          </strong>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground shrink-0">
+                            Thickness:
+                          </span>
+                          <strong className="font-mono text-amber-600 dark:text-amber-400 truncate text-right">
+                            {product.thickness}
+                          </strong>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground shrink-0">
+                            Process:
+                          </span>
+                          <strong className="text-foreground truncate text-right">
+                            {product.process}
+                          </strong>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground shrink-0">
+                            Mounting:
+                          </span>
+                          <strong className="text-foreground truncate text-right">
+                            {product.mounting}
+                          </strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dual High-Conversion Quote & Upload Buttons */}
+                  <div className="px-3.5 pb-3.5 pt-1 flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setModalProduct(product);
+                        setModalSuccessId("");
+                      }}
+                      className="flex-1 py-2 px-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[11px] uppercase tracking-wide transition-all flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <span>Get Best Quote</span>
+                      <ArrowRight size={11} />
+                    </button>
+                    <Link
+                      href="/customize"
+                      prefetch={true}
+                      className="py-2 px-2.5 rounded-xl bg-muted hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-950 border border-border text-[11px] font-bold transition-colors flex items-center justify-center gap-1"
+                      title="Upload Design Photo"
+                    >
+                      <Upload size={11} />
+                      <span>Upload</span>
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 7. VOLUME & CUSTOM INQUIRY CONSOLE */}
-      <section id="quote" className="py-20 px-6 max-w-5xl mx-auto w-full">
-        <div className="glass-panel rounded-3xl p-8 sm:p-12 border border-border relative overflow-hidden shadow-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
-            <div className="lg:col-span-6">
-              <div className="inline-block text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2">
-                Direct Workshop Inquiry
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground mb-3">
-                Submit Your Custom Query
-              </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6 font-medium">
-                Planning signage for a home, corporate office, manufacturing floor, or residential society? Select your approximate quantity and submit your requirement for a tailored quotation.
-              </p>
+      {/* ══════════════════════════════════════════════════════════════════
+          INDUSTRIES WE SERVE (6 COMPACT SECTOR CARDS)
+         ══════════════════════════════════════════════════════════════════ */}
+      <section
+        id="industries"
+        className="py-6 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto border-t border-border/50"
+      >
+        <div className="flex items-center justify-between mb-3.5">
+          <div>
+            <h2 className="text-base sm:text-lg font-black text-foreground">
+              Industries We Serve
+            </h2>
+            <p className="text-[11px] text-muted-foreground">
+              Supplying precision identification plates & labels across key industrial sectors
+            </p>
+          </div>
+        </div>
 
-              <div className="p-5 rounded-2xl bg-card border border-border mb-6">
-                <div className="flex items-center justify-between text-xs font-bold mb-3">
-                  <span className="text-muted-foreground">Approximate Quantity Needed:</span>
-                  <span className="text-foreground px-2.5 py-0.5 rounded-md bg-muted/60 dark:bg-muted/40 border border-border shadow-xs font-mono">
-                    {quoteQuantity} Units
-                  </span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {INDUSTRIES_SERVED.map((ind) => {
+            const Icon = ind.icon;
+            return (
+              <div
+                key={ind.name}
+                className="p-3.5 rounded-2xl bg-card border border-border hover:border-amber-500/60 transition-all flex flex-col justify-between"
+              >
+                <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center mb-2">
+                  <Icon size={16} />
+                </div>
+                <div>
+                  <h3 className="text-xs font-extrabold text-foreground">
+                    {ind.name}
+                  </h3>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
+                    {ind.desc}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SIDE-BY-SIDE INFRASTRUCTURE & QUALITY + COMPANY FACT SHEET (#profile)
+         ══════════════════════════════════════════════════════════════════ */}
+      <section
+        id="profile"
+        className="py-6 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto border-t border-border/50"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+          {/* Left (6 Cols): Manufacturing Infrastructure & Quality Testing */}
+          <div className="lg:col-span-6 bg-card border border-border rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <span className="text-[10px] font-mono font-bold uppercase text-amber-500 block">
+                Infrastructure & Quality Assurance
+              </span>
+              <h2 className="text-base sm:text-lg font-black text-foreground mt-0.5">
+                In-House Fabrication & Testing Facilities
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3.5">
+                {INFRASTRUCTURE_FEATURES.map((feat) => (
+                  <div
+                    key={feat.title}
+                    className="p-3 rounded-xl bg-muted/40 border border-border/60"
+                  >
+                    <h3 className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
+                      <Check size={13} className="text-emerald-500 shrink-0" />
+                      <span>{feat.title}</span>
+                    </h3>
+                    <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
+                      {feat.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs">
+              <span className="text-muted-foreground font-medium">
+                Need custom sample plates for approval?
+              </span>
+              <SweepButton href="/customize" label="Upload Sample Photo" size="sm" />
+            </div>
+          </div>
+
+          {/* Right (6 Cols): Company Profile Fact Sheet */}
+          <div className="lg:col-span-6 bg-card border border-border rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <span className="text-[10px] font-mono font-bold uppercase text-amber-500 block">
+                Company Profile
+              </span>
+              <h2 className="text-base sm:text-lg font-black text-foreground mt-0.5">
+                Sourav Graphic & Metal Labels — Fact Sheet
+              </h2>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-3.5">
+                {COMPANY_FACTS.map((fact) => (
+                  <div
+                    key={fact.label}
+                    className="p-3 rounded-xl bg-muted/40 border border-border/60"
+                  >
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                      {fact.label}
+                    </span>
+                    <span className="text-[11px] font-extrabold text-foreground mt-0.5 block leading-snug">
+                      {fact.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-border/50 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <ShieldCheck size={15} />
+                <span>Verified Quality • Direct Factory Pricing</span>
+              </div>
+              <a
+                href="https://wa.me/919876543210"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-zinc-950 font-black text-xs flex items-center gap-1.5"
+              >
+                <MessageCircle size={13} />
+                <span>Chat on WhatsApp</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          COMPACT BULK & CUSTOM ENQUIRY CONSOLE (#quote)
+         ══════════════════════════════════════════════════════════════════ */}
+      <section
+        id="quote"
+        className="py-6 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto"
+      >
+        <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-2xs">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+            <div className="lg:col-span-4 space-y-2.5">
+              <div>
+                <span className="text-[10px] font-mono font-bold text-amber-500 uppercase tracking-wider block">
+                  Direct Factory Enquiry
+                </span>
+                <h2 className="text-base sm:text-lg font-black text-foreground">
+                  Send Bulk or Custom Requirement
+                </h2>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Choose specifications below to generate an instant factory quotation.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-muted/40 border border-border">
+                <div className="flex items-center justify-between text-xs font-bold mb-1">
+                  <span className="text-muted-foreground">Quantity Needed:</span>
+                  <span className="text-amber-500 font-mono">{quoteQuantity} Pcs</span>
                 </div>
                 <input
                   type="range"
                   min="1"
-                  max="150"
+                  max="500"
                   step="1"
                   value={quoteQuantity}
                   onChange={(e) => setQuoteQuantity(Number(e.target.value))}
                   className="w-full accent-amber-500 cursor-pointer h-1.5 rounded-lg bg-muted"
                 />
-                <div className="flex justify-between text-[10px] text-muted-foreground mt-2 font-medium">
-                  <span>1 pc (Single Custom)</span>
-                  <span>25 pcs (Corporate Batch)</span>
-                  <span>100+ pcs (Industrial Bulk)</span>
-                </div>
-              </div>
-
-              <div className="space-y-2 text-xs text-muted-foreground font-medium">
-                <div className="flex items-center gap-2">
-                  <Check size={13} className="text-emerald-600 dark:text-emerald-500" />
-                  <span>Direct consultation & digital proof before laser fabrication</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check size={13} className="text-emerald-600 dark:text-emerald-500" />
-                  <span>Physical pre-production sample available for bulk inquiries</span>
-                </div>
               </div>
             </div>
 
-            <div className="lg:col-span-6 bg-card border border-border p-6 sm:p-7 rounded-2xl shadow-sm">
-              <h3 className="text-sm font-bold text-foreground mb-4">Request Official Quote & Spec Sheet</h3>
-              
+            <div className="lg:col-span-8">
               {quoteSubmitted ? (
-                <div className="py-12 text-center">
-                  <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-500 mx-auto flex items-center justify-center mb-3">
-                    <Check size={22} />
-                  </div>
-                  <h4 className="text-sm font-bold text-foreground mb-1">Inquiry Received</h4>
-                  <p className="text-xs text-muted-foreground">Our production manager will email your pricing summary within 24 business hours.</p>
+                <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
+                  <Check size={22} className="text-emerald-500 mx-auto mb-1" />
+                  <h4 className="text-sm font-black text-foreground">
+                    Enquiry Logged Successfully!
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Our sales team will contact you with the quotation shortly.
+                  </p>
                 </div>
               ) : (
-                <form onSubmit={handleQuoteSubmit} className="space-y-3.5">
-                  <div>
-                    <label className="block text-[11px] font-bold text-muted-foreground mb-1">Your Full Name</label>
+                <form onSubmit={handleQuoteSubmit} className="space-y-2 text-xs">
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    <div className="col-span-2 sm:col-span-2">
+                      <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5">
+                        Product Category
+                      </label>
+                      <select
+                        value={formData.product}
+                        onChange={(e) =>
+                          setFormData({ ...formData, product: e.target.value })
+                        }
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-bold text-[11px]"
+                      >
+                        <option>Aluminium Name Plate</option>
+                        <option>Acrylic Sign Board</option>
+                        <option>Industrial Screen Printing</option>
+                        <option>House Name Plate</option>
+                        <option>Anodize Aluminium Tag</option>
+                        <option>SS 304 Etched Plate</option>
+                        <option>Polycarbonate Stickers</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5">
+                        Thickness
+                      </label>
+                      <select
+                        value={formData.thickness}
+                        onChange={(e) =>
+                          setFormData({ ...formData, thickness: e.target.value })
+                        }
+                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px]"
+                      >
+                        <option>0.3 mm</option>
+                        <option>0.5 mm</option>
+                        <option>0.7 mm</option>
+                        <option>0.91 mm</option>
+                        <option>1.5 mm</option>
+                        <option>2.0 mm</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5">
+                        Holes
+                      </label>
+                      <select
+                        value={formData.holes}
+                        onChange={(e) =>
+                          setFormData({ ...formData, holes: e.target.value })
+                        }
+                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-bold text-[11px]"
+                      >
+                        <option>1 mm</option>
+                        <option>2 mm</option>
+                        <option>3 mm</option>
+                        <option>4 mm</option>
+                        <option>5 mm</option>
+                        <option>No Holes</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase text-muted-foreground mb-0.5">
+                        Colour
+                      </label>
+                      <select
+                        value={formData.colour}
+                        onChange={(e) =>
+                          setFormData({ ...formData, colour: e.target.value })
+                        }
+                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-foreground font-bold text-[11px]"
+                      >
+                        <option>Single Colour</option>
+                        <option>Double Colour</option>
+                        <option>Three Colour</option>
+                        <option>Four Colour</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
                     <input
                       type="text"
                       required
-                      placeholder="Suraj Kumar"
+                      placeholder="Your Name / Company *"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl bg-background border border-border text-foreground focus:outline-none focus:border-amber-600 shadow-xs font-medium"
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      className="sm:col-span-3 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
                     />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-muted-foreground mb-1">Work / Business Email</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="suraj@company.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl bg-background border border-border text-foreground focus:outline-none focus:border-amber-600 shadow-xs font-medium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-muted-foreground mb-1">WhatsApp / Contact Number</label>
                     <input
                       type="tel"
-                      placeholder="+91 98765 43210"
+                      required
+                      placeholder="WhatsApp / Mobile No. *"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl bg-background border border-border text-foreground focus:outline-none focus:border-amber-600 shadow-xs font-medium"
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                      className="sm:col-span-3 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-semibold text-[11px]"
                     />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-muted-foreground mb-1">Project Details or Logo Requirements</label>
-                    <textarea
-                      rows={2}
-                      placeholder="Size dimensions, mounting surface, or preferred material..."
+                    <input
+                      type="text"
+                      required
+                      placeholder="Delivery Address & Custom Requirement *"
                       value={formData.notes}
-                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl bg-background border border-border text-foreground focus:outline-none focus:border-amber-600 shadow-xs resize-none font-medium"
+                      onChange={(e) =>
+                        setFormData({ ...formData, notes: e.target.value })
+                      }
+                      className="sm:col-span-4 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
                     />
+                    <button
+                      type="submit"
+                      className="sm:col-span-2 py-1.5 px-3 rounded-lg text-xs font-black uppercase bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 hover:brightness-110 transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                    >
+                      <Send size={11} />
+                      <span>Submit</span>
+                    </button>
                   </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-2.5 rounded-xl text-xs font-bold bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-foreground dark:text-background transition-all duration-75 flex items-center justify-center gap-2 active:scale-95 cursor-pointer touch-manipulation shadow-sm"
-                  >
-                    <Send size={13} />
-                    <span>Send Proposal Request</span>
-                  </button>
                 </form>
               )}
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* 8. Minimalist Serene Footer */}
-      <footer className="mt-auto border-t border-border py-8 px-6 bg-card/60 dark:bg-background">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground font-medium">
+      {/* ══════════════════════════════════════════════════════════════════
+          INSTANT "GET BEST QUOTE" MODAL FOR ANY CATALOG PRODUCT
+         ══════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {modalProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setModalProduct(null)}
+            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-2xl bg-card border border-border shadow-2xl overflow-hidden"
+            >
+              <div className="p-4 bg-muted/40 border-b border-border flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="relative w-12 h-12 rounded-xl bg-background border border-border overflow-hidden shrink-0">
+                    <Image
+                      src={modalProduct.img}
+                      alt={modalProduct.title}
+                      fill
+                      className="object-contain p-1"
+                      sizes="50px"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-mono font-bold uppercase text-amber-500 block">
+                      Enquire Now • {modalProduct.code}
+                    </span>
+                    <h3 className="text-sm font-black text-foreground truncate">
+                      {modalProduct.title}
+                    </h3>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setModalProduct(null)}
+                  className="w-7 h-7 rounded-lg bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+
+              {modalSuccessId ? (
+                <div className="p-6 text-center space-y-3">
+                  <CheckCircle2 size={32} className="text-emerald-500 mx-auto" />
+                  <h4 className="text-base font-black text-foreground">
+                    Enquiry Sent! ({modalSuccessId})
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Your requirement for <strong>{modalProduct.title}</strong> has been logged in our system.
+                  </p>
+                  <div className="flex gap-2 justify-center pt-1">
+                    <a
+                      href={`https://wa.me/919876543210?text=${encodeURIComponent(
+                        `Hi Sourav Graphic! I requested a quote (${modalSuccessId}) for ${modalProduct.title} (Thickness: ${modalForm.thickness}, Holes: ${modalForm.holes}, Qty: ${modalForm.quantity}).`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 rounded-xl bg-emerald-500 text-zinc-950 font-black text-xs flex items-center gap-1.5"
+                    >
+                      <MessageCircle size={13} /> WhatsApp Us
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setModalProduct(null)}
+                      className="px-4 py-2 rounded-xl bg-muted text-foreground font-bold text-xs"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleModalQuoteSubmit} className="p-4 space-y-3 text-xs">
+                  <div className="grid grid-cols-4 gap-2">
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                        Thickness
+                      </label>
+                      <select
+                        value={modalForm.thickness}
+                        onChange={(e) =>
+                          setModalForm({ ...modalForm, thickness: e.target.value })
+                        }
+                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-mono font-bold text-[11px]"
+                      >
+                        <option>0.3 mm</option>
+                        <option>0.5 mm</option>
+                        <option>0.7 mm</option>
+                        <option>0.91 mm</option>
+                        <option>1.5 mm</option>
+                        <option>2.0 mm</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                        Holes
+                      </label>
+                      <select
+                        value={modalForm.holes}
+                        onChange={(e) =>
+                          setModalForm({ ...modalForm, holes: e.target.value })
+                        }
+                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-mono font-bold text-[11px]"
+                      >
+                        <option>1 mm</option>
+                        <option>2 mm</option>
+                        <option>3 mm</option>
+                        <option>4 mm</option>
+                        <option>5 mm</option>
+                        <option>No Holes</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                        Colour
+                      </label>
+                      <select
+                        value={modalForm.colour}
+                        onChange={(e) =>
+                          setModalForm({ ...modalForm, colour: e.target.value })
+                        }
+                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-bold text-[11px]"
+                      >
+                        <option>Single Colour</option>
+                        <option>Double Colour</option>
+                        <option>Three Colour</option>
+                        <option>Four Colour</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                        Qty
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        value={modalForm.quantity}
+                        onChange={(e) =>
+                          setModalForm({ ...modalForm, quantity: e.target.value })
+                        }
+                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border font-mono font-bold text-center text-[11px]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      required
+                      placeholder="Your Full Name *"
+                      value={modalForm.name}
+                      onChange={(e) =>
+                        setModalForm({ ...modalForm, name: e.target.value })
+                      }
+                      className="w-full px-3 py-2 rounded-lg bg-background border border-border font-medium"
+                    />
+                    <input
+                      type="tel"
+                      required
+                      placeholder="Mobile / WhatsApp *"
+                      value={modalForm.phone}
+                      onChange={(e) =>
+                        setModalForm({ ...modalForm, phone: e.target.value })
+                      }
+                      className="w-full px-3 py-2 rounded-lg bg-background border border-border font-mono font-semibold"
+                    />
+                  </div>
+
+                  <input
+                    type="text"
+                    required
+                    placeholder="Delivery Address / City *"
+                    value={modalForm.address}
+                    onChange={(e) =>
+                      setModalForm({ ...modalForm, address: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg bg-background border border-border font-medium"
+                  />
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      type="submit"
+                      disabled={modalSubmitting}
+                      className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-zinc-950 font-black uppercase tracking-wider shadow-md hover:brightness-110 transition-all cursor-pointer"
+                    >
+                      {modalSubmitting ? "Sending..." : "Submit Enquiry"}
+                    </button>
+                    <Link
+                      href="/customize"
+                      className="py-2.5 px-3 rounded-xl bg-muted hover:bg-muted/80 border border-border font-bold flex items-center gap-1"
+                    >
+                      <Upload size={12} /> Upload Photo
+                    </Link>
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Compact Footer */}
+      <footer className="mt-auto border-t border-border py-4 px-4 sm:px-6 lg:px-10 2xl:px-14 bg-card/60 dark:bg-background">
+        <div className="w-full max-w-[1920px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground font-medium">
           <div className="flex items-center gap-3">
-            <div className="relative h-7 w-24">
-              <Image src="/Media/Logo.png" alt="Logo" fill sizes="100px" className="object-contain object-left opacity-90" />
+            <div className="relative h-6 w-20">
+              <Image
+                src="/Media/Logo.png"
+                alt="Logo"
+                fill
+                sizes="90px"
+                className="object-contain object-left opacity-90"
+              />
             </div>
             <span>•</span>
-            <span>Handcrafted in India</span>
+            <span>Industrial Metal Labels, Nameplates & Signage Manufacturer</span>
           </div>
 
-          <div className="flex items-center gap-6">
-            <a href="#services" className="hover:text-foreground transition-colors">Services</a>
-            <a href="#engineering" className="hover:text-foreground transition-colors">Engineering</a>
-            <a href="#products" className="hover:text-foreground transition-colors">Collections</a>
-            <Link href="/customize" prefetch={true} className="hover:text-foreground active:scale-95 transition-all duration-75">Studio Builder</Link>
-            <Link href="/admin" className="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold hover:bg-amber-500 hover:text-zinc-950 transition-colors">
+          <div className="flex flex-wrap items-center gap-4">
+            <a href="#products" className="hover:text-foreground transition-colors">
+              Our Products
+            </a>
+            <a href="#industries" className="hover:text-foreground transition-colors">
+              Industries
+            </a>
+            <a href="#profile" className="hover:text-foreground transition-colors">
+              Company Profile
+            </a>
+            <Link
+              href="/customize"
+              prefetch={true}
+              className="hover:text-foreground transition-colors font-bold"
+            >
+              Upload Design / Studio
+            </Link>
+            <Link
+              href="/admin"
+              className="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold hover:bg-amber-500 hover:text-zinc-950 transition-colors"
+            >
               Admin Portal
             </Link>
           </div>
 
           <div>
-            &copy; {new Date().getFullYear()} Saourav Graphic. All rights reserved.
+            &copy; {new Date().getFullYear()} Sourav Graphic. All rights reserved.
           </div>
         </div>
       </footer>
-
     </div>
   );
 }

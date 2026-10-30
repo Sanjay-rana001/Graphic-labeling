@@ -44,7 +44,7 @@ export default function CheckoutBlock({ config, setConfig, previewRef, isPreview
     }
   };
 
-  const handleSubmitInquiry = (e) => {
+  const handleSubmitInquiry = async (e) => {
     e.preventDefault();
     if (!form.name || !form.phone) return;
 
@@ -73,6 +73,28 @@ export default function CheckoutBlock({ config, setConfig, previewRef, isPreview
       status: "New Inquiry",
       notes: form.notes || "Customizer configuration submitted online."
     };
+
+    try {
+      await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: `${config.material} Name Plate`,
+          specifications: {
+            thickness: `${config.size.thickness || 3} mm`,
+            holes: config.mountingStyle || "Standoffs",
+            side: "Single Side",
+            quantity: Number(form.quantity) || 1,
+            colour: "Custom Engraved",
+          },
+          customer: {
+            name: form.name,
+            phone: form.phone,
+            address: form.city || "Online 3D Studio",
+          },
+        }),
+      });
+    } catch (err) {}
 
     // Save to local storage for Admin Panel
     try {

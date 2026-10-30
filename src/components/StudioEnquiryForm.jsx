@@ -432,7 +432,7 @@ export default function StudioEnquiryForm({
               onClick={() => {
                 if (!designFile) fileInputRef.current?.click();
               }}
-              className={`w-full max-w-2xl flex-1 max-h-[420px] rounded-3xl relative overflow-hidden transition-all duration-300 flex flex-col items-center justify-center border-2 ${
+              className={`w-full max-w-4xl 2xl:max-w-5xl flex-1 max-h-[480px] 2xl:max-h-[600px] rounded-2xl relative overflow-hidden transition-all duration-300 flex flex-col items-center justify-center border-2 ${
                 designFile
                   ? isDarkMode
                     ? "bg-zinc-950/90 border-amber-500/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]"
@@ -619,7 +619,7 @@ export default function StudioEnquiryForm({
         {/* ══════════════════════════════════════════════════════════════════
             RIGHT SIDE: COMPACT LUXURY SPECIFICATION & LEAD GENERATION DRAWER
            ══════════════════════════════════════════════════════════════════ */}
-        <div className="w-full lg:w-[520px] xl:w-[560px] lg:h-full flex flex-col bg-card border-l border-border/60 z-20 lg:overflow-hidden">
+        <div className="w-full lg:w-[500px] xl:w-[560px] 2xl:w-[660px] lg:h-full flex flex-col bg-card border-l border-border/60 z-20 lg:overflow-hidden">
           {submittedEnquiry ? (
             /* ── LEAD SUBMITTED SUCCESS STATE ── */
             <div className="flex-1 p-6 sm:p-8 flex flex-col items-center justify-center text-center">

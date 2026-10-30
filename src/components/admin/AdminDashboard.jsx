@@ -1211,7 +1211,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Animated Tab Views */}
-        <div className="p-6 max-w-7xl w-full mx-auto flex-1">
+        <div className="p-4 sm:p-6 lg:px-8 max-w-[1920px] w-full mx-auto flex-1">
           <AnimatePresence mode="wait">
             {/* ── TAB 1: DASHBOARD OVERVIEW ── */}
             {activeTab === "dashboard" && (
