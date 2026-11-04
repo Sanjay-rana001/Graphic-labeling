@@ -27,7 +27,7 @@ const jsonLdSchema = {
     "Aluminium Etching Plate",
     "QR & Barcode Metal Tag",
     "SS 304 Etched Plate",
-    "Brass & Gold Plate",
+    "House Name Plate",
     "Polycarbonate Sticker",
     "Acrylic Sign Board",
     "Danger & Safety Plate",

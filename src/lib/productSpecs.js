@@ -206,7 +206,8 @@ export function getProductSpecCategory(productName = "") {
     norm.includes("stainless") ||
     norm.includes("brass") ||
     norm.includes("door plate") ||
-    norm.includes("cabin")
+    norm.includes("cabin") ||
+    norm.includes("house")
   ) {
     return "ss_brass";
   }
@@ -227,3 +228,4 @@ export function getProductSpecs(productName = "") {
   const catKey = getProductSpecCategory(productName);
   return PRODUCT_SPEC_MAP[catKey] || PRODUCT_SPEC_MAP.aluminium;
 }
+

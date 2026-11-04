@@ -65,10 +65,10 @@ const PRODUCT_OPTIONS = [
     icon: ShieldCheck,
   },
   {
-    id: "Brass & Gold Plate",
-    label: "Brass & Gold Plate",
-    shortDesc: "Mirror & brushed brass nameplates",
-    icon: Award,
+    id: "House Name Plate",
+    label: "House Name Plate",
+    shortDesc: "Custom engraved brass & acrylic home plates",
+    icon: Home,
   },
   {
     id: "Polycarbonate Sticker",
