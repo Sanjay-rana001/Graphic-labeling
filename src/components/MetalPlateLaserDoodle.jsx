@@ -6,13 +6,13 @@ export default function MetalPlateLaserDoodle() {
   return (
     <div
       aria-hidden="true"
-      className="absolute right-0 top-0 bottom-0 w-36 sm:w-48 md:w-56 lg:w-60 pointer-events-none select-none flex items-center justify-end pr-1 sm:pr-3 overflow-hidden z-0"
+      className="absolute right-0 top-0 bottom-0 w-26 sm:w-34 md:w-42 lg:w-46 pointer-events-none select-none flex items-center justify-end pr-1 sm:pr-2 overflow-hidden z-0"
     >
       {/* Background ambient laser glow */}
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 w-28 h-28 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/25 transition-all duration-700 pointer-events-none" />
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 w-22 h-22 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/25 transition-all duration-700 pointer-events-none" />
 
       <svg
-        viewBox="0 0 200 120"
+        viewBox="72 0 128 120"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full max-h-[110px] object-contain opacity-40 sm:opacity-75 group-hover:opacity-100 transition-opacity duration-500"
@@ -179,7 +179,7 @@ export default function MetalPlateLaserDoodle() {
 
         {/* 5. Precision Etched Vector Path (Being engraved by the laser) */}
         <motion.path
-          d="M 40 76 H 88 Q 98 76 104 84 T 120 92 H 145"
+          d="M 70 76 H 88 Q 98 76 104 84 T 120 92 H 145"
           fill="none"
           stroke="#f59e0b"
           strokeWidth="1.2"
@@ -205,12 +205,12 @@ export default function MetalPlateLaserDoodle() {
           <line x1="90" y1="102" x2="160" y2="102" stroke="rgba(245,158,11,0.4)" strokeWidth="0.6" />
           <line x1="90" y1="99" x2="90" y2="105" stroke="rgba(245,158,11,0.4)" strokeWidth="0.6" />
           <line x1="160" y1="99" x2="160" y2="105" stroke="rgba(245,158,11,0.4)" strokeWidth="0.6" />
-          <text x="110" y="100" fill="rgba(250,204,21,0.85)">CAD 0.01mm</text>
+          <text x="108" y="100" fill="rgba(250,204,21,0.85)">CAD 0.01mm</text>
 
           {/* Machine Status Blink Indicator */}
-          <circle cx="48" cy="24" r="1.5" fill="#10b981" className="animate-ping" />
-          <circle cx="48" cy="24" r="1.5" fill="#10b981" />
-          <text x="54" y="26" fill="#34d399" fontSize="5.5">LASER ON</text>
+          <circle cx="78" cy="24" r="1.5" fill="#10b981" className="animate-ping" />
+          <circle cx="78" cy="24" r="1.5" fill="#10b981" />
+          <text x="84" y="26" fill="#34d399" fontSize="5.5">LASER ON</text>
         </g>
       </svg>
     </div>
