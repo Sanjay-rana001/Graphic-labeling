@@ -148,21 +148,21 @@ const CATALOG_PRODUCTS = [
   {
     id: 4,
     category: "SS & Brass Plates",
-    title: "SS 304 Etched Plate",
+    title: "SS 304 / SS 202 Etched Plate",
     code: "SG-SS-301",
-    desc: "Corrosion-proof stainless steel machinery rating plates.",
-    thickness: "0.5 – 2.0mm",
-    material: "SS 304 / 316",
+    desc: "Corrosion-proof SS 304, SS 202 & SS 316 machinery rating plates.",
+    thickness: "0.5 – 3.0mm",
+    material: "SS 304 / SS 202 / SS 316",
     process: "Acid Etching",
     mounting: "2–5mm Holes",
     application: "Chemical & Marine",
-    tag: "SS 304/316",
+    tag: "SS 304 / 202",
     img: "/Media/SS 304 Etched Plate.webp",
   },
   {
     id: 5,
     category: "SS & Brass Plates",
-    title: "House Name Plate",
+    title: "House Etched Name Plate",
     code: "SG-HNP-302",
     desc: "Custom etched brass, acrylic & gold finish house name plates.",
     thickness: "1.0 – 4.0mm",
@@ -931,10 +931,10 @@ export default function LandingClient() {
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {[
                   "Aluminium Name Plate",
-                  "SS 304 Etched Plate",
+                  "SS 304 / SS 202 Etched Plate",
+                  "House Etched Name Plate",
                   "Anodize Aluminium Tag",
                   "Acrylic Sign Board",
-                  "Industrial Screen Printing",
                   "Polycarbonate Stickers",
                 ].map((item) => (
                   <button

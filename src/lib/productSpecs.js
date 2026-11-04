@@ -77,13 +77,13 @@ export const PRODUCT_SPEC_MAP = {
     },
   },
 
-  // ── 3. Stainless Steel (SS 304/316) & Brass Plates ──
-  ss_brass: {
+  // ── 3. Stainless Steel (SS 304 / SS 202 / SS 316) Plates ──
+  ss_plate: {
     labels: {
-      thickness: "Metal Plate Gauge",
+      thickness: "SS Sheet Gauge",
       holes: "Mounting / Punch Holes",
-      side: "Plate Finish / Side",
-      colour: "Infill / Etching Process",
+      side: "Plate Finish / Process",
+      colour: "Stainless Steel Grade",
     },
     thicknessOptions: [
       "0.5 mm",
@@ -100,19 +100,58 @@ export const PRODUCT_SPEC_MAP = {
       "Standoff Bolt Holes",
       "3M 468MP High-Bond (No Holes)",
     ],
-    sideOptions: ["Single Side Etched", "Double Side Etched"],
+    sideOptions: ["Chemical Acid Etched", "Fiber Laser Engraved", "Single Side", "Double Side"],
     colourOptions: [
-      { label: "Single Colour Infill", dots: ["#18181b"] },
-      { label: "Double Colour Infill", dots: ["#ef4444", "#18181b"] },
-      { label: "Multi-Colour Enamel", dots: ["#ef4444", "#f59e0b", "#18181b"] },
-      { label: "Fiber Laser Mark (No Paint)", dots: ["#52525b", "#71717a"] },
+      { label: "SS 304 Grade", dots: ["#94a3b8", "#cbd5e1"] },
+      { label: "SS 202 Grade", dots: ["#64748b", "#94a3b8"] },
+      { label: "SS 316 Grade", dots: ["#334155", "#64748b"] },
     ],
     defaultSpecs: {
       thickness: "1.0 mm",
       holes: "3 mm Corner Holes",
-      side: "Single Side Etched",
-      colour: "Double Colour Infill",
+      side: "Chemical Acid Etched",
+      colour: "SS 304 Grade",
     },
+  },
+
+  // ── 4. House Etched Name Plate (Brass & Gold) ──
+  house_name_plate: {
+    labels: {
+      thickness: "Plate Gauge",
+      holes: "Mounting Style",
+      side: "Finish / Process",
+      colour: "Material (Brass / Gold)",
+    },
+    thicknessOptions: [
+      "1.0 mm",
+      "1.5 mm",
+      "2.0 mm",
+      "3.0 mm",
+      "4.0 mm",
+    ],
+    holesOptions: [
+      "SS Standoff Studs (4 Corner)",
+      "2 Corner Screw Holes",
+      "4 Corner Screw Holes",
+      "3M VHB Heavy Tape (No Holes)",
+      "Concealed Keyhole Mount",
+    ],
+    sideOptions: ["Mirror Gloss Finish", "Brushed Satin Finish", "Etched + Lacquer Coated"],
+    colourOptions: [
+      { label: "Brass", dots: ["#d97706", "#f59e0b"] },
+      { label: "Gold", dots: ["#eab308", "#fde047"] },
+    ],
+    defaultSpecs: {
+      thickness: "1.5 mm",
+      holes: "SS Standoff Studs (4 Corner)",
+      side: "Mirror Gloss Finish",
+      colour: "Brass",
+    },
+  },
+
+  // Legacy fallback alias
+  get ss_brass() {
+    return this.ss_plate;
   },
 
   // ── 4. QR, Barcode & Inspection Asset Tags ──
@@ -201,15 +240,22 @@ export function getProductSpecCategory(productName = "") {
     return "acrylic";
   }
   if (
-    norm.includes("ss 304") ||
-    norm.includes("ss 316") ||
-    norm.includes("stainless") ||
+    norm.includes("house") ||
     norm.includes("brass") ||
+    norm.includes("gold") ||
     norm.includes("door plate") ||
-    norm.includes("cabin") ||
-    norm.includes("house")
+    norm.includes("cabin")
   ) {
-    return "ss_brass";
+    return "house_name_plate";
+  }
+  if (
+    norm.includes("ss") ||
+    norm.includes("stainless") ||
+    norm.includes("202") ||
+    norm.includes("304") ||
+    norm.includes("316")
+  ) {
+    return "ss_plate";
   }
   if (
     norm.includes("qr") ||
