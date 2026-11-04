@@ -39,6 +39,7 @@ import ThemeToggle from "./ThemeToggle";
 import RealBlackPlateSpecimen from "./RealBlackPlateSpecimen";
 import PremiumLoader, { isScreenLoaderEnabled } from "./PremiumLoader";
 import MetalScrollToTop from "./MetalScrollToTop";
+import MetalPlateLaserDoodle from "./MetalPlateLaserDoodle";
 import { INITIAL_LEADS } from "@/lib/adminData";
 import { getProductSpecs } from "@/lib/productSpecs";
 
@@ -87,8 +88,8 @@ const PRODUCT_CATEGORIES = [
   },
   {
     id: "SS & Brass Plates",
-    label: "Stainless Steel (SS 304/316) & Brass Boards",
-    short: "SS 304 & Brass",
+    label: "Stainless Steel (SS 304 & SS 202) & Brass Boards",
+    short: "SS 304/202 & Brass",
   },
   {
     id: "Polycarbonate & Stickers",
@@ -150,9 +151,9 @@ const CATALOG_PRODUCTS = [
     category: "SS & Brass Plates",
     title: "SS 304 / SS 202 Etched Plate",
     code: "SG-SS-301",
-    desc: "Corrosion-proof SS 304, SS 202 & SS 316 machinery rating plates.",
+    desc: "Corrosion-proof SS 304 & SS 202 machinery rating plates.",
     thickness: "0.5 – 3.0mm",
-    material: "SS 304 / SS 202 / SS 316",
+    material: "SS 304 / SS 202",
     process: "Acid Etching",
     mounting: "2–5mm Holes",
     application: "Chemical & Marine",
@@ -274,12 +275,42 @@ const CATALOG_PRODUCTS = [
 ];
 
 const INDUSTRIES_SERVED = [
-  { name: "Automotive & EV", desc: "VIN plates, CNG compliance & engine tags", icon: Car },
-  { name: "Electrical & Panels", desc: "Switchgear rating plates & mimic labels", icon: Zap },
-  { name: "Heavy Machinery", desc: "Compressor, pump & motor spec plates", icon: Cog },
-  { name: "Solar & Energy", desc: "UV-proof inverter & module asset tags", icon: Sun },
-  { name: "Marine & Oil/Gas", desc: "SS 316 acid-etched corrosion-proof tags", icon: Ship },
-  { name: "Corporate & Homes", desc: "Acrylic, brass & brushed door signage", icon: Building2 },
+  {
+    name: "Automotive & EV",
+    desc: "VIN plates, CNG compliance & engine tags",
+    icon: Car,
+    hoverAnim: "group-hover:translate-x-1.5 group-hover:scale-115",
+  },
+  {
+    name: "Electrical & Panels",
+    desc: "Switchgear rating plates & mimic labels",
+    icon: Zap,
+    hoverAnim: "group-hover:scale-125 group-hover:-rotate-12",
+  },
+  {
+    name: "Heavy Machinery",
+    desc: "Compressor, pump & motor spec plates",
+    icon: Cog,
+    hoverAnim: "group-hover:rotate-180 group-hover:scale-115 duration-700",
+  },
+  {
+    name: "Solar & Energy",
+    desc: "UV-proof inverter & module asset tags",
+    icon: Sun,
+    hoverAnim: "group-hover:rotate-90 group-hover:scale-125 duration-500",
+  },
+  {
+    name: "Marine & Oil/Gas",
+    desc: "SS 304 & SS 202 acid-etched corrosion-proof tags",
+    icon: Ship,
+    hoverAnim: "group-hover:-rotate-12 group-hover:scale-115",
+  },
+  {
+    name: "Corporate & Homes",
+    desc: "Acrylic, brass & brushed door signage",
+    icon: Building2,
+    hoverAnim: "group-hover:-translate-y-1.5 group-hover:scale-115",
+  },
 ];
 
 const INFRASTRUCTURE_FEATURES = [
@@ -289,7 +320,7 @@ const INFRASTRUCTURE_FEATURES = [
   },
   {
     title: "High-Precision Fiber Laser Marking",
-    desc: "Micron-level QR codes, sequential barcodes, and fine schematic text on Aluminium, SS 304/316, and Brass.",
+    desc: "Micron-level QR codes, sequential barcodes, and fine schematic text on Aluminium, SS 304, SS 202, and Brass.",
   },
   {
     title: "Multi-Colour Industrial Screen Printing",
@@ -303,7 +334,7 @@ const INFRASTRUCTURE_FEATURES = [
 
 const COMPANY_FACTS = [
   { label: "Nature of Business", value: "Manufacturer, Exporter & B2B Supplier" },
-  { label: "Materials Offered", value: "Aluminium, SS 304/316, Brass, Acrylic, Polycarbonate" },
+  { label: "Materials Offered", value: "Aluminium, SS 304, SS 202, Brass, Acrylic, Polycarbonate" },
   { label: "Thickness Gauges", value: "0.3 mm, 0.5 mm, 0.7 mm, 0.91 mm, 1.5 mm, 2.0 mm+" },
   { label: "Mounting & Holes", value: "1mm–5mm Holes, SS Studs, 3M Self-Adhesive" },
   { label: "Printing Options", value: "Single / Double Side • 1 to 4 Colour & Etched" },
@@ -887,6 +918,9 @@ export default function LandingClient() {
                 />
                 <div className="absolute -inset-y-full -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-amber-300/15 to-transparent rotate-12 translate-x-[-120%] group-hover:translate-x-[380%] transition-transform duration-1000 ease-out pointer-events-none" />
 
+                {/* Animated Laser & CAD Engineering Doodle in Right Blank Space */}
+                <MetalPlateLaserDoodle />
+
                 <div className="relative z-10 pl-1.5 pr-1.5">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-[9px] font-mono font-extrabold uppercase tracking-[0.25em] text-amber-400/90">
@@ -922,7 +956,7 @@ export default function LandingClient() {
               <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
                 Bulk manufacturer & exporter of{" "}
                 <strong className="text-foreground">
-                  Anodized Aluminium Nameplates, SS 304/316 Etched Tags, Brass Boards, QR/Barcode Cable Tags, Polycarbonate Stickers
+                  Anodized Aluminium Nameplates, SS 304 & SS 202 Etched Tags, Brass Boards, QR/Barcode Cable Tags, Polycarbonate Stickers
                 </strong>{" "}
                 & <strong className="text-foreground">Multi-Colour Screen Printing</strong>.
               </p>
@@ -1345,22 +1379,29 @@ export default function LandingClient() {
           {INDUSTRIES_SERVED.map((ind) => {
             const Icon = ind.icon;
             return (
-              <div
+              <motion.div
                 key={ind.name}
-                className="p-3.5 rounded-2xl bg-card border border-border hover:border-amber-500/60 transition-all flex flex-col justify-between"
+                whileHover={{ y: -3 }}
+                transition={{ duration: 0.2 }}
+                className="group p-3.5 rounded-2xl bg-card border border-border hover:border-amber-500/70 hover:shadow-lg hover:shadow-amber-500/10 transition-all flex flex-col justify-between cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center mb-2">
-                  <Icon size={16} />
+                <div className="w-9 h-9 rounded-xl bg-amber-500/15 group-hover:bg-gradient-to-br group-hover:from-amber-400 group-hover:to-amber-500 text-amber-500 group-hover:text-zinc-950 flex items-center justify-center mb-2.5 transition-all duration-300 shadow-2xs group-hover:shadow-md group-hover:shadow-amber-500/30">
+                  <Icon
+                    size={17}
+                    className={`transition-all duration-300 ease-out ${
+                      ind.hoverAnim || "group-hover:scale-120 group-hover:-translate-y-0.5"
+                    }`}
+                  />
                 </div>
                 <div>
-                  <h3 className="text-xs font-extrabold text-foreground">
+                  <h3 className="text-xs font-extrabold text-foreground group-hover:text-amber-500 transition-colors">
                     {ind.name}
                   </h3>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
                     {ind.desc}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
@@ -1677,8 +1718,8 @@ export default function LandingClient() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
           {[
             {
-              q: "1. What is the difference between SS 304 Etched Plates and Anodized Aluminium Nameplates?",
-              a: "SS 304/316 Chemical Etched Plates have recessed acid-etched lettering filled with oven-baked epoxy paint, ideal for extreme heat, chemical plants, marine valves, and outdoor switchgear. Anodized Aluminium Plates have sealed dye/laser graphics inside the anodic layer, making them lightweight and cost-effective for motors, pumps, and control panels.",
+              q: "1. What is the difference between SS 304 & SS 202 Etched Plates and Anodized Aluminium Nameplates?",
+              a: "SS 304 & SS 202 Chemical Etched Plates have recessed acid-etched lettering filled with oven-baked epoxy paint, ideal for extreme heat, chemical plants, industrial valves, and outdoor switchgear. Anodized Aluminium Plates have sealed dye/laser graphics inside the anodic layer, making them lightweight and cost-effective for motors, pumps, and control panels.",
             },
             {
               q: "2. What is your Minimum Order Quantity (MOQ) and bulk OEM pricing structure?",

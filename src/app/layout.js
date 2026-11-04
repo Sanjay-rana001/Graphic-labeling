@@ -22,7 +22,7 @@ export const metadata = {
     template: "%s | Sourav Graphic & Metal Label",
   },
   description:
-    "India's trusted B2B manufacturer & exporter of Anodized Aluminium Nameplates, SS 304/316 Etched Tags, Brass Boards, QR/Barcode Cable Tags, Polycarbonate Stickers & Industrial Screen Printing.",
+    "India's trusted B2B manufacturer & exporter of Anodized Aluminium Nameplates, SS 304 & SS 202 Etched Tags, Brass Boards, QR/Barcode Cable Tags, Polycarbonate Stickers & Industrial Screen Printing.",
   keywords: [
     "Sourav Graphic",
     "Metal Label Manufacturer India",
@@ -72,6 +72,9 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <head>
+        <link rel="icon" type="image/png" href="/Media/Logo.png" />
+        <link rel="shortcut icon" type="image/png" href="/Media/Logo.png" />
+        <link rel="apple-touch-icon" href="/Media/Logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

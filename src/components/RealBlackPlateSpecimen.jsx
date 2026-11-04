@@ -127,7 +127,7 @@ export default function RealBlackPlateSpecimen({
             <span className="text-[18px] font-black text-white leading-none tracking-tight">
               3R
             </span>
-            <span className="text-[5.5px] text-zinc-300 mt-0.5">SS 316 TAG</span>
+            <span className="text-[5.5px] text-zinc-300 mt-0.5">SS 304 TAG</span>
           </div>
         </div>
       )}

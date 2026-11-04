@@ -100,7 +100,7 @@ export const INITIAL_LEADS = [
     mounting: "Single Side | Holes: 2 mm",
     quantity: 450,
     status: "Sample Dispatched",
-    notes: "Acid-etched SS 316 valve & pump specification tags dispatched via BlueDart for approval.",
+    notes: "Acid-etched SS 304 / SS 202 valve & pump specification tags dispatched via BlueDart for approval.",
   },
   {
     id: "INQ-9425",

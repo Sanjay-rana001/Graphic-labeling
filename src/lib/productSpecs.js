@@ -77,7 +77,7 @@ export const PRODUCT_SPEC_MAP = {
     },
   },
 
-  // ── 3. Stainless Steel (SS 304 / SS 202 / SS 316) Plates ──
+  // ── 3. Stainless Steel (SS 304 / SS 202) Plates ──
   ss_plate: {
     labels: {
       thickness: "SS Sheet Gauge",
@@ -104,7 +104,6 @@ export const PRODUCT_SPEC_MAP = {
     colourOptions: [
       { label: "SS 304 Grade", dots: ["#94a3b8", "#cbd5e1"] },
       { label: "SS 202 Grade", dots: ["#64748b", "#94a3b8"] },
-      { label: "SS 316 Grade", dots: ["#334155", "#64748b"] },
     ],
     defaultSpecs: {
       thickness: "1.0 mm",
@@ -252,8 +251,7 @@ export function getProductSpecCategory(productName = "") {
     norm.includes("ss") ||
     norm.includes("stainless") ||
     norm.includes("202") ||
-    norm.includes("304") ||
-    norm.includes("316")
+    norm.includes("304")
   ) {
     return "ss_plate";
   }
