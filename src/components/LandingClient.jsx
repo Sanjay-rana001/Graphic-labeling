@@ -554,6 +554,18 @@ export default function LandingClient() {
     return () => clearInterval(timer);
   }, []);
 
+  // Pre-cache all catalog product images in browser memory for instant 0ms lightbox & modal opening
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      CATALOG_PRODUCTS.forEach((product) => {
+        if (product.img) {
+          const preImg = new window.Image();
+          preImg.src = product.img;
+        }
+      });
+    }
+  }, []);
+
   const liveCatalogProducts = (() => {
     if (!Array.isArray(adminCatalog) || adminCatalog.length === 0) {
       return CATALOG_PRODUCTS;
@@ -1286,6 +1298,7 @@ export default function LandingClient() {
                     src={product.img}
                     alt={product.title}
                     fill
+                    unoptimized
                     className="object-contain p-1 group-hover:scale-105 transition-transform duration-200"
                     sizes="(max-width: 768px) 50vw, 18vw"
                   />
@@ -1798,6 +1811,8 @@ export default function LandingClient() {
                       src={modalProduct.img}
                       alt={modalProduct.title}
                       fill
+                      unoptimized
+                      priority
                       className="object-cover"
                       sizes="50px"
                     />
@@ -2055,6 +2070,8 @@ export default function LandingClient() {
                     src={lightboxProduct.img}
                     alt={lightboxProduct.title}
                     fill
+                    unoptimized
+                    priority
                     className="object-contain p-2"
                     sizes="(max-width: 768px) 95vw, 650px"
                   />
