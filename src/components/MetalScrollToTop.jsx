@@ -7,6 +7,7 @@ export default function MetalScrollToTop() {
   const [visible, setVisible] = useState(false);
   const [scrollPct, setScrollPct] = useState(0);
   const [isLaunching, setIsLaunching] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -56,7 +57,7 @@ export default function MetalScrollToTop() {
           }}
           exit={{ opacity: 0, y: 20, scale: 0.9 }}
           transition={{ type: "spring", stiffness: 340, damping: 26 }}
-          className="fixed bottom-4 right-3.5 sm:bottom-6 sm:right-6 z-50 flex items-center group select-none"
+          className="fixed bottom-4 right-3.5 sm:bottom-6 sm:right-6 z-50 flex items-center select-none pointer-events-none"
         >
           {/* ═════════════════════════════════════════════════════════════
               MOBILE VIEW (< 640px): Clean, Simple, Compact Metallic Button
@@ -65,7 +66,7 @@ export default function MetalScrollToTop() {
             type="button"
             onClick={handleScrollTop}
             aria-label="Scroll to top"
-            className="sm:hidden relative w-10 h-10 rounded-xl bg-[#0f131a]/95 backdrop-blur-md border border-amber-500/45 shadow-[0_8px_20px_rgba(0,0,0,0.45)] flex items-center justify-center text-amber-400 active:scale-90 active:bg-amber-500 active:text-zinc-950 transition-all overflow-hidden cursor-pointer"
+            className="sm:hidden pointer-events-auto relative w-10 h-10 rounded-xl bg-[#0f131a]/95 backdrop-blur-md border border-amber-500/45 shadow-[0_8px_20px_rgba(0,0,0,0.45)] flex items-center justify-center text-amber-400 active:scale-90 active:bg-amber-500 active:text-zinc-950 transition-all overflow-hidden cursor-pointer"
           >
             {/* Bottom Thin Gold Scroll Progress Line */}
             <span
@@ -93,10 +94,14 @@ export default function MetalScrollToTop() {
           {/* ═════════════════════════════════════════════════════════════
               DESKTOP / TABLET VIEW (>= 640px): Riveted Metal Label Tag
              ═════════════════════════════════════════════════════════════ */}
-          <div className="hidden sm:flex items-center">
-            {/* Slide-Out Stamped Metal Spec Tab on Hover */}
+          <div className="hidden sm:flex items-center pointer-events-none">
+            {/* Slide-Out Stamped Metal Spec Tab (ONLY when hovering directly over the button) */}
             <div className="flex items-center mr-2 pointer-events-none overflow-hidden">
-              <div className="translate-x-6 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 ease-out px-3 py-1.5 rounded-lg bg-[#0d1118]/95 border border-amber-500/45 shadow-[0_8px_24px_rgba(0,0,0,0.45)] flex items-center gap-2">
+              <div
+                className={`${
+                  isHovered ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0"
+                } transition-all duration-300 ease-out px-3 py-1.5 rounded-lg bg-[#0d1118]/95 border border-amber-500/45 shadow-[0_8px_24px_rgba(0,0,0,0.45)] flex items-center gap-2`}
+              >
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                 <div className="text-left">
                   <div className="text-[9.5px] font-mono font-black uppercase tracking-[0.16em] text-amber-400 leading-none">
@@ -113,8 +118,10 @@ export default function MetalScrollToTop() {
             <button
               type="button"
               onClick={handleScrollTop}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
               aria-label="Scroll to top"
-              className="relative w-[56px] rounded-xl bg-gradient-to-b from-[#1a202c] via-[#0f131a] to-[#090b10] border-[1.5px] border-amber-500/45 group-hover:border-amber-400 shadow-[0_14px_34px_-6px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.18)] p-1.5 pt-2 pb-1.5 flex flex-col items-center cursor-pointer overflow-hidden transition-all duration-300 group-hover:-translate-y-1 active:scale-95"
+              className="pointer-events-auto group relative w-[56px] rounded-xl bg-gradient-to-b from-[#1a202c] via-[#0f131a] to-[#090b10] border-[1.5px] border-amber-500/45 hover:border-amber-400 shadow-[0_14px_34px_-6px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.18)] p-1.5 pt-2 pb-1.5 flex flex-col items-center cursor-pointer overflow-hidden transition-all duration-300 hover:-translate-y-1 active:scale-95"
             >
               {/* Bottom-to-Top Molten 24K Gold Sweep Fill Animation on Hover */}
               <span
