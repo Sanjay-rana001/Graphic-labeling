@@ -36,6 +36,7 @@ import {
   MapPin,
   FileCheck2,
   ExternalLink,
+  Menu,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
@@ -367,12 +368,14 @@ export default function LandingClient() {
   const [heroSubmitting, setHeroSubmitting] = useState(false);
   const [heroSubmittedId, setHeroSubmittedId] = useState("");
   const [heroEmailAck, setHeroEmailAck] = useState(false);
+  const [heroError, setHeroError] = useState("");
 
   // Bottom Bulk Estimator Console State
   const [quoteQuantity, setQuoteQuantity] = useState(100);
   const [quoteSubmitted, setQuoteSubmitted] = useState(false);
   const [quoteSubmittedRef, setQuoteSubmittedRef] = useState("");
   const [quoteEmailAck, setQuoteEmailAck] = useState(false);
+  const [quoteError, setQuoteError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -401,6 +404,8 @@ export default function LandingClient() {
   const [modalSubmitting, setModalSubmitting] = useState(false);
   const [modalSuccessId, setModalSuccessId] = useState("");
   const [modalEmailAck, setModalEmailAck] = useState(false);
+  const [modalError, setModalError] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showInitialLoader, setShowInitialLoader] = useState(false);
 
   const openProductModal = (product) => {
@@ -650,6 +655,11 @@ export default function LandingClient() {
     source = "Website Quick Quote",
     notes = "",
   }) => {
+    const cleanDigits = String(phone || "").replace(/\D/g, "");
+    if (cleanDigits.length < 7) {
+      return { error: "Please enter a valid 10-digit mobile / WhatsApp number." };
+    }
+
     let createdLead = null;
     let customerEmailSent = false;
     try {
@@ -669,14 +679,17 @@ export default function LandingClient() {
           },
           customer: {
             name: name || "Website Buyer",
-            phone: phone || "8447507195",
+            phone,
             email: email || "",
             address: address || "Commercial Inquiry",
           },
         }),
       });
       const data = await res.json();
-      if (res.ok && data?.success && data.enquiry) {
+      if (!res.ok) {
+        return { error: data?.error || "Could not submit enquiry. Please check your details." };
+      }
+      if (data?.success && data.enquiry) {
         createdLead = data.enquiry;
         customerEmailSent = Boolean(data.customerEmailSent);
       }
@@ -720,7 +733,8 @@ export default function LandingClient() {
 
   const handleHeroQuoteSubmit = async (e) => {
     e.preventDefault();
-    if (!heroForm.phone || heroSubmitting) return;
+    if (heroSubmitting) return;
+    setHeroError("");
     setHeroSubmitting(true);
     const lead = await submitLeadToBackendAndAdmin({
       category: heroForm.product,
@@ -735,6 +749,10 @@ export default function LandingClient() {
       source: "Hero Instant Quote",
     });
     setHeroSubmitting(false);
+    if (lead?.error) {
+      setHeroError(lead.error);
+      return;
+    }
     setHeroSubmittedId(lead.id);
     setHeroEmailAck(Boolean(lead.customerEmailSent));
     setHeroForm((prev) => ({ ...prev, name: "", phone: "", email: "" }));
@@ -744,6 +762,7 @@ export default function LandingClient() {
   const handleModalQuoteSubmit = async (e) => {
     e.preventDefault();
     if (!modalProduct || modalSubmitting) return;
+    setModalError("");
     setModalSubmitting(true);
     const lead = await submitLeadToBackendAndAdmin({
       category: modalProduct.title,
@@ -759,12 +778,17 @@ export default function LandingClient() {
       source: "Catalog Product Quote",
     });
     setModalSubmitting(false);
+    if (lead?.error) {
+      setModalError(lead.error);
+      return;
+    }
     setModalSuccessId(lead.id);
     setModalEmailAck(Boolean(lead.customerEmailSent));
   };
 
   const handleQuoteSubmit = async (e) => {
     e.preventDefault();
+    setQuoteError("");
     const lead = await submitLeadToBackendAndAdmin({
       category: formData.product,
       thickness: formData.thickness,
@@ -779,6 +803,10 @@ export default function LandingClient() {
       source: "Homepage Bulk Enquiry",
       notes: formData.notes,
     });
+    if (lead?.error) {
+      setQuoteError(lead.error);
+      return;
+    }
     setQuoteSubmittedRef(lead.id);
     setQuoteEmailAck(Boolean(lead.customerEmailSent));
     setQuoteSubmitted(true);
@@ -903,8 +931,98 @@ export default function LandingClient() {
             </motion.a>
             <ThemeToggle size="sm" />
             <SweepButton href="/customize" label="Upload Design / Enquire" size="nav" />
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="xl:hidden w-8 h-8 rounded-lg bg-muted/80 hover:bg-muted border border-border flex items-center justify-center text-foreground cursor-pointer"
+              aria-label="Toggle Menu"
+            >
+              {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile & Tablet Navigation Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="xl:hidden border-t border-border bg-card/98 dark:bg-[#0c0e14]/98 backdrop-blur-xl overflow-hidden"
+            >
+              <div className="px-4 py-3.5 space-y-3">
+                {/* Mobile Search Input (< md) */}
+                <div className="relative md:hidden">
+                  <Search
+                    size={14}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                  />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (e.target.value.trim()) {
+                        document
+                          .getElementById("products")
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }}
+                    placeholder="Search Aluminium, SS 304, Brass, QR Tags..."
+                    className="w-full pl-9 pr-8 py-2 rounded-full bg-muted/60 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber-500"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      <X size={13} />
+                    </button>
+                  )}
+                </div>
+
+                <nav className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold">
+                  {[
+                    { label: "Our Products", href: "#products" },
+                    { label: "Industries", href: "#industries" },
+                    { label: "Company Profile", href: "#profile" },
+                    { label: "Bulk Quote", href: "#quote" },
+                  ].map((item) => (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="px-3 py-2 rounded-xl bg-muted/50 hover:bg-amber-500/15 border border-border text-foreground text-center transition-colors"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </nav>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <a
+                    href={`tel:+91${String(factoryInfo.whatsapp || "8447507195").replace(/\D/g, "").slice(-10)}`}
+                    className="flex-1 py-2 px-3 rounded-xl bg-muted/60 border border-border text-xs font-bold text-foreground flex items-center justify-center gap-1.5"
+                  >
+                    <Phone size={13} className="text-amber-500" />
+                    <span>Call +91 {String(factoryInfo.whatsapp || "8447507195").replace(/\D/g, "").slice(-10)}</span>
+                  </a>
+                  <a
+                    href={`https://wa.me/${waNumber}?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-2 px-3 rounded-xl bg-emerald-500 text-zinc-950 font-black text-xs flex items-center justify-center gap-1.5"
+                  >
+                    <WhatsAppLogo size={13} />
+                    <span>WhatsApp Chat</span>
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* ══════════════════════════════════════════════════════════════════
@@ -1233,6 +1351,12 @@ export default function LandingClient() {
                       }
                       className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
                     />
+
+                    {heroError && (
+                      <p className="text-[11px] font-bold text-red-500 bg-red-500/10 border border-red-500/30 rounded-lg px-2.5 py-1">
+                        {heroError}
+                      </p>
+                    )}
 
                     <button
                       type="submit"
@@ -1588,19 +1712,25 @@ export default function LandingClient() {
                 </div>
               </button>
 
-              <div className="p-3.5 rounded-xl bg-muted/35 border border-border/70 flex items-center gap-3">
+              <a
+                href="https://maps.google.com/?q=DC+696+33+Feet+Road+Sector+50+Faridabad+Haryana+121001"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3.5 rounded-xl bg-muted/35 hover:bg-muted/60 border border-border/70 hover:border-amber-500/40 transition-colors flex items-center gap-3 group"
+              >
                 <div className="w-9 h-9 rounded-lg bg-amber-500/12 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                   <MapPin size={16} />
                 </div>
                 <div className="min-w-0">
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
-                    Registered Unit
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center justify-between gap-2">
+                    <span>Registered Unit</span>
+                    <span className="text-amber-500 font-bold group-hover:underline">Maps &rarr;</span>
                   </span>
                   <span className="text-[11.5px] font-medium text-foreground block leading-snug line-clamp-2">
                     Sector 50, 33 Feet Road, Faridabad, Haryana 121001
                   </span>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>
@@ -1890,6 +2020,11 @@ export default function LandingClient() {
                           <span>Submit</span>
                         </button>
                       </div>
+                      {quoteError && (
+                        <p className="text-[11px] font-bold text-red-500 bg-red-500/10 border border-red-500/30 rounded-lg px-2.5 py-1">
+                          {quoteError}
+                        </p>
+                      )}
                     </form>
                   );
                 })()
@@ -2178,6 +2313,12 @@ export default function LandingClient() {
                         className="w-full px-3 py-2 rounded-lg bg-background border border-border font-medium"
                       />
 
+                      {modalError && (
+                        <p className="text-[11px] font-bold text-red-500 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-1.5">
+                          {modalError}
+                        </p>
+                      )}
+
                       <div className="flex items-center gap-2 pt-1">
                         <button
                           type="submit"
@@ -2437,12 +2578,24 @@ export default function LandingClient() {
               </div>
 
               {/* Embedded Certificate PDF Viewer */}
-              <div className="p-3 bg-zinc-100 dark:bg-zinc-900 flex-1 overflow-hidden">
+              <div className="p-3 bg-zinc-100 dark:bg-zinc-900 flex-1 overflow-hidden flex flex-col gap-2">
                 <iframe
                   src="/Media/GST_Certificate.pdf#toolbar=0&navpanes=0"
-                  className="w-full h-[55vh] sm:h-[62vh] rounded-xl border border-border bg-white"
+                  className="w-full h-[52vh] sm:h-[60vh] rounded-xl border border-border bg-white"
                   title="GST Registration Certificate - Sourav Graphic & Metal Label"
                 />
+                <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] text-muted-foreground">
+                  <span>On mobile, if preview is blank, tap the button to view PDF directly:</span>
+                  <a
+                    href="/Media/GST_Certificate.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+                  >
+                    <span>Open / Download GST Certificate PDF</span>
+                    <ExternalLink size={11} />
+                  </a>
+                </div>
               </div>
             </motion.div>
           </motion.div>
@@ -2527,6 +2680,22 @@ export default function LandingClient() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Quick-Chat WhatsApp Pill (Mobile & Desktop) */}
+      <motion.a
+        href={`https://wa.me/${waNumber}?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates.`}
+        target="_blank"
+        rel="noopener noreferrer"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="fixed bottom-4 left-3.5 sm:bottom-6 sm:left-6 z-40 inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-[#128C7E] hover:bg-[#25D366] text-white hover:text-zinc-950 font-bold text-xs shadow-lg shadow-emerald-950/30 border border-emerald-400/40 transition-colors"
+        aria-label="Chat on WhatsApp"
+      >
+        <WhatsAppLogo size={16} className="shrink-0" />
+        <span className="hidden sm:inline">WhatsApp Quote</span>
+      </motion.a>
     </div>
   );
 }
