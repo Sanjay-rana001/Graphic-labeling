@@ -31,6 +31,11 @@ import {
   Ship,
   Car,
   ZoomIn,
+  Phone,
+  Mail,
+  MapPin,
+  FileCheck2,
+  ExternalLink,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
@@ -333,11 +338,11 @@ const INFRASTRUCTURE_FEATURES = [
 ];
 
 const COMPANY_FACTS = [
-  { label: "Nature of Business", value: "Manufacturer, Exporter & B2B Supplier" },
+  { label: "Legal Status", value: "Proprietorship • Sourav Kumar" },
+  { label: "GSTIN Number", value: "06EFEPK5404R1Z2 (Regular)" },
   { label: "Materials Offered", value: "Aluminium, SS 304, SS 202, Brass, Acrylic, Polycarbonate" },
   { label: "Thickness Gauges", value: "0.3 mm, 0.5 mm, 0.7 mm, 0.91 mm, 1.5 mm, 2.0 mm+" },
   { label: "Mounting & Holes", value: "1mm–5mm Holes, SS Studs, 3M Self-Adhesive" },
-  { label: "Printing Options", value: "Single / Double Side • 1 to 4 Colour & Etched" },
   { label: "Quality & Dispatch", value: "ISO-Grade Inspection • Pan-India Express Delivery" },
 ];
 
@@ -357,16 +362,21 @@ export default function LandingClient() {
     quantity: "50",
     name: "",
     phone: "",
+    email: "",
   });
   const [heroSubmitting, setHeroSubmitting] = useState(false);
   const [heroSubmittedId, setHeroSubmittedId] = useState("");
+  const [heroEmailAck, setHeroEmailAck] = useState(false);
 
   // Bottom Bulk Estimator Console State
   const [quoteQuantity, setQuoteQuantity] = useState(100);
   const [quoteSubmitted, setQuoteSubmitted] = useState(false);
+  const [quoteSubmittedRef, setQuoteSubmittedRef] = useState("");
+  const [quoteEmailAck, setQuoteEmailAck] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    email: "",
     product: "Aluminium Name Plate",
     thickness: "0.7 mm",
     holes: "2 mm",
@@ -380,6 +390,7 @@ export default function LandingClient() {
   const [modalForm, setModalForm] = useState({
     name: "",
     phone: "",
+    email: "",
     address: "",
     thickness: "0.7 mm",
     holes: "2 mm",
@@ -389,12 +400,14 @@ export default function LandingClient() {
   });
   const [modalSubmitting, setModalSubmitting] = useState(false);
   const [modalSuccessId, setModalSuccessId] = useState("");
+  const [modalEmailAck, setModalEmailAck] = useState(false);
   const [showInitialLoader, setShowInitialLoader] = useState(false);
 
   const openProductModal = (product) => {
     const specs = getProductSpecs(product?.title || product?.category);
     setModalProduct(product);
     setModalSuccessId("");
+    setModalEmailAck(false);
     setModalForm((prev) => ({
       ...prev,
       thickness: specs.defaultSpecs.thickness,
@@ -430,21 +443,24 @@ export default function LandingClient() {
   // High-Res Product Photo Zoom / Specimen Inspection Lightbox State
   const [lightboxProduct, setLightboxProduct] = useState(null);
   const [lightboxZoom, setLightboxZoom] = useState(1);
+  const [gstModalOpen, setGstModalOpen] = useState(false);
   const [adminCatalog, setAdminCatalog] = useState(null);
   const [openFaqIdx, setOpenFaqIdx] = useState(0);
 
   // Dynamic Factory & Contact Info (Synced with Admin Factory Settings)
   const [factoryInfo, setFactoryInfo] = useState({
     businessName: "Sourav Graphic & Metal Label",
-    whatsapp: "9876543210",
-    address: "Industrial Area, New Delhi, India",
-    gstin: "07AABCS1429B1Z1",
+    ownerName: "Sourav Kumar",
+    whatsapp: "8447507195",
+    email: "souravgraphicmetallabel@gmail.com",
+    address: "DC 696 (313), 33 Feet Road, Near SS Tools, Sector 50, Faridabad, Haryana 121001",
+    gstin: "06EFEPK5404R1Z2",
     tagline: "B2B Industrial Nameplate & Metal Label Manufacturer",
   });
 
   const waNumber = (() => {
-    const digits = String(factoryInfo.whatsapp || "9876543210").replace(/\D/g, "");
-    return digits.length === 10 ? `91${digits}` : digits || "919876543210";
+    const digits = String(factoryInfo.whatsapp || "8447507195").replace(/\D/g, "");
+    return digits.length === 10 ? `91${digits}` : digits || "918447507195";
   })();
 
   useEffect(() => {
@@ -629,17 +645,21 @@ export default function LandingClient() {
     quantity = 50,
     name,
     phone,
+    email = "",
     address = "Website Quick Quote",
     source = "Website Quick Quote",
     notes = "",
   }) => {
     let createdLead = null;
+    let customerEmailSent = false;
     try {
       const res = await fetch("/api/enquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          source,
           category,
+          notes,
           specifications: {
             thickness,
             holes,
@@ -649,7 +669,8 @@ export default function LandingClient() {
           },
           customer: {
             name: name || "Website Buyer",
-            phone: phone || "9876543210",
+            phone: phone || "8447507195",
+            email: email || "",
             address: address || "Commercial Inquiry",
           },
         }),
@@ -657,6 +678,7 @@ export default function LandingClient() {
       const data = await res.json();
       if (res.ok && data?.success && data.enquiry) {
         createdLead = data.enquiry;
+        customerEmailSent = Boolean(data.customerEmailSent);
       }
     } catch (e) { }
 
@@ -665,7 +687,7 @@ export default function LandingClient() {
         id: `INQ-${Math.floor(1000 + Math.random() * 9000)}`,
         client: name || "Commercial Buyer",
         phone: phone || "Not provided",
-        email: "—",
+        email: email || "—",
         address: address || "Website Inquiry",
         city: address || "India",
         date: new Date().toISOString().split("T")[0],
@@ -693,7 +715,7 @@ export default function LandingClient() {
       localStorage.setItem("sourav_admin_leads", JSON.stringify(merged));
     } catch (err) { }
 
-    return createdLead;
+    return { ...createdLead, customerEmailSent };
   };
 
   const handleHeroQuoteSubmit = async (e) => {
@@ -708,13 +730,15 @@ export default function LandingClient() {
       quantity: Number(heroForm.quantity) || 50,
       name: heroForm.name || "Direct Buyer",
       phone: heroForm.phone,
+      email: heroForm.email,
       address: "Hero Quick Quote",
       source: "Hero Instant Quote",
     });
     setHeroSubmitting(false);
     setHeroSubmittedId(lead.id);
-    setHeroForm((prev) => ({ ...prev, name: "", phone: "" }));
-    setTimeout(() => setHeroSubmittedId(""), 6000);
+    setHeroEmailAck(Boolean(lead.customerEmailSent));
+    setHeroForm((prev) => ({ ...prev, name: "", phone: "", email: "" }));
+    setTimeout(() => setHeroSubmittedId(""), 8000);
   };
 
   const handleModalQuoteSubmit = async (e) => {
@@ -730,16 +754,18 @@ export default function LandingClient() {
       quantity: Number(modalForm.quantity) || 1,
       name: modalForm.name,
       phone: modalForm.phone,
+      email: modalForm.email,
       address: modalForm.address,
       source: "Catalog Product Quote",
     });
     setModalSubmitting(false);
     setModalSuccessId(lead.id);
+    setModalEmailAck(Boolean(lead.customerEmailSent));
   };
 
   const handleQuoteSubmit = async (e) => {
     e.preventDefault();
-    await submitLeadToBackendAndAdmin({
+    const lead = await submitLeadToBackendAndAdmin({
       category: formData.product,
       thickness: formData.thickness,
       holes: formData.holes,
@@ -748,14 +774,18 @@ export default function LandingClient() {
       quantity: Number(quoteQuantity) || 100,
       name: formData.name,
       phone: formData.phone,
+      email: formData.email,
       address: formData.notes || "Bulk Enquiry Console",
       source: "Homepage Bulk Enquiry",
       notes: formData.notes,
     });
+    setQuoteSubmittedRef(lead.id);
+    setQuoteEmailAck(Boolean(lead.customerEmailSent));
     setQuoteSubmitted(true);
     setFormData({
       name: "",
       phone: "",
+      email: "",
       product: "Aluminium Name Plate",
       thickness: "0.7 mm",
       holes: "2 mm",
@@ -763,7 +793,7 @@ export default function LandingClient() {
       colour: "Single Colour",
       notes: "",
     });
-    setTimeout(() => setQuoteSubmitted(false), 6000);
+    setTimeout(() => setQuoteSubmitted(false), 8000);
   };
 
   return (
@@ -780,7 +810,7 @@ export default function LandingClient() {
             : "bg-background/90 backdrop-blur-md border-border/60 py-2.5"
           }`}
       >
-        <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-10 2xl:px-14 flex items-center justify-between gap-3">
+        <div className="w-full max-w-[2160px] mx-auto px-3.5 sm:px-6 lg:px-10 xl:px-12 2xl:px-16 flex items-center justify-between gap-2 sm:gap-3">
           {/* Left: Brand Logo + Verified Badge */}
           <div className="flex items-center gap-3 shrink-0">
             <Link
@@ -799,18 +829,18 @@ export default function LandingClient() {
                 />
               </div>
             </Link>
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10.5px] font-extrabold uppercase tracking-wide">
+            <div className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10.5px] font-extrabold uppercase tracking-wide whitespace-nowrap">
               <BadgeCheck size={13} className="text-emerald-500 shrink-0" />
               <span>B2B OEM & Wholesale Manufacturer</span>
             </div>
           </div>
 
           {/* Center: Product Search Bar + Navigation Links */}
-          <div className="hidden lg:flex items-center gap-5 flex-1 max-w-2xl mx-4">
-            <div className="relative flex-1">
+          <div className="hidden md:flex items-center gap-3 lg:gap-4 xl:gap-5 flex-1 max-w-3xl 2xl:max-w-4xl mx-2 lg:mx-4">
+            <div className="relative flex-1 min-w-[200px] lg:min-w-[240px] xl:min-w-[280px]">
               <Search
-                size={13}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                size={14}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
               />
               <input
                 type="text"
@@ -823,14 +853,24 @@ export default function LandingClient() {
                       ?.scrollIntoView({ behavior: "smooth" });
                   }
                 }}
-                placeholder="Search Aluminum Nameplates, SS 304 Tags, QR Labels, Polycarbonate Stickers..."
-                className="w-full pl-8 pr-3 py-1.5 rounded-full bg-muted/60 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber-500"
+                placeholder="Search Aluminium, SS 304, Brass, QR Tags..."
+                className="w-full pl-9 pr-8 py-2 rounded-full bg-muted/60 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber-500 focus:bg-background transition-colors"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                  aria-label="Clear search"
+                >
+                  <X size={13} />
+                </button>
+              )}
             </div>
 
-            <nav className="flex items-center gap-4 text-xs font-bold text-muted-foreground shrink-0">
+            <nav className="hidden xl:flex items-center gap-3.5 2xl:gap-5 text-xs font-bold text-muted-foreground shrink-0 whitespace-nowrap">
               <a href="#products" className="hover:text-foreground transition-colors">
-                Our Products
+                Products
               </a>
               <a href="#industries" className="hover:text-foreground transition-colors">
                 Industries
@@ -845,7 +885,7 @@ export default function LandingClient() {
           </div>
 
           {/* Right: Direct Conversion Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <motion.a
               href={`https://wa.me/${waNumber}?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates.`}
               target="_blank"
@@ -870,14 +910,14 @@ export default function LandingClient() {
       {/* ══════════════════════════════════════════════════════════════════
           COMPACT 3-COLUMN FLUID B2B HERO (Adapts to 13" up to 50"+ Screens)
          ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative pt-16 sm:pt-18 pb-4 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto z-10">
+      <section className="relative pt-16 sm:pt-18 pb-4 px-3.5 sm:px-6 lg:px-10 xl:px-12 2xl:px-16 w-full max-w-[2160px] mx-auto z-10">
         {/* Instant-Glance B2B Industrial Trust & Credentials Strip */}
         <div className="mb-3 px-3.5 py-2 rounded-xl bg-card border border-border shadow-2xs flex flex-wrap items-center justify-between gap-2 text-[11px]">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md bg-amber-500 text-zinc-950 font-black text-[10px] uppercase tracking-wider">
+            <span className="px-2 py-0.5 rounded-md bg-amber-500 text-zinc-950 font-black text-[10px] uppercase tracking-wider shrink-0">
               B2B Factory Direct
             </span>
-            <span className="font-extrabold text-foreground">
+            <span className="font-bold text-foreground">
               Dedicated B2B Industrial Manufacturing Partner for OEMs, Factories & Corporate Buyers
             </span>
           </div>
@@ -897,9 +937,9 @@ export default function LandingClient() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3.5 xl:gap-4 2xl:gap-5 items-stretch">
           {/* Col 1 (5 Cols): Manufacturer Value Proposition */}
-          <div className="lg:col-span-5 bg-card border border-border rounded-2xl p-4 sm:p-5 flex flex-col justify-between relative overflow-hidden shadow-2xs">
+          <div className="md:col-span-2 lg:col-span-5 bg-card border border-border rounded-2xl p-4 sm:p-5 2xl:p-6 flex flex-col justify-between relative overflow-hidden shadow-2xs">
             <div className="relative z-10">
               {/* Top B2B Authority Badge Row */}
               <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
@@ -930,34 +970,38 @@ export default function LandingClient() {
                 />
                 <div className="absolute -inset-y-full -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-amber-300/15 to-transparent rotate-12 translate-x-[-120%] group-hover:translate-x-[380%] transition-transform duration-1000 ease-out pointer-events-none" />
 
-                {/* Animated Laser & CAD Engineering Doodle in Right Blank Space */}
-                <MetalPlateLaserDoodle />
+                <div className="relative z-10 flex items-center justify-between gap-2 pl-1.5 pr-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[8.5px] sm:text-[9px] 2xl:text-[10px] font-mono font-bold uppercase tracking-[0.18em] sm:tracking-[0.2em] text-amber-400/90 truncate">
+                        PRECISION ETCHED • ANODIZED • LASER ENGRAVED
+                      </span>
+                    </div>
 
-                <div className="relative z-10 pl-1.5 pr-1.5">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[9px] font-mono font-extrabold uppercase tracking-[0.25em] text-amber-400/90">
-                      PRECISION ETCHED • ANODIZED • LASER ENGRAVED
-                    </span>
+                    <h1 className="uppercase leading-none">
+                      {/* Line 1: SOURAV GRAPHIC in Brushed Silver/White Monumental Display */}
+                      <span className="block text-xl sm:text-2xl lg:text-[21px] xl:text-[26px] 2xl:text-[34px] font-black tracking-[-0.01em] bg-gradient-to-b from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(255,255,255,0.12)] whitespace-nowrap">
+                        SOURAV GRAPHIC
+                      </span>
+
+                      {/* Line 2: & METAL LABEL in Embossed 24K Gold Metallic Nameplate Strip */}
+                      <span className="mt-2 inline-flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-lg bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-zinc-950 font-black text-sm sm:text-lg lg:text-[15px] xl:text-[18px] 2xl:text-[21px] tracking-[0.05em] shadow-[0_4px_20px_rgba(245,158,11,0.45),inset_0_1px_1px_rgba(255,255,255,0.8)] border border-amber-200/80 whitespace-nowrap">
+                          <span className="w-1.5 h-1.5 rounded-full bg-zinc-950/75" />
+                          <span>&amp; METAL LABEL</span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-zinc-950/75" />
+                        </span>
+                        <span className="text-[9.5px] 2xl:text-[10.5px] font-mono font-bold text-zinc-300 tracking-wider uppercase px-2 py-1 rounded border border-white/15 bg-white/5 whitespace-nowrap">
+                          Direct Factory
+                        </span>
+                      </span>
+                    </h1>
                   </div>
 
-                  <h1 className="uppercase leading-none">
-                    {/* Line 1: SOURAV GRAPHIC in Brushed Silver/White Monumental Display */}
-                    <span className="block text-2xl sm:text-3xl xl:text-[32px] 2xl:text-[36px] font-black tracking-[-0.01em] bg-gradient-to-b from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(255,255,255,0.12)]">
-                      SOURAV GRAPHIC
-                    </span>
-
-                    {/* Line 2: & METAL LABEL in Embossed 24K Gold Metallic Nameplate Strip */}
-                    <span className="mt-2 inline-flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-zinc-950 font-black text-base sm:text-xl xl:text-[21px] tracking-[0.06em] shadow-[0_4px_20px_rgba(245,158,11,0.45),inset_0_1px_1px_rgba(255,255,255,0.8)] border border-amber-200/80">
-                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-950/75" />
-                        <span>&amp; METAL LABEL</span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-950/75" />
-                      </span>
-                      <span className="text-[10px] font-mono font-bold text-zinc-300 tracking-wider uppercase px-2 py-1 rounded border border-white/15 bg-white/5">
-                        Direct Factory
-                      </span>
-                    </span>
-                  </h1>
+                  {/* Animated Laser & CAD Engineering Doodle in Dedicated Non-Overlapping Right Space */}
+                  <div className="hidden sm:flex items-center justify-center shrink-0 w-28 md:w-36 lg:w-28 xl:w-40 2xl:w-48 h-[110px] sm:h-[125px] lg:h-[115px] xl:h-[135px] 2xl:h-[150px]">
+                    <MetalPlateLaserDoodle />
+                  </div>
                 </div>
               </div>
 
@@ -1022,7 +1066,7 @@ export default function LandingClient() {
           </div>
 
           {/* Col 2 (3 Cols): Featured Specimen Card with Full-Size Seamless Stage (1.png & 2.png) */}
-          <div className="lg:col-span-3 bg-card border border-border rounded-2xl p-3.5 flex flex-col justify-between shadow-2xs overflow-hidden">
+          <div className="md:col-span-1 lg:col-span-3 bg-card border border-border rounded-2xl p-3.5 2xl:p-5 flex flex-col justify-between shadow-2xs overflow-hidden">
             <div className="flex items-center justify-between text-[11px] mb-2">
               <span className="font-bold text-foreground">Featured Specimen</span>
               <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 font-mono text-[10px] font-bold">
@@ -1057,7 +1101,7 @@ export default function LandingClient() {
           </div>
 
           {/* Col 3 (4 Cols): Samarth-Style Instant "Tell Us Your Requirement" Box */}
-          <div className="lg:col-span-4 bg-card border border-border rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
+          <div className="md:col-span-1 lg:col-span-4 bg-card border border-border rounded-2xl p-4 2xl:p-5 flex flex-col justify-between shadow-2xs">
             <div className="flex items-center justify-between pb-2 border-b border-border/60">
               <div>
                 <h2 className="text-xs sm:text-sm font-black uppercase tracking-wide text-foreground">
@@ -1085,14 +1129,22 @@ export default function LandingClient() {
             </div>
 
             {heroSubmittedId ? (
-              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-1 my-auto">
-                <CheckCircle2 size={22} className="text-emerald-500 mx-auto" />
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-1.5 my-auto">
+                <CheckCircle2 size={24} className="text-emerald-500 mx-auto" />
                 <h3 className="text-xs font-black text-foreground">
                   Enquiry Sent! ({heroSubmittedId})
                 </h3>
-                <p className="text-[11px] text-muted-foreground">
-                  Logged in Admin Dashboard. We will call you shortly.
+                <p className="text-[11px] text-muted-foreground leading-snug">
+                  Our team has received your requirement{heroEmailAck ? " & sent a confirmation copy to your email." : ". We will respond shortly with your quote."}
                 </p>
+                <a
+                  href={`https://wa.me/${waNumber}?text=${encodeURIComponent(`Hi Sourav Graphic, I just submitted enquiry ${heroSubmittedId}. Please share the quote.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500 text-zinc-950 font-black text-[10px] uppercase tracking-wide mt-1"
+                >
+                  <WhatsAppLogo size={12} /> Chat on WhatsApp
+                </a>
               </div>
             ) : (
               (() => {
@@ -1172,6 +1224,15 @@ export default function LandingClient() {
                         className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-semibold text-[11px]"
                       />
                     </div>
+                    <input
+                      type="email"
+                      placeholder="Email Address (Optional — for instant quote copy)"
+                      value={heroForm.email}
+                      onChange={(e) =>
+                        setHeroForm({ ...heroForm, email: e.target.value })
+                      }
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
+                    />
 
                     <button
                       type="submit"
@@ -1195,7 +1256,7 @@ export default function LandingClient() {
          ══════════════════════════════════════════════════════════════════ */}
       <section
         id="products"
-        className="py-5 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto"
+        className="py-5 px-3.5 sm:px-6 lg:px-10 xl:px-12 2xl:px-16 w-full max-w-[2160px] mx-auto"
       >
         {/* Top Unified Category & Filter Control Bar */}
         <div className="bg-card border border-border rounded-2xl p-3 sm:p-4 mb-4 shadow-2xs space-y-3">
@@ -1275,8 +1336,8 @@ export default function LandingClient() {
           </div>
         </div>
 
-        {/* Micro-Compact 6-Column Product Grid (Small Cards on All Laptop & Desktop Screens) */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+        {/* Responsive Product Grid (2 cols Mobile -> 3/4 Tablet -> 5 Laptop -> 6 Desktop & Ultrawide) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-3 2xl:gap-4">
           {filteredProducts.map((product) => (
             <motion.div
               key={product.id}
@@ -1375,7 +1436,7 @@ export default function LandingClient() {
          ══════════════════════════════════════════════════════════════════ */}
       <section
         id="industries"
-        className="py-6 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto border-t border-border/50"
+        className="py-6 px-3.5 sm:px-6 lg:px-10 xl:px-12 2xl:px-16 w-full max-w-[2160px] mx-auto border-t border-border/50"
       >
         <div className="flex items-center justify-between mb-3.5">
           <div>
@@ -1421,34 +1482,152 @@ export default function LandingClient() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          SIDE-BY-SIDE INFRASTRUCTURE & QUALITY + COMPANY FACT SHEET (#profile)
+          LEADERSHIP, GST VERIFICATION, INFRASTRUCTURE & FACT SHEET (#profile)
          ══════════════════════════════════════════════════════════════════ */}
       <section
         id="profile"
-        className="py-6 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto border-t border-border/50"
+        className="py-8 px-3.5 sm:px-6 lg:px-10 xl:px-12 2xl:px-16 w-full max-w-[2160px] mx-auto border-t border-border/50 space-y-5"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        {/* Top Executive Leadership & Verified Credentials Banner */}
+        <div className="bg-card border border-border rounded-2xl p-6 sm:p-7 shadow-2xs">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+            {/* Founder Identity */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5 max-w-2xl">
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border border-border shadow-sm bg-white shrink-0">
+                <Image
+                  src="/Media/Sourav.jpeg"
+                  alt="Sourav Kumar - Founder & Proprietor, Sourav Graphic & Metal Label"
+                  fill
+                  unoptimized
+                  className="object-cover object-top"
+                  sizes="112px"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <span className="text-[11px] font-medium uppercase tracking-widest text-amber-600 dark:text-amber-400">
+                    Leadership & Direct Contact
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setGstModalOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold transition-colors cursor-pointer"
+                  >
+                    <FileCheck2 size={12} />
+                    <span>GST Registered & Verified</span>
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap items-baseline gap-2.5">
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+                    {factoryInfo.ownerName || "Sourav Kumar"}
+                  </h2>
+                  <span className="text-xs sm:text-sm font-medium text-muted-foreground">
+                    — Founder & Proprietor, Sourav Graphic & Metal Label
+                  </span>
+                </div>
+
+                <p className="text-xs sm:text-[13px] text-muted-foreground leading-relaxed">
+                  Direct factory manufacturing with precision laser marking, chemical etching, transparent GST billing, and dependable pan-India B2B dispatch.
+                </p>
+              </div>
+            </div>
+
+            {/* Spacious Contact & Verification Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 xl:w-[540px] shrink-0">
+              <a
+                href={`tel:+91${String(factoryInfo.whatsapp || "8447507195").replace(/\D/g, "").slice(-10)}`}
+                className="p-3.5 rounded-xl bg-muted/35 hover:bg-muted/60 border border-border/70 transition-colors flex items-center gap-3"
+              >
+                <div className="w-9 h-9 rounded-lg bg-amber-500/12 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                  <Phone size={16} />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
+                    Direct Phone / WhatsApp
+                  </span>
+                  <span className="text-[13px] font-semibold text-foreground block truncate">
+                    +91 {String(factoryInfo.whatsapp || "8447507195").replace(/\D/g, "").slice(-10)}
+                  </span>
+                </div>
+              </a>
+
+              <a
+                href={`mailto:${factoryInfo.email || "souravgraphicmetallabel@gmail.com"}`}
+                className="p-3.5 rounded-xl bg-muted/35 hover:bg-muted/60 border border-border/70 transition-colors flex items-center gap-3"
+              >
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <Mail size={16} />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
+                    Official Email
+                  </span>
+                  <span className="text-[12.5px] font-semibold text-foreground block truncate">
+                    {factoryInfo.email || "souravgraphicmetallabel@gmail.com"}
+                  </span>
+                </div>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setGstModalOpen(true)}
+                className="p-3.5 rounded-xl bg-muted/35 hover:bg-emerald-500/10 border border-border/70 hover:border-emerald-500/35 transition-colors flex items-center gap-3 text-left cursor-pointer"
+              >
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <ShieldCheck size={16} />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
+                    GSTIN (Click to View)
+                  </span>
+                  <span className="text-[13px] font-mono font-semibold text-foreground block truncate">
+                    {factoryInfo.gstin || "06EFEPK5404R1Z2"}
+                  </span>
+                </div>
+              </button>
+
+              <div className="p-3.5 rounded-xl bg-muted/35 border border-border/70 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-amber-500/12 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                  <MapPin size={16} />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
+                    Registered Unit
+                  </span>
+                  <span className="text-[11.5px] font-medium text-foreground block leading-snug line-clamp-2">
+                    Sector 50, 33 Feet Road, Faridabad, Haryana 121001
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Balanced 2-Column Split: Infrastructure & Fact Sheet */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* Left (6 Cols): Manufacturing Infrastructure & Quality Testing */}
-          <div className="lg:col-span-6 bg-card border border-border rounded-2xl p-5 flex flex-col justify-between">
+          <div className="lg:col-span-6 bg-card border border-border rounded-2xl p-6 flex flex-col justify-between">
             <div>
-              <span className="text-[10px] font-mono font-bold uppercase text-amber-500 block">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
                 Infrastructure & Quality Assurance
               </span>
-              <h2 className="text-base sm:text-lg font-black text-foreground mt-0.5">
+              <h2 className="text-lg font-bold tracking-tight text-foreground mt-1">
                 In-House Fabrication & Testing Facilities
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-4">
                 {INFRASTRUCTURE_FEATURES.map((feat) => (
                   <div
                     key={feat.title}
-                    className="p-3 rounded-xl bg-muted/40 border border-border/60"
+                    className="p-4 rounded-xl bg-muted/35 border border-border/60"
                   >
-                    <h3 className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-500 shrink-0" />
+                    <h3 className="text-[13px] font-semibold text-foreground flex items-center gap-2">
+                      <Check size={14} className="text-emerald-500 shrink-0" />
                       <span>{feat.title}</span>
                     </h3>
-                    <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
+                    <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
                       {feat.desc}
                     </p>
                   </div>
@@ -1456,7 +1635,7 @@ export default function LandingClient() {
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs">
+            <div className="mt-5 pt-4 border-t border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs">
               <span className="text-muted-foreground font-medium">
                 Need custom sample plates for approval?
               </span>
@@ -1465,25 +1644,25 @@ export default function LandingClient() {
           </div>
 
           {/* Right (6 Cols): Company Profile Fact Sheet */}
-          <div className="lg:col-span-6 bg-card border border-border rounded-2xl p-5 flex flex-col justify-between">
+          <div className="lg:col-span-6 bg-card border border-border rounded-2xl p-6 flex flex-col justify-between">
             <div>
-              <span className="text-[10px] font-mono font-bold uppercase text-amber-500 block">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
                 Company Profile
               </span>
-              <h2 className="text-base sm:text-lg font-black text-foreground mt-0.5">
+              <h2 className="text-lg font-bold tracking-tight text-foreground mt-1">
                 Sourav Graphic & Metal Label — Fact Sheet
               </h2>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-3.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 mt-4">
                 {COMPANY_FACTS.map((fact) => (
                   <div
                     key={fact.label}
-                    className="p-3 rounded-xl bg-muted/40 border border-border/60"
+                    className="p-4 rounded-xl bg-muted/35 border border-border/60"
                   >
-                    <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
                       {fact.label}
                     </span>
-                    <span className="text-[11px] font-extrabold text-foreground mt-0.5 block leading-snug">
+                    <span className="text-[12.5px] font-semibold text-foreground mt-1.5 block leading-relaxed">
                       {fact.value}
                     </span>
                   </div>
@@ -1491,11 +1670,15 @@ export default function LandingClient() {
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-border/50 flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <div className="mt-5 pt-4 border-t border-border/50 flex flex-wrap items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => setGstModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold text-emerald-600 dark:text-emerald-400 transition-colors cursor-pointer"
+              >
                 <ShieldCheck size={15} />
-                <span>Verified Quality • Direct Factory Pricing</span>
-              </div>
+                <span>View Official GST Certificate</span>
+              </button>
               <motion.a
                 href={`https://wa.me/${waNumber}?text=Hi%20Sourav%20Graphic,%20I%20want%20to%20enquire%20about%20industrial%20metal%20labels%20and%20nameplates.`}
                 target="_blank"
@@ -1521,7 +1704,7 @@ export default function LandingClient() {
                     />
                   </div>
 
-                  <span className="relative z-20 text-white group-hover:text-zinc-950 font-black text-xs transition-colors duration-500 whitespace-nowrap">
+                  <span className="relative z-20 text-white group-hover:text-zinc-950 font-bold text-xs transition-colors duration-500 whitespace-nowrap">
                     Chat on WhatsApp
                   </span>
                 </div>
@@ -1536,7 +1719,7 @@ export default function LandingClient() {
          ══════════════════════════════════════════════════════════════════ */}
       <section
         id="quote"
-        className="py-6 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto"
+        className="py-6 px-3.5 sm:px-6 lg:px-10 xl:px-12 2xl:px-16 w-full max-w-[2160px] mx-auto"
       >
         <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-2xs">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
@@ -1572,13 +1755,13 @@ export default function LandingClient() {
 
             <div className="lg:col-span-8">
               {quoteSubmitted ? (
-                <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
-                  <Check size={22} className="text-emerald-500 mx-auto mb-1" />
+                <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-1.5">
+                  <CheckCircle2 size={24} className="text-emerald-500 mx-auto" />
                   <h4 className="text-sm font-black text-foreground">
-                    Enquiry Logged Successfully!
+                    Enquiry Logged Successfully! {quoteSubmittedRef ? `(${quoteSubmittedRef})` : ""}
                   </h4>
                   <p className="text-xs text-muted-foreground">
-                    Our sales team will contact you with the quotation shortly.
+                    Our sales team has received your bulk requirement{quoteEmailAck ? " & emailed a confirmation copy to you." : " and will contact you with the quotation shortly."}
                   </p>
                 </div>
               ) : (
@@ -1678,7 +1861,16 @@ export default function LandingClient() {
                           onChange={(e) =>
                             setFormData({ ...formData, phone: e.target.value })
                           }
-                          className="sm:col-span-3 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-semibold text-[11px]"
+                          className="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-mono font-semibold text-[11px]"
+                        />
+                        <input
+                          type="email"
+                          placeholder="Email (Optional)"
+                          value={formData.email}
+                          onChange={(e) =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
+                          className="sm:col-span-3 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
                         />
                         <input
                           type="text"
@@ -1688,7 +1880,7 @@ export default function LandingClient() {
                           onChange={(e) =>
                             setFormData({ ...formData, notes: e.target.value })
                           }
-                          className="sm:col-span-4 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
+                          className="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-medium text-[11px]"
                         />
                         <button
                           type="submit"
@@ -1712,7 +1904,7 @@ export default function LandingClient() {
          ══════════════════════════════════════════════════════════════════ */}
       <section
         id="faq"
-        className="py-5 px-4 sm:px-6 lg:px-10 2xl:px-14 w-full max-w-[1920px] mx-auto border-t border-border/50"
+        className="py-5 px-3.5 sm:px-6 lg:px-10 xl:px-12 2xl:px-16 w-full max-w-[2160px] mx-auto border-t border-border/50"
       >
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div>
@@ -1842,7 +2034,7 @@ export default function LandingClient() {
                     Enquiry Sent! ({modalSuccessId})
                   </h4>
                   <p className="text-xs text-muted-foreground">
-                    Your requirement for <strong>{modalProduct.title}</strong> has been logged in our system.
+                    Your requirement for <strong>{modalProduct.title}</strong> has been sent to our factory team{modalEmailAck ? " & a confirmation copy has been emailed to you." : "."}
                   </p>
                   <div className="flex gap-2 justify-center pt-1">
                     <a
@@ -1964,6 +2156,16 @@ export default function LandingClient() {
                           className="w-full px-3 py-2 rounded-lg bg-background border border-border font-mono font-semibold"
                         />
                       </div>
+
+                      <input
+                        type="email"
+                        placeholder="Email Address (Optional — for instant quote copy)"
+                        value={modalForm.email}
+                        onChange={(e) =>
+                          setModalForm({ ...modalForm, email: e.target.value })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-background border border-border font-medium"
+                      />
 
                       <input
                         type="text"
@@ -2142,54 +2344,186 @@ export default function LandingClient() {
         )}
       </AnimatePresence>
 
-      {/* Compact Footer */}
-      <footer className="mt-auto border-t border-border py-4 px-4 sm:px-6 lg:px-10 2xl:px-14 bg-card/60 dark:bg-background">
-        <div className="w-full max-w-[1920px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground font-medium">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="relative flex items-center h-7 w-24 shrink-0">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-24 pointer-events-none">
-                <Image
-                  src="/Media/Logo.png"
-                  alt="Logo"
-                  fill
-                  sizes="120px"
-                  className="object-contain object-center scale-[1.08] opacity-95"
+      {/* ══════════════════════════════════════════════════════════════════
+          VERIFIED GST REGISTRATION CERTIFICATE MODAL
+         ══════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {gstModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setGstModalOpen(false)}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-3xl rounded-2xl bg-card border border-border shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+            >
+              {/* Modal Header */}
+              <div className="p-3.5 bg-muted/40 border-b border-border flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-bold uppercase flex items-center gap-1">
+                      <ShieldCheck size={12} />
+                      <span>Form GST REG-06 • Verified</span>
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-amber-500 uppercase truncate">
+                      GSTIN: {factoryInfo.gstin || "06EFEPK5404R1Z2"}
+                    </span>
+                  </div>
+                  <h3 className="text-sm sm:text-base font-black text-foreground truncate mt-0.5">
+                    Government of India — GST Registration Certificate
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href="/Media/GST_Certificate.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-[10px] uppercase tracking-wider transition-colors"
+                  >
+                    <span>Open PDF</span>
+                    <ExternalLink size={11} />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setGstModalOpen(false)}
+                    className="w-7 h-7 rounded-lg bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Official Details Summary Strip */}
+              <div className="px-4 py-2.5 bg-muted/20 border-b border-border grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10.5px]">
+                <div>
+                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                    Legal / Proprietor
+                  </span>
+                  <span className="font-extrabold text-foreground">
+                    {factoryInfo.ownerName || "Sourav Kumar"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                    Trade Name
+                  </span>
+                  <span className="font-extrabold text-foreground">
+                    {factoryInfo.businessName || "Sourav Graphic & Metal Label"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                    Constitution
+                  </span>
+                  <span className="font-extrabold text-foreground">
+                    Proprietorship (Regular)
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                    Registration Date
+                  </span>
+                  <span className="font-extrabold text-foreground">
+                    02/10/2026
+                  </span>
+                </div>
+              </div>
+
+              {/* Embedded Certificate PDF Viewer */}
+              <div className="p-3 bg-zinc-100 dark:bg-zinc-900 flex-1 overflow-hidden">
+                <iframe
+                  src="/Media/GST_Certificate.pdf#toolbar=0&navpanes=0"
+                  className="w-full h-[55vh] sm:h-[62vh] rounded-xl border border-border bg-white"
+                  title="GST Registration Certificate - Sourav Graphic & Metal Label"
                 />
               </div>
-            </Link>
-            <span>•</span>
-            <span>
-              {factoryInfo.businessName || "Sourav Graphic & Metal Label"} • {factoryInfo.address || "Industrial Metal Label Manufacturer"}
-            </span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Compact Footer */}
+      <footer className="mt-auto border-t border-border py-5 px-3.5 sm:px-6 lg:px-10 xl:px-12 2xl:px-16 bg-card/60 dark:bg-background">
+        <div className="w-full max-w-[2160px] mx-auto flex flex-col gap-3">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 text-xs text-muted-foreground font-medium">
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/" className="relative flex items-center h-7 w-24 shrink-0">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-24 pointer-events-none">
+                  <Image
+                    src="/Media/Logo.png"
+                    alt="Logo"
+                    fill
+                    sizes="120px"
+                    className="object-contain object-center scale-[1.08] opacity-95"
+                  />
+                </div>
+              </Link>
+              <span>•</span>
+              <span className="text-foreground font-bold">
+                {factoryInfo.businessName || "Sourav Graphic & Metal Label"}
+              </span>
+              <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-bold">
+                GSTIN: {factoryInfo.gstin || "06EFEPK5404R1Z2"}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <a href="#products" className="hover:text-foreground transition-colors">
+                Our Products
+              </a>
+              <a href="#industries" className="hover:text-foreground transition-colors">
+                Industries
+              </a>
+              <a href="#profile" className="hover:text-foreground transition-colors">
+                Company Profile
+              </a>
+              <Link
+                href="/customize"
+                prefetch={true}
+                className="hover:text-foreground transition-colors font-bold"
+              >
+                Upload Design / Studio
+              </Link>
+              <Link
+                href="/admin"
+                className="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold hover:bg-amber-500 hover:text-zinc-950 transition-colors"
+              >
+                Admin Portal
+              </Link>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <a href="#products" className="hover:text-foreground transition-colors">
-              Our Products
-            </a>
-            <a href="#industries" className="hover:text-foreground transition-colors">
-              Industries
-            </a>
-            <a href="#profile" className="hover:text-foreground transition-colors">
-              Company Profile
-            </a>
-            <Link
-              href="/customize"
-              prefetch={true}
-              className="hover:text-foreground transition-colors font-bold"
-            >
-              Upload Design / Studio
-            </Link>
-            <Link
-              href="/admin"
-              className="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold hover:bg-amber-500 hover:text-zinc-950 transition-colors"
-            >
-              Admin Portal
-            </Link>
-          </div>
-
-          <div>
-            &copy; {new Date().getFullYear()} Sourav Graphic. All rights reserved.
+          <div className="pt-2.5 border-t border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <span>
+                <strong className="text-foreground">Proprietor:</strong> {factoryInfo.ownerName || "Sourav Kumar"}
+              </span>
+              <a
+                href={`tel:+91${String(factoryInfo.whatsapp || "8447507195").replace(/\D/g, "").slice(-10)}`}
+                className="hover:text-amber-500 transition-colors"
+              >
+                <strong className="text-foreground">Mob:</strong> +91 {String(factoryInfo.whatsapp || "8447507195").replace(/\D/g, "").slice(-10)}
+              </a>
+              <a
+                href={`mailto:${factoryInfo.email || "souravgraphicmetallabel@gmail.com"}`}
+                className="hover:text-amber-500 transition-colors"
+              >
+                <strong className="text-foreground">Email:</strong> {factoryInfo.email || "souravgraphicmetallabel@gmail.com"}
+              </a>
+              <span>
+                <strong className="text-foreground">Address:</strong> {factoryInfo.address}
+              </span>
+            </div>
+            <div className="shrink-0">
+              &copy; {new Date().getFullYear()} Sourav Graphic. All rights reserved.
+            </div>
           </div>
         </div>
       </footer>

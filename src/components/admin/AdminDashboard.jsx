@@ -51,6 +51,7 @@ import {
   LEAD_STATUSES,
   INITIAL_MATERIALS,
   DEFAULT_ADMIN_AUTH,
+  SUPER_ADMIN_ACCOUNTS,
   PRODUCT_IMAGE_MAP,
 } from "@/lib/adminData";
 import { useTheme } from "../ThemeProvider";
@@ -406,10 +407,11 @@ function LeadDetailModal({
     const grandTotal = subTotal + gstAmt;
     const bizName =
       factorySettings?.businessName || "Sourav Graphic & Metal Label";
-    const bizPhone = factorySettings?.whatsapp || "9876543210";
+    const bizPhone = factorySettings?.whatsapp || "8447507195";
     const bizAddr =
-      factorySettings?.address || "Industrial Area, New Delhi, India";
-    const bizGst = factorySettings?.gstin || "07AABCS1429B1Z1";
+      factorySettings?.address ||
+      "DC 696 (313), 33 Feet Road, Near SS Tools, Sector 50, Faridabad, Haryana 121001";
+    const bizGst = factorySettings?.gstin || "06EFEPK5404R1Z2";
 
     const win = window.open("", "_blank", "width=860,height=720");
     if (!win) return;
@@ -873,10 +875,10 @@ export default function AdminDashboard() {
   // Settings
   const [settings, setSettings] = useState({
     businessName: "Sourav Graphic & Metal Label",
-    whatsapp: "9876543210",
-    email: "sales@souravgraphic.in",
-    address: "Industrial Area, New Delhi, India",
-    gstin: "07AABCS1429B1Z1",
+    whatsapp: "8447507195",
+    email: "souravgraphicmetallabel@gmail.com",
+    address: "DC 696 (313), 33 Feet Road, Near SS Tools, Sector 50, Faridabad, Haryana 121001",
+    gstin: "06EFEPK5404R1Z2",
     tagline: "B2B Industrial Nameplate & Metal Label Manufacturer",
   });
   const [settingsSaved, setSettingsSaved] = useState(false);
@@ -1148,22 +1150,26 @@ export default function AdminDashboard() {
   // ── Auth handlers ──
   function handleLogin(e) {
     e.preventDefault();
-    const auth = (() => {
+    const storedAuth = (() => {
       try {
-        return (
-          JSON.parse(localStorage.getItem("sourav_super_admin_auth")) ||
-          adminAuth
-        );
+        return JSON.parse(localStorage.getItem("sourav_super_admin_auth")) || adminAuth;
       } catch {
         return adminAuth;
       }
     })();
 
-    if (
-      loginEmail.trim().toLowerCase() === auth.email.trim().toLowerCase() &&
-      loginPassword === auth.password
-    ) {
+    const candidateAccounts = [storedAuth, ...SUPER_ADMIN_ACCOUNTS];
+    const matchedAccount = candidateAccounts.find(
+      (acc) =>
+        acc &&
+        loginEmail.trim().toLowerCase() === String(acc.email).trim().toLowerCase() &&
+        loginPassword === acc.password
+    );
+
+    if (matchedAccount) {
       sessionStorage.setItem("sourav_admin_session", "true");
+      setAdminAuth(matchedAccount);
+      setCredForm((prev) => ({ ...prev, email: matchedAccount.email }));
       setIsAuthenticated(true);
       setLoginError("");
     } else {
@@ -2792,22 +2798,22 @@ export default function AdminDashboard() {
                       {
                         label: "Official WhatsApp Number (Used on Live Website)",
                         key: "whatsapp",
-                        placeholder: "9876543210",
+                        placeholder: "8447507195",
                       },
                       {
                         label: "Official Sales Email",
                         key: "email",
-                        placeholder: "sales@souravgraphic.in",
+                        placeholder: "souravgraphicmetallabel@gmail.com",
                       },
                       {
                         label: "GSTIN Number (Printed on Quotations)",
                         key: "gstin",
-                        placeholder: "07AABCS1429B1Z1",
+                        placeholder: "06EFEPK5404R1Z2",
                       },
                       {
                         label: "Factory Address",
                         key: "address",
-                        placeholder: "Industrial Area, New Delhi",
+                        placeholder: "DC 696 (313), 33 Feet Road, Sector 50, Faridabad, Haryana 121001",
                       },
                       {
                         label: "Brand Tagline",

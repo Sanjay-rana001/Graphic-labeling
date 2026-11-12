@@ -37,6 +37,8 @@
 }
 
 @theme inline {
+  --font-sans: var(--font-inter-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -54,6 +56,8 @@
 html {
   background-color: var(--background);
   color: var(--foreground);
+  font-family: var(--font-inter-sans), system-ui, -apple-system, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
 }
@@ -61,8 +65,10 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
+  font-family: var(--font-inter-sans), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Instant Tactile Feedback on Click/Tap Across Entire App */

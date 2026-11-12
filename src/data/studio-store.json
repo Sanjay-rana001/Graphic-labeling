@@ -3,6 +3,7 @@
     "displayMode": "enquiry",
     "customizationStudioOn": false,
     "enquiryFormOn": true,
+    "screenLoaderOn": true,
     "minQuantity": 30,
     "maxFileSizeMB": 5,
     "allowedFileTypes": [
@@ -40,8 +41,120 @@
       "Three Colour",
       "Four Colour"
     ],
+    "factoryInfo": {
+      "businessName": "Sourav Graphic & Metal Label",
+      "ownerName": "Sourav Kumar",
+      "whatsapp": "8447507195",
+      "email": "souravgraphicmetallabel@gmail.com",
+      "address": "DC 696 (313), 33 Feet Road, Near SS Tools, Sector 50, Faridabad, Haryana 121001",
+      "gstin": "06EFEPK5404R1Z2",
+      "tagline": "B2B Industrial Nameplate & Metal Label Manufacturer"
+    },
     "updatedAt": "2026-10-30T07:38:33.175Z",
     "updatedBy": "sanjay00002023@gmail.com"
   },
-  "enquiries": []
+  "enquiries": [
+    {
+      "id": "INQ-4563",
+      "client": "Sanjay Rana",
+      "customerName": "Sanjay Rana",
+      "phone": "7703988597",
+      "email": "danteyamato001@gmail.com",
+      "address": "C 301 Tyagi Market Faridabad",
+      "city": "C 301 Tyagi Market Faridabad",
+      "date": "2026-11-12",
+      "createdAt": "2026-11-12T10:10:32.518Z",
+      "source": "Website Enquiry Form",
+      "category": "SS 304 / SS 202 Etched Plate",
+      "material": "SS 304 / SS 202 Etched Plate",
+      "size": "Thickness: 1.0 mm | Holes: 3 mm Corner Holes",
+      "lighting": "SS 304 Grade",
+      "mounting": "Double Side: Single Side | Holes: 3 mm Corner Holes",
+      "specifications": {
+        "thickness": "1.0 mm",
+        "holes": "3 mm Corner Holes",
+        "side": "Single Side",
+        "quantity": 30,
+        "colour": "SS 304 Grade"
+      },
+      "designFile": null,
+      "textLayers": [
+        {
+          "line": "SS 304 / SS 202 Etched Plate",
+          "font": "Standard"
+        }
+      ],
+      "quantity": 30,
+      "status": "New Inquiry",
+      "notes": "Product: SS 304 / SS 202 Etched Plate | Thickness: 1.0 mm | Holes: 3 mm Corner Holes | Double Side: Single Side | Colour: SS 304 Grade | Qty: 30 | Address: C 301 Tyagi Market Faridabad"
+    },
+    {
+      "id": "INQ-1553",
+      "client": "Sanjay Rana",
+      "customerName": "Sanjay Rana",
+      "phone": "7703988597",
+      "email": "sanjay00002023@gmail.com",
+      "address": "Hero Quick Quote",
+      "city": "Hero Quick Quote",
+      "date": "2026-11-12",
+      "createdAt": "2026-11-12T10:07:41.008Z",
+      "source": "Hero Instant Quote",
+      "category": "Aluminium Name Plate",
+      "material": "Aluminium Name Plate",
+      "size": "Thickness: 0.7 mm | Holes: 2 mm",
+      "lighting": "Single Colour",
+      "mounting": "Double Side: Single Side | Holes: 2 mm",
+      "specifications": {
+        "thickness": "0.7 mm",
+        "holes": "2 mm",
+        "side": "Single Side",
+        "quantity": 50,
+        "colour": "Single Colour"
+      },
+      "designFile": null,
+      "textLayers": [
+        {
+          "line": "Aluminium Name Plate",
+          "font": "Standard"
+        }
+      ],
+      "quantity": 50,
+      "status": "New Inquiry",
+      "notes": "Product: Aluminium Name Plate | Thickness: 0.7 mm | Holes: 2 mm | Double Side: Single Side | Colour: Single Colour | Qty: 50 | Address: Hero Quick Quote"
+    },
+    {
+      "id": "INQ-8671",
+      "client": "Sanjay",
+      "customerName": "Sanjay",
+      "phone": "7703988597",
+      "email": "sanjayranatanabana@gmail.com",
+      "address": "d 1023 dabua colony nit faridabad 121001",
+      "city": "d 1023 dabua colony nit faridabad 121001",
+      "date": "2026-11-12",
+      "createdAt": "2026-11-12T10:06:06.615Z",
+      "source": "Homepage Bulk Enquiry",
+      "category": "Aluminium Name Plate",
+      "material": "Aluminium Name Plate",
+      "size": "Thickness: 0.7 mm | Holes: 2 mm",
+      "lighting": "Single Colour",
+      "mounting": "Double Side: Single Side | Holes: 2 mm",
+      "specifications": {
+        "thickness": "0.7 mm",
+        "holes": "2 mm",
+        "side": "Single Side",
+        "quantity": 100,
+        "colour": "Single Colour"
+      },
+      "designFile": null,
+      "textLayers": [
+        {
+          "line": "Aluminium Name Plate",
+          "font": "Standard"
+        }
+      ],
+      "quantity": 100,
+      "status": "New Inquiry",
+      "notes": "d 1023 dabua colony nit faridabad 121001 | Product: Aluminium Name Plate | Thickness: 0.7 mm | Holes: 2 mm | Side: Single Side | Colour: Single Colour | Qty: 100"
+    }
+  ]
 }

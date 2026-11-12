@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readStore, writeStore } from "@/lib/serverStore";
+import { sendEnquiryEmail } from "@/lib/mailer";
 
 function sanitize(str, maxLen = 300) {
   if (typeof str !== "string") return "";
@@ -42,7 +43,9 @@ export async function POST(request) {
     const cust = body.customer || {};
     const customerName = sanitize(cust.name || "Customer", 120);
     const phone = sanitize(cust.phone, 30);
+    const customerEmail = sanitize(cust.email || "", 150);
     const address = sanitize(cust.address, 400);
+    const customNotes = sanitize(body.notes || "", 500);
 
     if (quantity < minQty) {
       return NextResponse.json(
@@ -106,12 +109,12 @@ export async function POST(request) {
       client: customerName,
       customerName,
       phone,
-      email: "—",
+      email: customerEmail || "—",
       address,
       city: address,
       date: dateStr,
       createdAt: new Date().toISOString(),
-      source: "Upload Design Form",
+      source: sanitize(body.source || "Website Enquiry Form", 80),
       category,
       material: category,
       size: `Thickness: ${thickness} | Holes: ${holes}`,
@@ -130,17 +133,23 @@ export async function POST(request) {
         : [{ line: category, font: "Standard" }],
       quantity,
       status: "New Inquiry",
-      notes: `Product: ${category} | Thickness: ${thickness} | Holes: ${holes} | Double Side: ${side} | Colour: ${colour} | Qty: ${quantity} | Address: ${address}`,
+      notes: customNotes
+        ? `${customNotes} | Product: ${category} | Thickness: ${thickness} | Holes: ${holes} | Side: ${side} | Colour: ${colour} | Qty: ${quantity}`
+        : `Product: ${category} | Thickness: ${thickness} | Holes: ${holes} | Double Side: ${side} | Colour: ${colour} | Qty: ${quantity} | Address: ${address}`,
     };
 
     store.enquiries = [newEnquiry, ...(store.enquiries || [])];
     writeStore(store);
+
+    const emailResult = await sendEnquiryEmail(newEnquiry);
 
     return NextResponse.json(
       {
         success: true,
         referenceId,
         enquiry: newEnquiry,
+        emailSent: emailResult.ownerSent,
+        customerEmailSent: emailResult.customerSent,
       },
       { status: 201 }
     );

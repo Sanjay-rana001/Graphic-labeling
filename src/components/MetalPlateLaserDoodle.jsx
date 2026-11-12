@@ -6,16 +6,16 @@ export default function MetalPlateLaserDoodle() {
   return (
     <div
       aria-hidden="true"
-      className="absolute right-0 top-0 bottom-0 w-22 sm:w-28 md:w-34 lg:w-38 pointer-events-none select-none flex items-center justify-end pr-1 sm:pr-2 overflow-hidden z-0"
+      className="relative w-full h-full pointer-events-none select-none flex items-center justify-center overflow-visible"
     >
       {/* Background ambient laser glow */}
-      <div className="absolute right-1 top-1/2 -translate-y-1/2 w-20 h-20 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/25 transition-all duration-700 pointer-events-none" />
+      <div className="absolute inset-2 bg-amber-500/12 rounded-full blur-2xl group-hover:bg-amber-500/25 transition-all duration-700 pointer-events-none" />
 
       <svg
-        viewBox="105 0 95 120"
+        viewBox="92 5 110 112"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full max-h-[110px] object-contain opacity-40 sm:opacity-75 group-hover:opacity-100 transition-opacity duration-500"
+        className="w-full h-full max-h-[148px] object-contain opacity-85 group-hover:opacity-100 transition-opacity duration-500"
       >
         <defs>
           <linearGradient id="laserBeamGrad" x1="0%" y1="0%" x2="100%" y2="100%">

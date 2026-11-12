@@ -162,6 +162,7 @@ export default function StudioEnquiryForm({
   const [customer, setCustomer] = useState({
     name: "",
     phone: "",
+    email: "",
     address: "",
   });
 
@@ -276,7 +277,7 @@ export default function StudioEnquiryForm({
           ...existing.filter((item) => item.id !== data.enquiry.id),
         ];
         localStorage.setItem("sourav_admin_leads", JSON.stringify(merged));
-      } catch (err) {}
+      } catch (err) { }
 
       setSubmittedEnquiry(data.enquiry);
     } catch (err) {
@@ -298,18 +299,18 @@ export default function StudioEnquiryForm({
   const holeRadiusPx = hasNoHoles
     ? 0
     : holeStr.includes("1 mm")
-    ? 6
-    : holeStr.includes("2 mm")
-    ? 8
-    : holeStr.includes("3 mm")
-    ? 10
-    : holeStr.includes("4 mm")
-    ? 12
-    : holeStr.includes("5 mm")
-    ? 14
-    : holeStr.includes("standoff")
-    ? 16
-    : 8;
+      ? 6
+      : holeStr.includes("2 mm")
+        ? 8
+        : holeStr.includes("3 mm")
+          ? 10
+          : holeStr.includes("4 mm")
+            ? 12
+            : holeStr.includes("5 mm")
+              ? 14
+              : holeStr.includes("standoff")
+                ? 16
+                : 8;
 
   return (
     <div className="flex flex-col min-h-screen lg:h-screen lg:overflow-hidden bg-background text-foreground relative select-none">
@@ -458,11 +459,10 @@ export default function StudioEnquiryForm({
                       <button
                         type="button"
                         onClick={() => setShowHoleOverlay((v) => !v)}
-                        className={`px-2.5 py-1 rounded-full font-semibold flex items-center gap-1 transition-colors ${
-                          showHoleOverlay
-                            ? "bg-amber-500/15 text-amber-500"
-                            : "hover:bg-muted text-muted-foreground"
-                        }`}
+                        className={`px-2.5 py-1 rounded-full font-semibold flex items-center gap-1 transition-colors ${showHoleOverlay
+                          ? "bg-amber-500/15 text-amber-500"
+                          : "hover:bg-muted text-muted-foreground"
+                          }`}
                       >
                         <CircleDot size={12} />
                         <span>Holes ({specs.holes})</span>
@@ -501,17 +501,16 @@ export default function StudioEnquiryForm({
               onClick={() => {
                 if (!designFile) fileInputRef.current?.click();
               }}
-              className={`w-full max-w-4xl 2xl:max-w-5xl flex-1 max-h-[480px] 2xl:max-h-[600px] rounded-2xl relative overflow-hidden transition-all duration-300 flex flex-col items-center justify-center border-2 ${
-                designFile
-                  ? isDarkMode
-                    ? "bg-zinc-950/90 border-amber-500/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]"
-                    : "bg-white border-amber-500/50 shadow-[0_20px_50px_-15px_rgba(13,30,27,0.12)]"
-                  : isDragging
+              className={`w-full max-w-4xl 2xl:max-w-5xl flex-1 max-h-[480px] 2xl:max-h-[600px] rounded-2xl relative overflow-hidden transition-all duration-300 flex flex-col items-center justify-center border-2 ${designFile
+                ? isDarkMode
+                  ? "bg-zinc-950/90 border-amber-500/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]"
+                  : "bg-white border-amber-500/50 shadow-[0_20px_50px_-15px_rgba(13,30,27,0.12)]"
+                : isDragging
                   ? "border-amber-500 bg-amber-500/10 scale-[1.01] cursor-pointer"
                   : isDarkMode
-                  ? "border-dashed border-white/20 hover:border-amber-400/60 bg-zinc-900/40 hover:bg-zinc-900/70 cursor-pointer"
-                  : "border-dashed border-emerald-950/25 hover:border-amber-500 bg-white/70 hover:bg-white cursor-pointer shadow-sm"
-              }`}
+                    ? "border-dashed border-white/20 hover:border-amber-400/60 bg-zinc-900/40 hover:bg-zinc-900/70 cursor-pointer"
+                    : "border-dashed border-emerald-950/25 hover:border-amber-500 bg-white/70 hover:bg-white cursor-pointer shadow-sm"
+                }`}
             >
               {/* Subtle Industrial Blueprint Grid Inside Frame */}
               <div
@@ -611,11 +610,10 @@ export default function StudioEnquiryForm({
                   <img
                     src={designFile.previewUrl}
                     alt={designFile.fileName}
-                    className={`max-w-full max-h-full rounded-xl transition-all duration-300 shadow-2xl ${
-                      imageFit === "cover"
-                        ? "w-full h-full object-cover"
-                        : "object-contain max-h-[330px]"
-                    }`}
+                    className={`max-w-full max-h-full rounded-xl transition-all duration-300 shadow-2xl ${imageFit === "cover"
+                      ? "w-full h-full object-cover"
+                      : "object-contain max-h-[330px]"
+                      }`}
                   />
 
                   {/* Bottom-left live badge on the photo frame */}
@@ -752,9 +750,9 @@ export default function StudioEnquiryForm({
                 <a
                   href={`https://wa.me/${(() => {
                     const raw =
-                      studioSettings?.factoryInfo?.whatsapp || "9876543210";
+                      studioSettings?.factoryInfo?.whatsapp || "8447507195";
                     const digits = String(raw).replace(/\D/g, "");
-                    return digits.length === 10 ? `91${digits}` : digits || "919876543210";
+                    return digits.length === 10 ? `91${digits}` : digits || "918447507195";
                   })()}?text=${encodeURIComponent(
                     `Hi Sourav Graphic! I just submitted Enquiry *${submittedEnquiry.id}* for *${submittedEnquiry.category}* (${submittedEnquiry.specifications?.thickness}, Holes: ${submittedEnquiry.specifications?.holes}, ${submittedEnquiry.specifications?.side}, ${submittedEnquiry.specifications?.colour}, Qty: ${submittedEnquiry.quantity}).`
                   )}`}
@@ -770,7 +768,7 @@ export default function StudioEnquiryForm({
                   onClick={() => {
                     setSubmittedEnquiry(null);
                     setDesignFile(null);
-                    setCustomer({ name: "", phone: "", address: "" });
+                    setCustomer({ name: "", phone: "", email: "", address: "" });
                   }}
                   className="py-3 px-4 rounded-xl bg-muted hover:bg-muted/80 border border-border text-xs font-extrabold transition-colors"
                 >
@@ -799,11 +797,10 @@ export default function StudioEnquiryForm({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className={`px-3 py-2 rounded-xl border text-xs font-extrabold flex items-center gap-1.5 shrink-0 transition-all ${
-                      designFile
-                        ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-500"
-                        : "bg-amber-500 text-zinc-950 border-amber-400 shadow-sm hover:brightness-110"
-                    }`}
+                    className={`px-3 py-2 rounded-xl border text-xs font-extrabold flex items-center gap-1.5 shrink-0 transition-all ${designFile
+                      ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-500"
+                      : "bg-amber-500 text-zinc-950 border-amber-400 shadow-sm hover:brightness-110"
+                      }`}
                   >
                     <Upload size={13} />
                     <span>{designFile ? "Change Photo" : "Upload Photo"}</span>
@@ -839,18 +836,16 @@ export default function StudioEnquiryForm({
                           key={item.id}
                           type="button"
                           onClick={() => handleProductChange(item.id)}
-                          className={`p-2 rounded-xl border text-left transition-all flex items-center gap-2 ${
-                            isSelected
-                              ? "border-amber-500 bg-amber-500/15 text-foreground shadow-sm"
-                              : "border-border/70 bg-muted/30 hover:bg-muted/60 text-muted-foreground hover:text-foreground"
-                          }`}
+                          className={`p-2 rounded-xl border text-left transition-all flex items-center gap-2 ${isSelected
+                            ? "border-amber-500 bg-amber-500/15 text-foreground shadow-sm"
+                            : "border-border/70 bg-muted/30 hover:bg-muted/60 text-muted-foreground hover:text-foreground"
+                            }`}
                         >
                           <div
-                            className={`p-1.5 rounded-lg shrink-0 ${
-                              isSelected
-                                ? "bg-amber-500 text-zinc-950"
-                                : "bg-muted text-muted-foreground"
-                            }`}
+                            className={`p-1.5 rounded-lg shrink-0 ${isSelected
+                              ? "bg-amber-500 text-zinc-950"
+                              : "bg-muted text-muted-foreground"
+                              }`}
                           >
                             <Icon size={13} />
                           </div>
@@ -882,11 +877,10 @@ export default function StudioEnquiryForm({
                           key={t}
                           type="button"
                           onClick={() => setSpecs({ ...specs, thickness: t })}
-                          className={`py-1.5 px-1.5 rounded-lg text-[10.5px] font-bold transition-all truncate text-center ${
-                            specs.thickness === t
-                              ? "bg-amber-500 text-zinc-950 font-black shadow-2xs"
-                              : "bg-background/80 hover:bg-background text-muted-foreground hover:text-foreground border border-border/50"
-                          }`}
+                          className={`py-1.5 px-1.5 rounded-lg text-[10.5px] font-bold transition-all truncate text-center ${specs.thickness === t
+                            ? "bg-amber-500 text-zinc-950 font-black shadow-2xs"
+                            : "bg-background/80 hover:bg-background text-muted-foreground hover:text-foreground border border-border/50"
+                            }`}
                           title={t}
                         >
                           {t}
@@ -912,11 +906,10 @@ export default function StudioEnquiryForm({
                           key={h}
                           type="button"
                           onClick={() => setSpecs({ ...specs, holes: h })}
-                          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold transition-all text-left truncate ${
-                            specs.holes === h
-                              ? "bg-amber-500 text-zinc-950 font-black shadow-2xs"
-                              : "bg-background/80 hover:bg-background text-muted-foreground hover:text-foreground border border-border/50"
-                          }`}
+                          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold transition-all text-left truncate ${specs.holes === h
+                            ? "bg-amber-500 text-zinc-950 font-black shadow-2xs"
+                            : "bg-background/80 hover:bg-background text-muted-foreground hover:text-foreground border border-border/50"
+                            }`}
                           title={h}
                         >
                           {h}
@@ -939,11 +932,10 @@ export default function StudioEnquiryForm({
                           key={s}
                           type="button"
                           onClick={() => setSpecs({ ...specs, side: s })}
-                          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold transition-all text-left truncate ${
-                            specs.side === s
-                              ? "bg-amber-500 text-zinc-950 font-black"
-                              : "bg-background/80 hover:bg-background text-muted-foreground border border-border/50"
-                          }`}
+                          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold transition-all text-left truncate ${specs.side === s
+                            ? "bg-amber-500 text-zinc-950 font-black"
+                            : "bg-background/80 hover:bg-background text-muted-foreground border border-border/50"
+                            }`}
                           title={s}
                         >
                           {s}
@@ -1011,11 +1003,10 @@ export default function StudioEnquiryForm({
                             key={c.label}
                             type="button"
                             onClick={() => setSpecs({ ...specs, colour: c.label })}
-                            className={`py-1.5 px-2 rounded-lg text-[9.5px] font-bold flex items-center justify-between gap-1 transition-all ${
-                              active
-                                ? "bg-amber-500 text-zinc-950 font-black shadow-2xs"
-                                : "bg-background/80 hover:bg-background text-muted-foreground border border-border/50"
-                            }`}
+                            className={`py-1.5 px-2 rounded-lg text-[9.5px] font-bold flex items-center justify-between gap-1 transition-all ${active
+                              ? "bg-amber-500 text-zinc-950 font-black shadow-2xs"
+                              : "bg-background/80 hover:bg-background text-muted-foreground border border-border/50"
+                              }`}
                             title={c.label}
                           >
                             <span className="truncate">
@@ -1102,6 +1093,16 @@ export default function StudioEnquiryForm({
                       className="w-full pl-8 pr-3 py-2 rounded-xl bg-background border border-border/80 text-xs font-semibold focus:outline-none focus:border-amber-500 transition-colors"
                     />
                   </div>
+
+                  <input
+                    type="email"
+                    placeholder="Email Address (Optional — receive instant quote confirmation copy)"
+                    value={customer.email}
+                    onChange={(e) =>
+                      setCustomer({ ...customer, email: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-background border border-border/80 text-xs font-semibold focus:outline-none focus:border-amber-500 transition-colors"
+                  />
                 </div>
               </div>
 

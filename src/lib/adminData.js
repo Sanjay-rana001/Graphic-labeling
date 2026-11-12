@@ -7,6 +7,16 @@ export const DEFAULT_ADMIN_AUTH = {
   lastUpdated: new Date().toISOString(),
 };
 
+export const SUPER_ADMIN_ACCOUNTS = [
+  DEFAULT_ADMIN_AUTH,
+  {
+    email: "kumarsourav411@gmail.com",
+    password: "100Rav@2026",
+    name: "Sourav Kumar (Super Admin)",
+    lastUpdated: new Date().toISOString(),
+  },
+];
+
 export const PRODUCT_IMAGE_MAP = {
   "Aluminium Name Plate": "/Media/Aluminium Name Plate.webp",
   "Aluminium Etching Plate": "/Media/Aluminium Etching Plate.jpeg",

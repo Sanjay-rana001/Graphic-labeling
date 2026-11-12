@@ -79,6 +79,7 @@ export default function CheckoutBlock({ config, setConfig, previewRef, isPreview
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          source: "Online 3D Studio",
           category: `${config.material} Name Plate`,
           specifications: {
             thickness: `${config.size.thickness || 3} mm`,
@@ -110,7 +111,7 @@ export default function CheckoutBlock({ config, setConfig, previewRef, isPreview
   };
 
   const handleDirectWhatsApp = () => {
-    let rawPhone = "9876543210";
+    let rawPhone = "8447507195";
     try {
       const saved = localStorage.getItem("sourav_admin_settings");
       if (saved) {
@@ -119,7 +120,7 @@ export default function CheckoutBlock({ config, setConfig, previewRef, isPreview
       }
     } catch (e) {}
     const cleanDigits = rawPhone.replace(/\D/g, "");
-    const number = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits || "919876543210";
+    const number = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits || "918447507195";
     
     const layerDetails = config.layers.map((l, i) => 
       `Line ${i+1}: "${l.text.replace(/\n/g, " ")}" (Font: ${l.font})`

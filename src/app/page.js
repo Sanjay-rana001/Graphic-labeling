@@ -16,9 +16,19 @@ const jsonLdSchema = {
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://souravgraphic.in",
   logo: "/Media/Logo.png",
   image: "/Media/metal labels.jpg",
+  telephone: "+91-8447507195",
+  email: "souravgraphicmetallabel@gmail.com",
+  founder: {
+    "@type": "Person",
+    name: "Sourav Kumar",
+  },
+  taxID: "06EFEPK5404R1Z2",
   address: {
     "@type": "PostalAddress",
-    addressLocality: "New Delhi",
+    streetAddress: "DC 696 (313), 33 Feet Road, Near SS Tools, Sector 50",
+    addressLocality: "Faridabad",
+    addressRegion: "Haryana",
+    postalCode: "121001",
     addressCountry: "IN",
   },
   makesOffer: [
